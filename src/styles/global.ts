@@ -10,6 +10,10 @@ export const GlobalStyles = createGlobalStyle`
     font-weight: 400;
   }
 
+  body {
+    overflow: hidden;
+  }
+
   button {
     border: none;
     background: none;

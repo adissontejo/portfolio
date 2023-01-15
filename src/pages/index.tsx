@@ -1,5 +1,11 @@
+import { Container } from './styles';
+
 const Home = () => {
-  return null;
+  return (
+    <Container>
+      <img src="/logo.svg" alt="Logo" />
+    </Container>
+  );
 };
 
 export default Home;

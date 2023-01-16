@@ -1,16 +1,29 @@
+import { motion } from 'framer-motion';
 import styled, { keyframes } from 'styled-components';
 
-const logoAnimation = keyframes`
-  0% {
-    transform: translateX(-8px);
+const logoEnterAnimation = keyframes`
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
   }
 
-  100% {
-    transform: translateX(8px);
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 `;
 
-export const Container = styled.div`
+const logoLoopAnimation = keyframes`
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-30px);
+  }
+`;
+
+export const Container = styled(motion.div)`
   padding: 0 0 0 15%;
 
   width: 100vw;
@@ -28,12 +41,12 @@ export const Container = styled.div`
   align-content: center;
   justify-content: center;
 
-  > .logo {
+  .logo {
     grid-row: 2;
     grid-column: 1;
     margin: 72px 65px 72px 0;
 
-    animation: ${logoAnimation} 3s ease-in-out infinite;
-    animation-direction: alternate;
+    animation: ${logoEnterAnimation} 3s ease-in-out,
+      ${logoLoopAnimation} 4s ease-in-out 3s infinite alternate;
   }
 `;

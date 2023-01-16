@@ -23,7 +23,14 @@ const logoLoopAnimation = keyframes`
   }
 `;
 
-export const Container = styled(motion.div)`
+export type ContainerProps = {
+  animateEntrance: boolean;
+};
+
+export const Container = styled(motion.div)<ContainerProps>`
+  position: absolute;
+  top: 0;
+  left: 0;
   padding: 0 0 0 15%;
 
   width: 100vw;
@@ -46,7 +53,9 @@ export const Container = styled(motion.div)`
     grid-column: 1;
     margin: 72px 65px 72px 0;
 
-    animation: ${logoEnterAnimation} 3s ease-in-out,
-      ${logoLoopAnimation} 4s ease-in-out 3s infinite alternate;
+    animation: ${logoEnterAnimation} 3s ease-in-out
+        ${p => (p.animateEntrance ? '1' : '0')},
+      ${logoLoopAnimation} 4s ease-in-out
+        ${p => (p.animateEntrance ? '3' : '0')}s infinite alternate;
   }
 `;

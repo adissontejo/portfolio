@@ -18,4 +18,4 @@ export const StylesProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const useStyles = () => useContext(StylesContext);
+export const useStylesContext = () => useContext(StylesContext);

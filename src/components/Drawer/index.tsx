@@ -27,7 +27,7 @@ export const Drawer = ({
 }: DrawerProps) => {
   const router = useRouter();
 
-  const { activeDrawer, setActiveDrawer } = useDrawersContext();
+  const { activeDrawer, setActiveDrawer, columnWidth } = useDrawersContext();
 
   const navigate = () => {
     setActiveDrawer(id);
@@ -37,7 +37,7 @@ export const Drawer = ({
     router.push(href);
   };
 
-  const translateX = `calc(-100vw + ${rightToLeftPosition * 60}px)`;
+  const translateX = `calc(-100vw + ${rightToLeftPosition * columnWidth}px)`;
 
   const initial = {
     translateX: activeDrawer === id ? translateX : '100vw',
@@ -63,7 +63,7 @@ export const Drawer = ({
     <Container
       gridArea={id}
       color={color}
-      position={rightToLeftPosition}
+      rightToLeftPosition={rightToLeftPosition}
       onClick={navigate}
       animateEntrances={!preventAnimations}
     >

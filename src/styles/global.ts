@@ -10,11 +10,8 @@ export const GlobalStyles = createGlobalStyle`
     font-weight: 400;
   }
 
-  body {
-    overflow: hidden;
-  }
-
   button {
+    -webkit-tap-highlight-color: transparent;
     border: none;
     background: none;
   }

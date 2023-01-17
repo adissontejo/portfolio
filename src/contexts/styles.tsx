@@ -11,10 +11,12 @@ export const StylesContext = createContext({} as StylesContextType);
 
 export const StylesProvider = ({ children }: { children: ReactNode }) => {
   return (
-    <ThemeProvider theme={theme}>
-      <GlobalStyles />
-      {children}
-    </ThemeProvider>
+    <StylesContext.Provider value={{ theme }}>
+      <ThemeProvider theme={theme}>
+        <GlobalStyles />
+        {children}
+      </ThemeProvider>
+    </StylesContext.Provider>
   );
 };
 

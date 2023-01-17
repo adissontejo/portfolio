@@ -2,6 +2,10 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 
 export const Container = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  left: 0;
+
   padding: 68px 0 0;
   z-index: 15;
 
@@ -42,9 +46,15 @@ export const BackBtn = styled(motion.button)`
 
     color: ${p => p.theme.colors.green};
     font-size: 20px;
+
+    transition: opacity 0.2s;
   }
 
   &:hover {
     left: -85px;
+
+    > .label {
+      opacity: 0.8;
+    }
   }
 `;

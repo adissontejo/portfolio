@@ -34,10 +34,7 @@ const Home = ({ preventAnimations }: HomeProps) => {
   }, []);
 
   return (
-    <Container
-      exit={{ position: 'absolute' }}
-      animateEntrance={!preventAnimations}
-    >
+    <Container animateEntrance={!preventAnimations}>
       <img className="logo" src="/logo.svg" alt="Logo" draggable={false} />
       <Drawer
         id="experiences"

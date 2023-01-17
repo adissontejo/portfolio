@@ -3,10 +3,14 @@ import { useRouter } from 'next/router';
 import { deleteCookie, getCookie, setCookie } from 'cookies-next';
 import { motion } from 'framer-motion';
 
+import { useDrawersContext } from '~/contexts';
+
 import { BackBtn, Container } from './styles';
 
 const Experiences = () => {
   const router = useRouter();
+
+  const { columnWidth } = useDrawersContext();
 
   const navigate = () => {
     setCookie('preventAnimations', true);
@@ -16,9 +20,9 @@ const Experiences = () => {
 
   return (
     <Container
-      initial={{ position: 'absolute', x: 'calc(100vw - 60px)' }}
-      animate={{ x: 0 }}
-      exit={{ position: 'absolute', x: 'calc(100vw - 60px)' }}
+      initial={{ translateX: `calc(100vw - ${columnWidth}px)` }}
+      animate={{ translateX: 0 }}
+      exit={{ translateX: `calc(100vw - ${columnWidth}px)` }}
       transition={{ ease: 'easeInOut', duration: 1.5 }}
     >
       <BackBtn

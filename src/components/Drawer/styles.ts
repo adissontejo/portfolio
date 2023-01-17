@@ -26,21 +26,29 @@ const columnAnimation = keyframes`
 export type ContainerProps = {
   gridArea: string;
   color: keyof Theme['colors'];
-  position: number;
+  rightToLeftPosition: number;
   animateEntrances: boolean;
 };
 
 export const Container = styled(motion.button)<ContainerProps>`
   grid-area: ${p => p.gridArea};
-  z-index: ${p => (2 - p.position) * 10};
+  z-index: ${p => (2 - p.rightToLeftPosition) * 10};
+  position: relative;
 
   width: 100%;
-  height: 50px;
 
   display: flex;
+  justify-self: flex-end;
   justify-content: flex-end;
 
   cursor: pointer;
+
+  animation: ${p => (p.animateEntrances ? barAnimation : 'none')} 2s ease-in-out
+    ${p => 1 + p.rightToLeftPosition * 0.2}s both;
+
+  @media ${p => p.theme.queries.mediumAndLower} {
+    align-self: flex-end;
+  }
 
   > .bar {
     position: relative;
@@ -54,15 +62,23 @@ export const Container = styled(motion.button)<ContainerProps>`
     align-items: center;
     overflow: hidden;
 
-    animation: ${p => (p.animateEntrances ? barAnimation : 'none')} 2s
-      ease-in-out ${p => 1 + p.position * 0.2}s both;
     transition: right 0.2s;
+
+    @media ${p => p.theme.queries.mediumAndLower} {
+      height: 35px;
+    }
 
     > .label {
       margin: 0 0 0 33px;
 
       color: ${p => p.theme.colors.light};
       font-size: 20px;
+
+      transition: opacity 0.2s;
+
+      @media ${p => p.theme.queries.mediumAndLower} {
+        font-size: 16px;
+      }
     }
   }
 
@@ -70,23 +86,40 @@ export const Container = styled(motion.button)<ContainerProps>`
     position: fixed;
     top: 0;
     right: -100vw;
+    z-index: 100;
 
-    width: calc(${p => (p.position + 1) * 60}px + 100vw);
+    width: calc(${p => (p.rightToLeftPosition + 1) * 60}px + 100vw);
     height: 100vh;
     background: ${p => p.theme.colors[p.color]};
 
     animation: ${p => (p.animateEntrances ? columnAnimation : 'none')} 1s
-      ${p => p.position * 0.2}s ease-in-out both;
+      ${p => p.rightToLeftPosition * 0.2}s ease-in-out both;
     transition: right 0.2s;
+
+    @media ${p => p.theme.queries.mediumAndLower} {
+      width: calc(${p => (p.rightToLeftPosition + 1) * 20}px + 100vw);
+    }
   }
 
   &:hover {
     > .bar {
       right: 15px;
+
+      @media ${p => p.theme.queries.mediumAndLower} {
+        right: 7px;
+      }
+
+      > .label {
+        opacity: 0.8;
+      }
     }
 
     > .column {
       right: calc(-100vw + 15px);
+
+      @media ${p => p.theme.queries.mediumAndLower} {
+        right: calc(-100vw + 7px);
+      }
     }
   }
 `;

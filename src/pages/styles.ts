@@ -49,11 +49,11 @@ export type ContainerProps = {
 };
 
 export const Container = styled.div<ContainerProps>`
-  padding: 0 0 0 15%;
+  padding: 0 0 0 max(15%, calc(100vw - 1500px));
 
   width: 100vw;
   height: 100vh;
-  background: ${p => p.theme.colors.light};
+  background: ${p => p.theme.colors.background};
 
   display: grid;
   grid:
@@ -68,6 +68,8 @@ export const Container = styled.div<ContainerProps>`
 
   overflow: hidden;
 
+  transition: background-color 0.8s;
+
   @media ${p => p.theme.queries.mediumAndLower} {
     padding: 0 0 0 36px;
 
@@ -77,7 +79,7 @@ export const Container = styled.div<ContainerProps>`
     gap: 47px;
   }
 
-  .logo {
+  > .logo-wrapper {
     margin: 72px 65px 72px 0;
 
     animation: ${logoEnterAnimation} 3s ease-in-out
@@ -87,8 +89,6 @@ export const Container = styled.div<ContainerProps>`
 
     @media ${p => p.theme.queries.mediumAndLower} {
       margin: 150px 0 13px;
-
-      max-height: 80px;
 
       animation: ${logoEnterAnimationMobile} 3s ease-in-out
           ${p => (p.animateEntrance ? '1' : '0')},

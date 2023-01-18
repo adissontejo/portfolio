@@ -19,18 +19,18 @@ export const Container = styled(motion.div)`
 
   > h1 {
     color: ${p => p.theme.colors.light};
-    font-size: 54px;
+    font-size: 40px;
   }
 `;
 
 export const BackBtn = styled(motion.button)`
   position: relative;
-  left: -100px;
+  left: -90px;
   align-self: flex-start;
 
-  width: 350px;
+  width: 330px;
   height: 50px;
-  background: ${p => p.theme.colors.light};
+  background: ${p => p.theme.colors.background};
 
   display: flex;
   align-items: center;
@@ -39,7 +39,11 @@ export const BackBtn = styled(motion.button)`
 
   cursor: pointer;
 
-  transition: left 0.2s;
+  transition: left 0.2s, background-color 0.8s;
+
+  @media ${p => p.theme.queries.mediumAndLower} {
+    height: 35px;
+  }
 
   > .label {
     margin: 0 33px 0 0;
@@ -48,10 +52,14 @@ export const BackBtn = styled(motion.button)`
     font-size: 20px;
 
     transition: opacity 0.2s;
+
+    @media ${p => p.theme.queries.mediumAndLower} {
+      font-size: 16px;
+    }
   }
 
   &:hover {
-    left: -85px;
+    left: -75px;
 
     > .label {
       opacity: 0.8;

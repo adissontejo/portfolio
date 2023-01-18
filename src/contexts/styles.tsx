@@ -1,7 +1,7 @@
-import { createContext, ReactNode, useContext } from 'react';
+import { createContext, ReactNode, useContext, useState } from 'react';
 import { ThemeProvider } from 'styled-components';
 
-import { GlobalStyles, Theme, theme } from '~/styles';
+import { darkTheme, GlobalStyles, lightTheme, Theme } from '~/styles';
 
 export type StylesContextType = {
   theme: Theme;
@@ -9,7 +9,19 @@ export type StylesContextType = {
 
 export const StylesContext = createContext({} as StylesContextType);
 
-export const StylesProvider = ({ children }: { children: ReactNode }) => {
+export type StylesProviderProps = {
+  children: ReactNode;
+  initialMode: 'light' | 'dark';
+};
+
+export const StylesProvider = ({
+  children,
+  initialMode,
+}: StylesProviderProps) => {
+  const [mode] = useState(initialMode);
+
+  const theme = mode === 'light' ? lightTheme : darkTheme;
+
   return (
     <StylesContext.Provider value={{ theme }}>
       <ThemeProvider theme={theme}>

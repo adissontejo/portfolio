@@ -1,4 +1,4 @@
-export const theme = {
+export const baseTheme = {
   colors: {
     purple: '#37188e',
     green: '#32746d',
@@ -18,4 +18,31 @@ export const theme = {
   },
 };
 
-export type Theme = typeof theme;
+export type Theme = typeof baseTheme & {
+  mode: 'light' | 'dark';
+  colors: (typeof baseTheme)['colors'] & {
+    background: string;
+  };
+};
+
+export const lightTheme: Theme = {
+  ...baseTheme,
+  mode: 'light',
+  colors: {
+    ...baseTheme.colors,
+    background: baseTheme.colors.light,
+  },
+};
+
+export const darkTheme: Theme = {
+  ...baseTheme,
+  mode: 'dark',
+  colors: {
+    ...baseTheme.colors,
+    background: baseTheme.colors.dark,
+  },
+};
+
+export type LightTheme = typeof lightTheme;
+
+export type DarkTheme = typeof darkTheme;

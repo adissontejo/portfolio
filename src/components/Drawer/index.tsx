@@ -1,5 +1,5 @@
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { setCookie } from 'cookies-next';
 import { motion } from 'framer-motion';
 
 import { useDrawersContext } from '~/contexts';
@@ -29,13 +29,25 @@ export const Drawer = ({
 
   const { activeDrawer, setActiveDrawer, columnWidth } = useDrawersContext();
 
-  const navigate = () => {
-    setActiveDrawer(id);
+  const [active, setActive] = useState(true);
 
-    setCookie('transitioned', true);
+  const navigate = () => {
+    if (!active) {
+      return;
+    }
+
+    setActive(false);
+
+    setActiveDrawer(id);
 
     router.push(href);
   };
+
+  useEffect(() => {
+    if (router.pathname === '/') {
+      setActive(true);
+    }
+  }, [router.pathname]);
 
   const translateX = `calc(-100vw + ${rightToLeftPosition * columnWidth}px)`;
 

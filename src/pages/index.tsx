@@ -3,11 +3,11 @@ import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import { deleteCookie, getCookie, setCookie } from 'cookies-next';
 
-import { Drawer } from '~/components';
-
-import { Container } from './styles';
+import { Drawer, Logo } from '~/components';
 import { useDrawersContext } from '~/contexts';
 import { Drawers } from '~/types';
+
+import { Container } from './styles';
 
 type HomeProps = {
   preventAnimations: boolean;
@@ -25,17 +25,29 @@ const Home = ({ preventAnimations }: HomeProps) => {
     deleteCookie('preventAnimations');
 
     if (typeof redirect === 'string') {
-      setCookie('transitioned', true);
-
       setActiveDrawer(redirect as Drawers);
 
       router.push(`/${redirect}`);
     }
   }, []);
 
+  useEffect(() => {
+    if (router.pathname === '/') {
+      const listener = () => {
+        setCookie('transitioned', true);
+
+        router.events.off('routeChangeStart', listener);
+      };
+
+      router.events.on('routeChangeStart', listener);
+    }
+  }, [router.pathname]);
+
   return (
     <Container animateEntrance={!preventAnimations}>
-      <img className="logo" src="/logo.svg" alt="Logo" draggable={false} />
+      <div className="logo-wrapper">
+        <Logo />
+      </div>
       <Drawer
         id="experiences"
         label="experiências"

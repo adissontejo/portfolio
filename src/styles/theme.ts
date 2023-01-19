@@ -11,10 +11,13 @@ export const baseTheme = {
     medium: 'screen and (min-width: 600px) and (max-width: 768px)',
     mediumAndLower: 'screen and (max-width: 768px)',
     mediumAndGreater: 'screen and (min-width: 600px)',
-    large: 'screen and (min-width: 768px) and (max-width: 992px)',
-    largeAndLower: 'screen and (max-width: 992px)',
-    largeAndGreater: 'screen and (min-width: 768px)',
-    extraLarge: 'screen and (min-width: 992px)',
+    regular: 'screen and (min-width: 768px) and (max-width: 992px)',
+    regularAndLower: 'screen and (max-width: 992px)',
+    regularAndGreater: 'screen and (min-width: 768px)',
+    large: 'screen and (min-width: 992px) and (max-width: 1200px)',
+    largeAndLower: 'screen and (max-width: 1200px)',
+    largeAndGreater: 'screen and (min-width: 992px)',
+    extraLarge: 'screen and (min-width: 1200px)',
   },
 };
 

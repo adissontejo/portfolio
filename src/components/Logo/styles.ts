@@ -2,8 +2,10 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
   > svg {
-    @media ${p => p.theme.queries.mediumAndLower} {
-      max-width: calc(100vw - 150px);
+    max-width: calc(100vw - 120px);
+
+    @media ${p => p.theme.queries.small} {
+      width: 270px;
     }
   }
 

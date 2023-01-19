@@ -61,10 +61,16 @@ export const Container = styled(motion.button)<ContainerProps>`
     display: flex;
     align-items: center;
     overflow: hidden;
+    gap: 15px;
 
     transition: right 0.2s;
 
-    @media ${p => p.theme.queries.mediumAndLower} {
+    @media ${p => p.theme.queries.regularAndLower} {
+      flex-direction: row-reverse;
+      justify-content: flex-end;
+    }
+
+    @media ${p => p.theme.queries.small} {
       height: 35px;
     }
 
@@ -76,8 +82,22 @@ export const Container = styled(motion.button)<ContainerProps>`
 
       transition: opacity 0.2s;
 
-      @media ${p => p.theme.queries.mediumAndLower} {
+      @media ${p => p.theme.queries.regularAndLower} {
+        margin: 0;
+      }
+
+      @media ${p => p.theme.queries.small} {
         font-size: 16px;
+      }
+    }
+
+    > .icon {
+      @media ${p => p.theme.queries.regularAndLower} {
+        margin: 0 0 0 15px;
+      }
+
+      @media ${p => p.theme.queries.small} {
+        height: 18px;
       }
     }
   }
@@ -96,7 +116,7 @@ export const Container = styled(motion.button)<ContainerProps>`
       ${p => p.rightToLeftPosition * 0.2}s ease-in-out both;
     transition: right 0.2s;
 
-    @media ${p => p.theme.queries.mediumAndLower} {
+    @media ${p => p.theme.queries.small} {
       width: calc(${p => (p.rightToLeftPosition + 1) * 20}px + 100vw);
     }
   }
@@ -105,7 +125,7 @@ export const Container = styled(motion.button)<ContainerProps>`
     > .bar {
       right: 15px;
 
-      @media ${p => p.theme.queries.mediumAndLower} {
+      @media ${p => p.theme.queries.small} {
         right: 7px;
       }
 
@@ -117,7 +137,7 @@ export const Container = styled(motion.button)<ContainerProps>`
     > .column {
       right: calc(-100vw + 15px);
 
-      @media ${p => p.theme.queries.mediumAndLower} {
+      @media ${p => p.theme.queries.small} {
         right: calc(-100vw + 7px);
       }
     }

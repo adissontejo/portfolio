@@ -70,7 +70,7 @@ export const Container = styled.div<ContainerProps>`
 
   transition: background-color 0.8s;
 
-  @media ${p => p.theme.queries.mediumAndLower} {
+  @media ${p => p.theme.queries.regularAndLower} {
     padding: 0 0 0 36px;
 
     display: flex;
@@ -87,8 +87,8 @@ export const Container = styled.div<ContainerProps>`
       ${logoLoopAnimation} 4s ease-in-out
         ${p => (p.animateEntrance ? '3' : '0')}s infinite alternate;
 
-    @media ${p => p.theme.queries.mediumAndLower} {
-      margin: 150px 0 13px;
+    @media ${p => p.theme.queries.regularAndLower} {
+      margin: 30px 0 13px;
 
       animation: ${logoEnterAnimationMobile} 3s ease-in-out
           ${p => (p.animateEntrance ? '1' : '0')},

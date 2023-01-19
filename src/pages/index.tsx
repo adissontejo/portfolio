@@ -1,50 +1,18 @@
-import { useEffect } from 'react';
-import { GetServerSideProps } from 'next';
-import { useRouter } from 'next/router';
-import { deleteCookie, getCookie, setCookie } from 'cookies-next';
+import Head from 'next/head';
 
 import { Drawer, Logo } from '~/components';
 import { useDrawersContext } from '~/contexts';
-import { Drawers } from '~/types';
 
 import { Container } from './styles';
 
-type HomeProps = {
-  preventAnimations: boolean;
-};
-
-const Home = ({ preventAnimations }: HomeProps) => {
-  const router = useRouter();
-
-  const { setActiveDrawer } = useDrawersContext();
-
-  useEffect(() => {
-    const redirect = getCookie('redirect');
-
-    deleteCookie('redirect');
-    deleteCookie('preventAnimations');
-
-    if (typeof redirect === 'string') {
-      setActiveDrawer(redirect as Drawers);
-
-      router.push(`/${redirect}`);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (router.pathname === '/') {
-      const listener = () => {
-        setCookie('transitioned', true);
-
-        router.events.off('routeChangeStart', listener);
-      };
-
-      router.events.on('routeChangeStart', listener);
-    }
-  }, [router.pathname]);
+const Home = () => {
+  const { isInitialPage } = useDrawersContext();
 
   return (
-    <Container animateEntrance={!preventAnimations}>
+    <Container animateEntrance={isInitialPage}>
+      <Head>
+        <title>Ádisson</title>
+      </Head>
       <div className="logo-wrapper">
         <Logo />
       </div>
@@ -52,41 +20,28 @@ const Home = ({ preventAnimations }: HomeProps) => {
         id="experiences"
         label="experiências"
         color="green"
+        iconSrc="/experiences.svg"
         rightToLeftPosition={1}
         href="/experiences"
-        preventAnimations={preventAnimations}
       />
       <Drawer
         id="qualifications"
         label="qualificações"
         color="brown"
+        iconSrc="/qualifications.svg"
         rightToLeftPosition={0}
         href="/qualifications"
-        preventAnimations={preventAnimations}
       />
       <Drawer
         id="contact"
         label="contato"
         color="purple"
+        iconSrc="/contact.svg"
         rightToLeftPosition={2}
         href="/contact"
-        preventAnimations={preventAnimations}
       />
     </Container>
   );
-};
-
-export const getServerSideProps: GetServerSideProps<HomeProps> = async ({
-  req,
-  res,
-}) => {
-  const preventAnimations = !!getCookie('preventAnimations', { req, res });
-
-  return {
-    props: {
-      preventAnimations,
-    },
-  };
 };
 
 export default Home;

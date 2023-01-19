@@ -12,41 +12,37 @@ export type DrawerProps = {
   id: Drawers;
   label: string;
   color: keyof Theme['colors'];
+  iconSrc: string;
   rightToLeftPosition: number;
   href: string;
-  preventAnimations?: boolean;
 };
 
 export const Drawer = ({
   id,
   label,
   color,
+  iconSrc,
   rightToLeftPosition,
-  href,
-  preventAnimations,
 }: DrawerProps) => {
   const router = useRouter();
 
-  const { activeDrawer, setActiveDrawer, columnWidth } = useDrawersContext();
+  const { activeDrawer, columnWidth, isInitialPage, openDrawer } =
+    useDrawersContext();
 
   const [active, setActive] = useState(true);
 
   const navigate = () => {
-    if (!active) {
+    if (!active || (activeDrawer !== id && activeDrawer !== null)) {
       return;
     }
 
     setActive(false);
 
-    setActiveDrawer(id);
-
-    router.push(href);
+    openDrawer(id);
   };
 
   useEffect(() => {
-    if (router.pathname === '/') {
-      setActive(true);
-    }
+    setActive(router.pathname === '/');
   }, [router.pathname]);
 
   const translateX = `calc(-100vw + ${rightToLeftPosition * columnWidth}px)`;
@@ -77,7 +73,7 @@ export const Drawer = ({
       color={color}
       rightToLeftPosition={rightToLeftPosition}
       onClick={navigate}
-      animateEntrances={!preventAnimations}
+      animateEntrances={isInitialPage}
     >
       <motion.div
         className="bar"
@@ -86,6 +82,7 @@ export const Drawer = ({
         exit={exit}
       >
         <p className="label">{label}</p>
+        <img className="icon" src={iconSrc} alt={label} />
       </motion.div>
       <motion.div
         className="column"

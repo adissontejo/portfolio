@@ -13,7 +13,7 @@ export const Container = styled(motion.div)<ContainerProps>`
   top: 0;
   left: 0;
 
-  padding: 50px 0 0;
+  padding: 45px 0 0;
   z-index: ${p => (2 - p.rightToLeftPosition) * 10 + 5};
 
   width: 100vw;
@@ -24,8 +24,9 @@ export const Container = styled(motion.div)<ContainerProps>`
   flex-direction: column;
   align-items: center;
 
-  > h1 {
-    margin: 50px 0 0;
+  > .title {
+    margin: 113px 0 41px 72px;
+    align-self: flex-start;
 
     color: ${p => p.theme.colors.light};
     font-size: 40px;

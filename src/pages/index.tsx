@@ -20,7 +20,6 @@ const Home = () => {
         id="experiences"
         label="experiências"
         color="green"
-        iconSrc="/experiences.svg"
         rightToLeftPosition={1}
         href="/experiences"
       />
@@ -28,7 +27,6 @@ const Home = () => {
         id="qualifications"
         label="qualificações"
         color="brown"
-        iconSrc="/qualifications.svg"
         rightToLeftPosition={0}
         href="/qualifications"
       />
@@ -36,7 +34,6 @@ const Home = () => {
         id="contact"
         label="contato"
         color="purple"
-        iconSrc="/contact.svg"
         rightToLeftPosition={2}
         href="/contact"
       />

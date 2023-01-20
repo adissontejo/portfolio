@@ -10,7 +10,6 @@ export type DrawerProps = {
   id: Drawers;
   label: string;
   color: keyof Theme['colors'];
-  iconSrc: string;
   rightToLeftPosition: number;
   href: string;
 };
@@ -19,7 +18,6 @@ export const Drawer = ({
   id,
   label,
   color,
-  iconSrc,
   rightToLeftPosition,
 }: DrawerProps) => {
   const { activeDrawer, columnWidth, isInitialPage, openDrawer } =
@@ -62,7 +60,7 @@ export const Drawer = ({
         exit={exit}
       >
         <p className="label">{label}</p>
-        <img className="icon" src={iconSrc} alt={label} />
+        <img className="icon" src={`/drawer-icons/${id}.svg`} alt={label} />
       </motion.div>
       <motion.div
         className="column"

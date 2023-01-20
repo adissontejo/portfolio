@@ -66,7 +66,12 @@ export const DrawerScreen = ({
           <MdOutlineArrowBackIosNew className="icon" />
         </motion.div>
       </BackBtn>
-      <h1>{title}</h1>
+      <img
+        className="title"
+        src={`/drawer-titles/${id}.svg`}
+        alt={title}
+        draggable={false}
+      />
       {children}
     </Container>
   );

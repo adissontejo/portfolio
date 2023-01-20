@@ -1,5 +1,3 @@
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
 import { motion } from 'framer-motion';
 
 import { useDrawersContext } from '~/contexts';
@@ -24,26 +22,8 @@ export const Drawer = ({
   iconSrc,
   rightToLeftPosition,
 }: DrawerProps) => {
-  const router = useRouter();
-
   const { activeDrawer, columnWidth, isInitialPage, openDrawer } =
     useDrawersContext();
-
-  const [active, setActive] = useState(true);
-
-  const navigate = () => {
-    if (!active || (activeDrawer !== id && activeDrawer !== null)) {
-      return;
-    }
-
-    setActive(false);
-
-    openDrawer(id);
-  };
-
-  useEffect(() => {
-    setActive(router.pathname === '/');
-  }, [router.pathname]);
 
   const translateX = `calc(-100vw + ${rightToLeftPosition * columnWidth}px)`;
 
@@ -72,7 +52,7 @@ export const Drawer = ({
       gridArea={id}
       color={color}
       rightToLeftPosition={rightToLeftPosition}
-      onClick={navigate}
+      onClick={() => openDrawer(id)}
       animateEntrances={isInitialPage}
     >
       <motion.div

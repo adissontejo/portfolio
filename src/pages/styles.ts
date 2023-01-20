@@ -15,7 +15,7 @@ const logoEnterAnimation = keyframes`
 const logoEnterAnimationMobile = keyframes`
   from {
     opacity: 0;
-    transform: translateY(-100px);
+    transform: translateY(-70px);
   }
 
   to {
@@ -40,7 +40,7 @@ const logoLoopAnimationMobile = keyframes`
   }
 
   to {
-    transform: translateY(-60px);
+    transform: translateY(-40px);
   }
 `;
 
@@ -84,7 +84,7 @@ export const Container = styled.div<ContainerProps>`
 
     animation: ${logoEnterAnimation} 3s ease-in-out
         ${p => (p.animateEntrance ? '1' : '0')},
-      ${logoLoopAnimation} 4s ease-in-out
+      ${logoLoopAnimation} 10s ease-in-out
         ${p => (p.animateEntrance ? '3' : '0')}s infinite alternate;
 
     @media ${p => p.theme.queries.regularAndLower} {
@@ -92,7 +92,7 @@ export const Container = styled.div<ContainerProps>`
 
       animation: ${logoEnterAnimationMobile} 3s ease-in-out
           ${p => (p.animateEntrance ? '1' : '0')},
-        ${logoLoopAnimationMobile} 4s ease-in-out
+        ${logoLoopAnimationMobile} 10s ease-in-out
           ${p => (p.animateEntrance ? '3' : '0')}s infinite alternate;
     }
   }

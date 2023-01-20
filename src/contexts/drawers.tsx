@@ -4,6 +4,7 @@ import {
   ReactNode,
   SetStateAction,
   useContext,
+  useEffect,
   useRef,
   useState,
 } from 'react';
@@ -17,6 +18,8 @@ import { useStylesContext } from './styles';
 export type DrawersContextType = {
   activeDrawer?: Drawers;
   setActiveDrawer: Dispatch<SetStateAction<Drawers>>;
+  transitioning: boolean;
+  setTransitioning: Dispatch<SetStateAction<boolean>>;
   columnWidth: number;
   isInitialPage: boolean;
   openDrawer: (id: Drawers) => void;
@@ -28,9 +31,11 @@ export const DrawersContext = createContext({} as DrawersContextType);
 export const DrawersProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
 
-  const [activeDrawer, setActiveDrawer] = useState<Drawers>();
+  const [activeDrawer, setActiveDrawer] = useState<Drawers>(null);
+  const [transitioning, setTransitioning] = useState(false);
 
   const isInitialPage = useRef(true);
+  const drawerQueue = useRef<Drawers>(null);
 
   const { theme } = useStylesContext();
 
@@ -39,7 +44,15 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
   const columnWidth = isMobile ? 20 : 60;
 
   const openDrawer = (id: Drawers) => {
+    if (transitioning && id !== activeDrawer) {
+      drawerQueue.current = id;
+
+      return;
+    }
+
     setActiveDrawer(id);
+
+    setTransitioning(true);
 
     isInitialPage.current = false;
 
@@ -47,7 +60,13 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const closeDrawer = async (id: Drawers) => {
+    if (router.pathname !== `/${id}`) {
+      return;
+    }
+
     setActiveDrawer(id);
+
+    setTransitioning(true);
 
     if (isInitialPage.current) {
       isInitialPage.current = false;
@@ -64,21 +83,23 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
     } else {
       router.back();
     }
-
-    const listener = () => {
-      setActiveDrawer(null);
-
-      router.events.off('routeChangeComplete', listener);
-    };
-
-    router.events.on('routeChangeComplete', listener);
   };
+
+  useEffect(() => {
+    if (!transitioning && drawerQueue.current) {
+      openDrawer(drawerQueue.current);
+
+      drawerQueue.current = null;
+    }
+  }, [transitioning]);
 
   return (
     <DrawersContext.Provider
       value={{
         activeDrawer,
         setActiveDrawer,
+        transitioning,
+        setTransitioning,
         columnWidth,
         isInitialPage: isInitialPage.current,
         openDrawer,

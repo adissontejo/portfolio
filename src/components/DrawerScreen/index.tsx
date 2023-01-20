@@ -1,7 +1,7 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode } from 'react';
 import Head from 'next/head';
-import { useRouter } from 'next/router';
 import { motion } from 'framer-motion';
+import { MdOutlineArrowBackIosNew } from 'react-icons/md';
 
 import { useDrawersContext } from '~/contexts';
 import { Theme } from '~/styles';
@@ -24,25 +24,7 @@ export const DrawerScreen = ({
   rightToLeftPosition,
   children,
 }: DrawerScreenProps) => {
-  const router = useRouter();
-
-  const { columnWidth, closeDrawer } = useDrawersContext();
-
-  const [active, setActive] = useState(true);
-
-  const navigate = async () => {
-    if (!active) {
-      return;
-    }
-
-    setActive(false);
-
-    closeDrawer(id);
-  };
-
-  useEffect(() => {
-    setActive(router.pathname === `/${id}`);
-  }, [router.pathname]);
+  const { columnWidth, setTransitioning, closeDrawer } = useDrawersContext();
 
   const translateX = `calc(100vw - ${rightToLeftPosition * columnWidth}px)`;
 
@@ -54,6 +36,7 @@ export const DrawerScreen = ({
       animate={{ translateX: 0 }}
       exit={{ translateX }}
       transition={{ ease: 'easeInOut', duration: 1.5 }}
+      onAnimationComplete={() => setTransitioning(false)}
     >
       <Head>
         <title>Ádisson</title>
@@ -67,20 +50,21 @@ export const DrawerScreen = ({
           transition: { ease: 'easeInOut', duration: 0.7, delay: 0.3 },
         }}
         transition={{ ease: 'easeInOut', duration: 0.7, delay: 0.5 }}
-        onClick={navigate}
+        onClick={() => closeDrawer(id)}
       >
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+        <motion.div
+          className="label-wrapper"
+          initial={{ translateX: 'min(80vw, 560px)' }}
+          animate={{ translateX: 0 }}
           exit={{
-            opacity: 0,
-            transition: { ease: 'easeInOut', duration: 0.5, delay: 0.3 },
+            translateX: 'min(80vw, 560px)',
+            transition: { ease: 'easeInOut', duration: 0.7, delay: 0.3 },
           }}
-          transition={{ ease: 'easeInOut', duration: 0.5, delay: 0.7 }}
-          className="label"
+          transition={{ ease: 'easeInOut', duration: 0.7, delay: 0.5 }}
         >
-          voltar
-        </motion.p>
+          <p className="label">voltar</p>
+          <MdOutlineArrowBackIosNew className="icon" />
+        </motion.div>
       </BackBtn>
       <h1>{title}</h1>
       {children}

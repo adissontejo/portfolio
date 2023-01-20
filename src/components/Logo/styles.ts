@@ -2,10 +2,10 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
   > svg {
-    max-width: calc(100vw - 120px);
+    aspect-ratio: 1;
 
     @media ${p => p.theme.queries.small} {
-      width: 270px;
+      width: min(270px, calc(100vw - 140px));
     }
   }
 

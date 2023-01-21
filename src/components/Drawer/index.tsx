@@ -23,7 +23,9 @@ export const Drawer = ({
   const { activeDrawer, columnWidth, isInitialPage, openDrawer } =
     useDrawersContext();
 
-  const translateX = `calc(-100vw + ${rightToLeftPosition * columnWidth}px)`;
+  const translateX = `calc(-100vw + ${
+    (rightToLeftPosition + 1) * columnWidth
+  }px)`;
 
   const initial = {
     translateX: activeDrawer === id ? translateX : '100vw',

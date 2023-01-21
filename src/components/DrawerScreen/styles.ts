@@ -25,11 +25,15 @@ export const Container = styled(motion.div)<ContainerProps>`
   align-items: center;
 
   > .title {
-    margin: 113px 0 41px 72px;
+    margin: 64px 0 0 72px;
     align-self: flex-start;
 
-    color: ${p => p.theme.colors.light};
-    font-size: 40px;
+    @media ${p => p.theme.queries.small} {
+      margin: 42px 0 0;
+      align-self: center;
+
+      height: 55px;
+    }
   }
 `;
 
@@ -39,7 +43,7 @@ export type BackBtnProps = {
 
 export const BackBtn = styled(motion.button)<BackBtnProps>`
   position: relative;
-  left: -90px;
+  left: -15px;
   align-self: flex-start;
 
   height: 50px;
@@ -63,7 +67,7 @@ export const BackBtn = styled(motion.button)<BackBtnProps>`
 
     > .label {
       color: ${p => p.theme.colors[p.color]};
-      font-size: 20px;
+      font-size: 1rem;
 
       transition: opacity 0.2s;
 
@@ -87,7 +91,7 @@ export const BackBtn = styled(motion.button)<BackBtnProps>`
   }
 
   &:hover {
-    left: -75px;
+    left: 0;
 
     > .label-wrapper {
       opacity: 0.8;

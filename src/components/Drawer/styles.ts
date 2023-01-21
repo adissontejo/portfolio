@@ -78,16 +78,12 @@ export const Container = styled(motion.button)<ContainerProps>`
       margin: 0 0 0 33px;
 
       color: ${p => p.theme.colors.light};
-      font-size: 20px;
+      font-size: 1rem;
 
       transition: opacity 0.2s;
 
       @media ${p => p.theme.queries.regularAndLower} {
         margin: 0;
-      }
-
-      @media ${p => p.theme.queries.small} {
-        font-size: 16px;
       }
     }
 

@@ -22,6 +22,7 @@ export type DrawersContextType = {
   setTransitioning: Dispatch<SetStateAction<boolean>>;
   columnWidth: number;
   isInitialPage: boolean;
+  animationType: 'load' | 'back' | 'forward';
   openDrawer: (id: Drawers) => void;
   closeDrawer: (id: Drawers) => void;
 };
@@ -35,7 +36,11 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
   const [transitioning, setTransitioning] = useState(false);
 
   const isInitialPage = useRef(true);
-  const drawerQueue = useRef<Drawers>(null);
+  const actionQueue = useRef<{
+    type: 'open' | 'close';
+    id: Drawers;
+  }>(null);
+  const animationType = useRef<'load' | 'back' | 'forward'>('load');
 
   const { theme } = useStylesContext();
 
@@ -44,11 +49,20 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
   const columnWidth = isMobile ? 20 : 60;
 
   const openDrawer = (id: Drawers) => {
-    if (transitioning && id !== activeDrawer) {
-      drawerQueue.current = id;
+    if (router.pathname === `/${id}`) {
+      return;
+    }
+
+    if (transitioning) {
+      actionQueue.current = {
+        type: 'open',
+        id,
+      };
 
       return;
     }
+
+    animationType.current = 'forward';
 
     setActiveDrawer(id);
 
@@ -56,7 +70,7 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
 
     isInitialPage.current = false;
 
-    router.push(`/${id}`);
+    router.replace(`/${id}`);
   };
 
   const closeDrawer = async (id: Drawers) => {
@@ -64,32 +78,35 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
+    if (transitioning) {
+      actionQueue.current = {
+        type: 'close',
+        id,
+      };
+
+      return;
+    }
+
+    animationType.current = 'back';
+
     setActiveDrawer(id);
 
     setTransitioning(true);
 
-    if (isInitialPage.current) {
-      isInitialPage.current = false;
-
-      history.pushState(null, '', `/${id}`);
-
-      await router.push(`/${id}?id=2`, `/${id}`);
-
-      await router.replace(`/${id}`);
-
-      router.back();
-
-      router.replace('/');
-    } else {
-      router.back();
-    }
+    router.replace('/');
   };
 
   useEffect(() => {
-    if (!transitioning && drawerQueue.current) {
-      openDrawer(drawerQueue.current);
+    console.log(actionQueue.current);
 
-      drawerQueue.current = null;
+    if (!transitioning && actionQueue.current) {
+      if (actionQueue.current.type === 'open') {
+        openDrawer(actionQueue.current.id);
+      } else {
+        closeDrawer(actionQueue.current.id);
+      }
+
+      actionQueue.current = null;
     }
   }, [transitioning]);
 
@@ -102,6 +119,7 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
         setTransitioning,
         columnWidth,
         isInitialPage: isInitialPage.current,
+        animationType: animationType.current,
         openDrawer,
         closeDrawer,
       }}

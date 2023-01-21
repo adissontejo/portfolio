@@ -1,4 +1,6 @@
-import { Container } from './styles';
+import { ProjectsCarousel } from '~/components';
+
+import { Container, Section } from './styles';
 
 const Experiences = () => {
   return (
@@ -7,7 +9,12 @@ const Experiences = () => {
       title="experiências"
       color="green"
       rightToLeftPosition={1}
-    ></Container>
+    >
+      <Section>
+        <h4 className="subtitle">meus projetos</h4>
+        <ProjectsCarousel />
+      </Section>
+    </Container>
   );
 };
 

@@ -15,6 +15,7 @@ export type DrawerScreenProps = {
   color: keyof Theme['colors'];
   rightToLeftPosition: number;
   children?: ReactNode;
+  className?: string;
 };
 
 export const DrawerScreen = ({
@@ -23,13 +24,17 @@ export const DrawerScreen = ({
   color,
   rightToLeftPosition,
   children,
+  className,
 }: DrawerScreenProps) => {
   const { columnWidth, setTransitioning, closeDrawer } = useDrawersContext();
 
-  const translateX = `calc(100vw - ${rightToLeftPosition * columnWidth}px)`;
+  const translateX = `calc(100vw - ${
+    (rightToLeftPosition + 1) * columnWidth
+  }px)`;
 
   return (
     <Container
+      className={className}
       color={color}
       rightToLeftPosition={rightToLeftPosition}
       initial={{ translateX }}
@@ -44,7 +49,7 @@ export const DrawerScreen = ({
       <BackBtn
         color={color}
         initial={{ width: 0 }}
-        animate={{ width: 'min(80vw, 560px)' }}
+        animate={{ width: 'min(max(265px, 75vw), 485px)' }}
         exit={{
           width: 0,
           transition: { ease: 'easeInOut', duration: 0.7, delay: 0.3 },

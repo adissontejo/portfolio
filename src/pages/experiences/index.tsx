@@ -4,12 +4,7 @@ import { Container, Section } from './styles';
 
 const Experiences = () => {
   return (
-    <Container
-      id="experiences"
-      title="experiências"
-      color="green"
-      rightToLeftPosition={1}
-    >
+    <Container id="experiences">
       <Section>
         <h4 className="subtitle">meus projetos</h4>
         <ProjectsCarousel />

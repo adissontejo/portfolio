@@ -23,6 +23,7 @@ export type DrawersContextType = {
   columnWidth: number;
   isInitialPage: boolean;
   animationType: 'load' | 'back' | 'forward';
+  exitingDrawer: Drawers;
   openDrawer: (id: Drawers) => void;
   closeDrawer: (id: Drawers) => void;
 };
@@ -41,6 +42,7 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
     id: Drawers;
   }>(null);
   const animationType = useRef<'load' | 'back' | 'forward'>('load');
+  const exitingDrawer = useRef<Drawers>(null);
 
   const { theme } = useStylesContext();
 
@@ -61,6 +63,8 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
 
       return;
     }
+
+    exitingDrawer.current = null;
 
     animationType.current = 'forward';
 
@@ -87,6 +91,8 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
+    exitingDrawer.current = id;
+
     animationType.current = 'back';
 
     setActiveDrawer(id);
@@ -97,8 +103,6 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
-    console.log(actionQueue.current);
-
     if (!transitioning && actionQueue.current) {
       if (actionQueue.current.type === 'open') {
         openDrawer(actionQueue.current.id);
@@ -120,6 +124,7 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
         columnWidth,
         isInitialPage: isInitialPage.current,
         animationType: animationType.current,
+        exitingDrawer: exitingDrawer.current,
         openDrawer,
         closeDrawer,
       }}

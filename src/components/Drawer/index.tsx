@@ -20,29 +20,25 @@ export const Drawer = ({
   color,
   rightToLeftPosition,
 }: DrawerProps) => {
-  const { activeDrawer, columnWidth, isInitialPage, openDrawer } =
+  const { activeDrawer, columnWidth, animationType, openDrawer } =
     useDrawersContext();
 
-  const translateX = `calc(-100vw + ${
-    (rightToLeftPosition + 1) * columnWidth
-  }px)`;
+  const x = `calc(-100vw + ${(rightToLeftPosition + 1) * columnWidth}px)`;
 
   const initial = {
-    translateX: activeDrawer === id ? translateX : '100vw',
+    x: activeDrawer === id ? x : '100vw',
   };
 
   const animate = {
-    translateX: 0,
+    x: 0,
     transition: {
-      ease: 'easeInOut',
       duration: activeDrawer === id ? 1.5 : 1,
     },
   };
 
   const exit = {
-    translateX: activeDrawer === id ? translateX : '100vw',
+    x: activeDrawer === id ? x : '100vw',
     transition: {
-      ease: 'easeInOut',
       duration: activeDrawer === id ? 1.5 : 1,
     },
   };
@@ -53,22 +49,27 @@ export const Drawer = ({
       color={color}
       rightToLeftPosition={rightToLeftPosition}
       onClick={() => openDrawer(id)}
-      animateEntrances={isInitialPage}
+      initial={animationType === 'load' ? { width: 0 } : false}
+      animate={{ width: '100%' }}
+      transition={{ duration: 2, delay: 1 + rightToLeftPosition * 0.2 }}
     >
       <motion.div
         className="bar"
-        initial={initial}
+        initial={animationType === 'back' && initial}
         animate={animate}
         exit={exit}
       >
-        <p className="label">{label}</p>
-        <img className="icon" src={`/drawer-icons/${id}.svg`} alt={label} />
+        <div className="label-wrapper">
+          <p className="label">{label}</p>
+          <img className="icon" src={`/drawer-icons/${id}.svg`} alt={label} />
+        </div>
       </motion.div>
       <motion.div
         className="column"
-        initial={initial}
-        animate={animate}
+        initial={animationType === 'back' ? initial : { height: 0 }}
+        animate={animationType === 'back' ? animate : { height: '100vh' }}
         exit={exit}
+        transition={{ duration: 1, delay: rightToLeftPosition * 0.2 }}
       />
     </Container>
   );

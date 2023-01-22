@@ -1,5 +1,3 @@
-import { useMemo } from 'react';
-
 import { useStylesContext } from '~/contexts';
 import { useMediaQuery } from '~/hooks';
 
@@ -8,13 +6,7 @@ export const useMeasures = () => {
 
   const isSmall = useMediaQuery(theme.queries.small);
 
-  const radius = useMemo(() => {
-    if (isSmall) {
-      return 664;
-    }
+  const width = isSmall ? 244 : 436;
 
-    return 1265;
-  }, [isSmall]);
-
-  return { radius };
+  return { width };
 };

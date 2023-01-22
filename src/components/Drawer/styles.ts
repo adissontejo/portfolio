@@ -1,33 +1,12 @@
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import { motion } from 'framer-motion';
 
 import { Theme } from '~/styles';
-
-const barAnimation = keyframes`
-  from {
-    width: 0;
-  }
-
-  to {
-    width: 100%;
-  }
-`;
-
-const columnAnimation = keyframes`
-  from {
-    height: 0;
-  }
-
-  to {
-    height: 100vh;
-  }
-`;
 
 export type ContainerProps = {
   gridArea: string;
   color: keyof Theme['colors'];
   rightToLeftPosition: number;
-  animateEntrances: boolean;
 };
 
 export const Container = styled(motion.button)<ContainerProps>`
@@ -43,10 +22,7 @@ export const Container = styled(motion.button)<ContainerProps>`
 
   cursor: pointer;
 
-  animation: ${p => (p.animateEntrances ? barAnimation : 'none')} 2s ease-in-out
-    ${p => 1 + p.rightToLeftPosition * 0.2}s both;
-
-  @media ${p => p.theme.queries.mediumAndLower} {
+  @media ${p => p.theme.queries.regularAndLower} {
     align-self: flex-end;
   }
 
@@ -61,39 +37,44 @@ export const Container = styled(motion.button)<ContainerProps>`
     display: flex;
     align-items: center;
     overflow: hidden;
-    gap: 15px;
 
     transition: right 0.2s;
-
-    @media ${p => p.theme.queries.regularAndLower} {
-      flex-direction: row-reverse;
-      justify-content: flex-end;
-    }
 
     @media ${p => p.theme.queries.small} {
       height: 35px;
     }
 
-    > .label {
-      margin: 0 0 0 33px;
-
-      color: ${p => p.theme.colors.light};
-      font-size: 1rem;
-
-      transition: opacity 0.2s;
+    > .label-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 15px;
 
       @media ${p => p.theme.queries.regularAndLower} {
-        margin: 0;
-      }
-    }
-
-    > .icon {
-      @media ${p => p.theme.queries.regularAndLower} {
-        margin: 0 0 0 15px;
+        flex-direction: row-reverse;
+        justify-content: flex-end;
       }
 
-      @media ${p => p.theme.queries.small} {
-        height: 18px;
+      > .label {
+        margin: 0 0 0 33px;
+
+        color: ${p => p.theme.colors.light};
+        font-size: 1rem;
+
+        transition: opacity 0.2s;
+
+        @media ${p => p.theme.queries.regularAndLower} {
+          margin: 0;
+        }
+      }
+
+      > .icon {
+        @media ${p => p.theme.queries.regularAndLower} {
+          margin: 0 0 0 15px;
+        }
+
+        @media ${p => p.theme.queries.small} {
+          height: 18px;
+        }
       }
     }
   }
@@ -108,8 +89,6 @@ export const Container = styled(motion.button)<ContainerProps>`
     height: 100vh;
     background: ${p => p.theme.colors[p.color]};
 
-    animation: ${p => (p.animateEntrances ? columnAnimation : 'none')} 1s
-      ${p => p.rightToLeftPosition * 0.2}s ease-in-out both;
     transition: right 0.2s;
 
     @media ${p => p.theme.queries.small} {
@@ -125,7 +104,7 @@ export const Container = styled(motion.button)<ContainerProps>`
         right: 7px;
       }
 
-      > .label {
+      > .label-wrapper {
         opacity: 0.8;
       }
     }

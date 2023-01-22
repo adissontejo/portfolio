@@ -3,18 +3,19 @@ import { motion } from 'framer-motion';
 
 export const Container = styled(motion.div)`
   position: absolute;
-  top: 15px;
-  left: 15px;
+  top: 10px;
+  left: 10px;
 
-  width: calc(100% - 30px);
-  height: calc(100% - 30px);
+  width: 416px;
+  height: 234px;
   object-fit: cover;
 
   @media ${p => p.theme.queries.small} {
-    top: 5px;
-    left: 5px;
+    width: 224px;
+    height: 126px;
+  }
 
-    width: calc(100% - 10px);
-    height: calc(100% - 10px);
+  > .image {
+    object-fit: cover;
   }
 `;

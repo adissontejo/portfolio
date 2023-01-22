@@ -24,15 +24,19 @@ export const Container = styled(motion.div)<ContainerProps>`
   flex-direction: column;
   align-items: center;
 
-  > .title {
+  > .title-wrapper {
     margin: 64px 0 0 72px;
     align-self: flex-start;
 
     @media ${p => p.theme.queries.small} {
-      margin: 42px 0 0;
+      margin: 50px 0 0;
       align-self: center;
+    }
 
-      height: 55px;
+    > .title {
+      @media ${p => p.theme.queries.small} {
+        height: 55px;
+      }
     }
   }
 `;

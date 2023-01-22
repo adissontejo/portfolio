@@ -1,54 +1,6 @@
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 
-const logoEnterAnimation = keyframes`
-  from {
-    opacity: 0;
-    transform: translateX(-50px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-`;
-
-const logoEnterAnimationMobile = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(-70px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-`;
-
-const logoLoopAnimation = keyframes`
-  from {
-    transform: translateX(0);
-  }
-
-  to {
-    transform: translateX(-30px);
-  }
-`;
-
-const logoLoopAnimationMobile = keyframes`
-  from {
-    transform: translateY(0);
-  }
-
-  to {
-    transform: translateY(-40px);
-  }
-`;
-
-export type ContainerProps = {
-  animateEntrance: boolean;
-};
-
-export const Container = styled.div<ContainerProps>`
+export const Container = styled.div`
   padding: 0 0 0 max(15%, calc(100vw - 1500px));
 
   width: 100vw;
@@ -82,18 +34,8 @@ export const Container = styled.div<ContainerProps>`
   > .logo-wrapper {
     margin: 72px 65px 72px 0;
 
-    animation: ${logoEnterAnimation} 3s ease-in-out
-        ${p => (p.animateEntrance ? '1' : '0')},
-      ${logoLoopAnimation} 10s ease-in-out
-        ${p => (p.animateEntrance ? '3' : '0')}s infinite alternate;
-
     @media ${p => p.theme.queries.regularAndLower} {
       margin: 30px 0 13px;
-
-      animation: ${logoEnterAnimationMobile} 3s ease-in-out
-          ${p => (p.animateEntrance ? '1' : '0')},
-        ${logoLoopAnimationMobile} 10s ease-in-out
-          ${p => (p.animateEntrance ? '3' : '0')}s infinite alternate;
     }
   }
 `;

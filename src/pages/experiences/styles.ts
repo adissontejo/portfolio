@@ -11,10 +11,6 @@ export const Section = styled.section`
   flex-direction: column;
   align-items: center;
 
-  @media ${p => p.theme.queries.small} {
-    margin: 83px 0 0;
-  }
-
   > .subtitle {
     margin: 0 0 29px;
 

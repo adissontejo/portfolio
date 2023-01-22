@@ -7,6 +7,7 @@ export type ContainerProps = {
   gridArea: string;
   color: keyof Theme['colors'];
   rightToLeftPosition: number;
+  transitioning: boolean;
 };
 
 export const Container = styled(motion.button)<ContainerProps>`
@@ -98,10 +99,10 @@ export const Container = styled(motion.button)<ContainerProps>`
 
   &:hover {
     > .bar {
-      right: 15px;
+      right: ${p => (p.transitioning ? 0 : 15)}px;
 
       @media ${p => p.theme.queries.small} {
-        right: 7px;
+        right: ${p => (p.transitioning ? 0 : 7)}px;
       }
 
       > .label-wrapper {
@@ -110,10 +111,10 @@ export const Container = styled(motion.button)<ContainerProps>`
     }
 
     > .column {
-      right: calc(-100vw + 15px);
+      right: calc(-100vw + ${p => (p.transitioning ? 0 : 15)}px);
 
       @media ${p => p.theme.queries.small} {
-        right: calc(-100vw + 7px);
+        right: calc(-100vw + ${p => (p.transitioning ? 0 : 7)}px);
       }
     }
   }

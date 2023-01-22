@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import Head from 'next/head';
 import { motion } from 'framer-motion';
 
 import { Drawer, Logo } from '~/components';
 import { useDrawersContext, useStylesContext } from '~/contexts';
+import { DrawerId, drawers } from '~/data';
 import { useMediaQuery } from '~/hooks';
 
 import { Container } from './styles';
@@ -12,6 +14,8 @@ const Home = () => {
   const { animationType } = useDrawersContext();
 
   const isRegularOrLower = useMediaQuery(theme.queries.regularAndLower);
+
+  const [iterationCount, setIterationCount] = useState(0);
 
   return (
     <Container>
@@ -33,41 +37,22 @@ const Home = () => {
         <motion.div
           initial={{ x: 0, y: 0 }}
           animate={{
-            x: isRegularOrLower ? 0 : -30,
-            y: isRegularOrLower ? -30 : 0,
+            x: isRegularOrLower || iterationCount % 2 === 1 ? 0 : -30,
+            y: isRegularOrLower && iterationCount % 2 === 0 ? -30 : 0,
           }}
           transition={{
             ease: 'easeInOut',
             duration: 10,
-            delay: animationType === 'load' ? 3 : 0,
-            repeat: Infinity,
-            repeatType: 'reverse',
+            delay: animationType === 'load' && iterationCount === 0 ? 3 : 0,
           }}
+          onAnimationComplete={() => setIterationCount(prev => prev + 1)}
         >
           <Logo />
         </motion.div>
       </motion.div>
-      <Drawer
-        id="experiences"
-        label="experiências"
-        color="green"
-        rightToLeftPosition={1}
-        href="/experiences"
-      />
-      <Drawer
-        id="qualifications"
-        label="qualificações"
-        color="brown"
-        rightToLeftPosition={0}
-        href="/qualifications"
-      />
-      <Drawer
-        id="contact"
-        label="contato"
-        color="purple"
-        rightToLeftPosition={2}
-        href="/contact"
-      />
+      {Object.keys(drawers).map((item: DrawerId) => (
+        <Drawer key={item} id={item} />
+      ))}
     </Container>
   );
 };

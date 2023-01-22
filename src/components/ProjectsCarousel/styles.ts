@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
 
 export const Container = styled.div`
   width: 100vw;
@@ -33,6 +32,7 @@ export const Carousel = styled.div`
 
     width: 436px;
     height: 254px;
+    display: flex;
 
     @media ${p => p.theme.queries.small} {
       width: 244px;
@@ -40,19 +40,7 @@ export const Carousel = styled.div`
     }
 
     > .carousel {
-      position: absolute;
-
-      width: 100%;
-      height: 100%;
-    }
-
-    > .border {
-      position: relative;
-      z-index: 1;
-
-      width: 100%;
-      height: 100%;
-      border: 1px solid ${p => p.theme.colors.light};
+      display: flex;
     }
   }
 `;
@@ -88,84 +76,5 @@ export const OpacityFilter = styled.div<OpacityFilterProps>`
   @media (min-width: 2140px) {
     width: 450px;
     height: 254px;
-  }
-`;
-
-export const Controller = styled.div`
-  margin: 25px 0 0;
-
-  width: 100vw;
-
-  display: flex;
-  align-items: center;
-
-  > .project-name {
-    width: 450px;
-
-    color: ${p => p.theme.colors.light};
-    font-size: 1.2rem;
-    text-align: center;
-
-    @media ${p => p.theme.queries.small} {
-      width: 238px;
-    }
-  }
-
-  > .arrow-wrapper {
-    flex: 1;
-
-    min-width: 60px;
-  }
-`;
-
-export const ArrowButton = styled(motion.button)`
-  height: 50px;
-
-  background: ${p => p.theme.colors.light};
-
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-
-  cursor: pointer;
-
-  @media ${p => p.theme.queries.small} {
-    height: 35px;
-  }
-
-  &.back {
-    justify-content: flex-end;
-
-    > .icon {
-      margin: 0 15px 0 0;
-    }
-  }
-
-  &.forward {
-    margin: 0 0 0 auto;
-
-    > .icon {
-      margin: 0 0 0 15px;
-    }
-  }
-
-  > .icon {
-    width: 21px;
-    height: 21px;
-
-    color: ${p => p.theme.colors.green};
-
-    transition: opacity 0.2s;
-
-    @media ${p => p.theme.queries.small} {
-      width: 18px;
-      height: 18px;
-    }
-  }
-
-  &:hover {
-    > .icon {
-      opacity: 0.6;
-    }
   }
 `;

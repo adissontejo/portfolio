@@ -1,27 +1,24 @@
 import { motion } from 'framer-motion';
 
 import { useDrawersContext } from '~/contexts';
-import { Theme } from '~/styles';
-import { Drawers } from '~/types';
+import { DrawerId, drawers } from '~/data';
 
 import { Container } from './styles';
 
 export type DrawerProps = {
-  id: Drawers;
-  label: string;
-  color: keyof Theme['colors'];
-  rightToLeftPosition: number;
-  href: string;
+  id: DrawerId;
 };
 
-export const Drawer = ({
-  id,
-  label,
-  color,
-  rightToLeftPosition,
-}: DrawerProps) => {
-  const { activeDrawer, columnWidth, animationType, openDrawer } =
-    useDrawersContext();
+export const Drawer = ({ id }: DrawerProps) => {
+  const { color, label, rightToLeftPosition } = drawers[id];
+
+  const {
+    activeDrawer,
+    columnWidth,
+    animationType,
+    transitioning,
+    openDrawer,
+  } = useDrawersContext();
 
   const x = `calc(-100vw + ${(rightToLeftPosition + 1) * columnWidth}px)`;
 
@@ -52,6 +49,7 @@ export const Drawer = ({
       initial={animationType === 'load' ? { width: 0 } : false}
       animate={{ width: '100%' }}
       transition={{ duration: 2, delay: 1 + rightToLeftPosition * 0.2 }}
+      transitioning={transitioning}
     >
       <motion.div
         className="bar"

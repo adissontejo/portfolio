@@ -9,10 +9,7 @@ const MyApp = ({ Component, pageProps, router, themeMode }: MyAppProps) => {
   return (
     <ContextProvider themeInitialMode={themeMode}>
       <AnimatePresence mode="sync">
-        <Component
-          key={`${router.pathname}${router.query?.id || ''}`}
-          {...pageProps}
-        />
+        <Component key={router.pathname} {...pageProps} />
       </AnimatePresence>
     </ContextProvider>
   );

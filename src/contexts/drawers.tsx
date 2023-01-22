@@ -11,21 +11,21 @@ import {
 import { useRouter } from 'next/router';
 
 import { useMediaQuery } from '~/hooks';
-import { Drawers } from '~/types';
+import { DrawerId } from '~/data';
 
 import { useStylesContext } from './styles';
 
 export type DrawersContextType = {
-  activeDrawer?: Drawers;
-  setActiveDrawer: Dispatch<SetStateAction<Drawers>>;
+  activeDrawer?: DrawerId;
+  setActiveDrawer: Dispatch<SetStateAction<DrawerId>>;
   transitioning: boolean;
   setTransitioning: Dispatch<SetStateAction<boolean>>;
   columnWidth: number;
   isInitialPage: boolean;
   animationType: 'load' | 'back' | 'forward';
-  exitingDrawer: Drawers;
-  openDrawer: (id: Drawers) => void;
-  closeDrawer: (id: Drawers) => void;
+  exitingDrawer: DrawerId;
+  openDrawer: (id: DrawerId) => void;
+  closeDrawer: (id: DrawerId) => void;
 };
 
 export const DrawersContext = createContext({} as DrawersContextType);
@@ -33,16 +33,16 @@ export const DrawersContext = createContext({} as DrawersContextType);
 export const DrawersProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
 
-  const [activeDrawer, setActiveDrawer] = useState<Drawers>(null);
+  const [activeDrawer, setActiveDrawer] = useState<DrawerId>(null);
   const [transitioning, setTransitioning] = useState(false);
 
   const isInitialPage = useRef(true);
   const actionQueue = useRef<{
     type: 'open' | 'close';
-    id: Drawers;
+    id: DrawerId;
   }>(null);
   const animationType = useRef<'load' | 'back' | 'forward'>('load');
-  const exitingDrawer = useRef<Drawers>(null);
+  const exitingDrawer = useRef<DrawerId>(null);
 
   const { theme } = useStylesContext();
 
@@ -50,7 +50,7 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
 
   const columnWidth = isMobile ? 20 : 60;
 
-  const openDrawer = (id: Drawers) => {
+  const openDrawer = (id: DrawerId) => {
     if (router.pathname === `/${id}`) {
       return;
     }
@@ -77,7 +77,7 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
     router.replace(`/${id}`);
   };
 
-  const closeDrawer = async (id: Drawers) => {
+  const closeDrawer = async (id: DrawerId) => {
     if (router.pathname !== `/${id}`) {
       return;
     }

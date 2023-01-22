@@ -4,28 +4,24 @@ import { motion } from 'framer-motion';
 import { MdOutlineArrowBackIosNew } from 'react-icons/md';
 
 import { useDrawersContext } from '~/contexts';
-import { Theme } from '~/styles';
+import { drawers } from '~/data';
 import { Drawers } from '~/types';
 
 import { BackBtn, Container } from './styles';
 
 export type DrawerScreenProps = {
   id: Drawers;
-  title: string;
-  color: keyof Theme['colors'];
-  rightToLeftPosition: number;
   children?: ReactNode;
   className?: string;
 };
 
 export const DrawerScreen = ({
   id,
-  title,
-  color,
-  rightToLeftPosition,
   children,
   className,
 }: DrawerScreenProps) => {
+  const { color, title, rightToLeftPosition } = drawers[id];
+
   const { columnWidth, animationType, setTransitioning, closeDrawer } =
     useDrawersContext();
 
@@ -43,13 +39,15 @@ export const DrawerScreen = ({
       onAnimationComplete={() => setTransitioning(false)}
     >
       <Head>
-        <title>Ádisson</title>
+        <title>Ádisson · {title}</title>
       </Head>
       <BackBtn
         color={color}
         initial={animationType !== 'back' && { width: 0 }}
         animate={
-          animationType !== 'back' && { width: 'min(max(265px, 75vw), 485px)' }
+          animationType !== 'back' && {
+            width: 'min(max(265px, 75vw), 485px)',
+          }
         }
         exit={{
           width: 0,

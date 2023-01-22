@@ -12,8 +12,8 @@ export const Container = styled(motion.div)<ContainerProps>`
   position: fixed;
   top: 0;
   left: 0;
-
   padding: 45px 0 0;
+
   z-index: ${p => (2 - p.rightToLeftPosition) * 10 + 5};
 
   width: 100vw;
@@ -23,6 +23,8 @@ export const Container = styled(motion.div)<ContainerProps>`
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow-x: hidden;
+  overflow-y: auto;
 
   > .title-wrapper {
     margin: 64px 0 0 72px;
@@ -48,9 +50,10 @@ export type BackBtnProps = {
 export const BackBtn = styled(motion.button)<BackBtnProps>`
   position: relative;
   left: -15px;
+  z-index: 20;
   align-self: flex-start;
 
-  height: 50px;
+  min-height: 50px;
   background: ${p => p.theme.colors.background};
 
   overflow: hidden;
@@ -60,7 +63,7 @@ export const BackBtn = styled(motion.button)<BackBtnProps>`
   transition: left 0.2s, background-color 0.8s;
 
   @media ${p => p.theme.queries.small} {
-    height: 35px;
+    min-height: 35px;
   }
 
   > .label-wrapper {

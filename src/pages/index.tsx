@@ -31,7 +31,7 @@ const Home = () => {
           }
         }
         animate={{ opacity: 1, x: 0, y: 0 }}
-        transition={{ duration: 3 }}
+        transition={{ delay: 0, duration: 3 }}
         className="logo-wrapper"
       >
         <motion.div

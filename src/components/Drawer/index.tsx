@@ -16,11 +16,14 @@ export const Drawer = ({ id }: DrawerProps) => {
     activeDrawer,
     columnWidth,
     animationType,
-    transitioning,
+    hover,
+    changeHover,
     openDrawer,
   } = useDrawersContext();
 
-  const x = `calc(-100vw + ${(rightToLeftPosition + 1) * columnWidth}px)`;
+  const x = `calc(-100vw + ${
+    (rightToLeftPosition + 1) * columnWidth + (hover === id ? 15 : 0)
+  }px)`;
 
   const initial = {
     x: activeDrawer === id ? x : '100vw',
@@ -47,9 +50,13 @@ export const Drawer = ({ id }: DrawerProps) => {
       rightToLeftPosition={rightToLeftPosition}
       onClick={() => openDrawer(id)}
       initial={animationType === 'load' ? { width: 0 } : false}
-      animate={{ width: '100%' }}
-      transition={{ duration: 2, delay: 1 + rightToLeftPosition * 0.2 }}
-      transitioning={transitioning}
+      animate={{
+        width: '100%',
+        transition: { duration: 2, delay: 1.5 + rightToLeftPosition * 0.2 },
+      }}
+      hover={hover === id}
+      onMouseEnter={() => changeHover(id)}
+      onMouseLeave={() => changeHover(null)}
     >
       <motion.div
         className="bar"
@@ -67,7 +74,7 @@ export const Drawer = ({ id }: DrawerProps) => {
         initial={animationType === 'back' ? initial : { height: 0 }}
         animate={animationType === 'back' ? animate : { height: '100vh' }}
         exit={exit}
-        transition={{ duration: 1, delay: rightToLeftPosition * 0.2 }}
+        transition={{ duration: 1, delay: 0.5 + rightToLeftPosition * 0.2 }}
       />
     </Container>
   );

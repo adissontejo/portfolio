@@ -75,7 +75,12 @@ export const ProjectsCarousel = () => {
               }
               transition={{
                 duration: entering ? 1 : 0.5,
-                delay: entering && animationType === 'forward' ? 1.5 : 0,
+                delay:
+                  entering && animationType === 'forward'
+                    ? 1.5
+                    : entering
+                    ? 0.5
+                    : 0,
               }}
               onAnimationComplete={() => setEntering(false)}
             >

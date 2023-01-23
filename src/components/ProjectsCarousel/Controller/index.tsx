@@ -45,7 +45,7 @@ export const Controller = ({
               width: '100%',
               transition: {
                 duration: 1,
-                delay: animationType === 'forward' ? 1.5 : 0,
+                delay: animationType === 'forward' ? 1.5 : 0.5,
               },
             }}
             exit={animationType === 'back' && { width: 0 }}
@@ -57,20 +57,8 @@ export const Controller = ({
         <NamesContainer>
           <motion.div
             className="names-wrapper"
-            initial={
-              animationType === 'forward' && { x: 1000 * projects.length }
-            }
             animate={{ x: -1000 * position }}
-            transition={{
-              duration: entering && animationType !== 'back' ? 1 : 0.5,
-              delay: entering && animationType === 'forward' ? 1.5 : 0,
-            }}
-            exit={
-              animationType === 'back' && {
-                x: 1000 * (position + projects.length),
-                transition: { duration: 1 },
-              }
-            }
+            transition={{ duration: 0.5 }}
           >
             {projects.map((item, index) => (
               <Name
@@ -92,7 +80,7 @@ export const Controller = ({
               width: '100%',
               transition: {
                 duration: 1,
-                delay: animationType === 'forward' ? 1.5 : 0,
+                delay: animationType === 'forward' ? 1.5 : 0.5,
               },
             }}
             exit={animationType === 'back' && { width: 0 }}
@@ -106,17 +94,22 @@ export const Controller = ({
         <OpacityFilter type="left" />
         <motion.div
           className="about-wrapper"
-          initial={animationType !== 'back' && { x: 1000 * projects.length }}
+          initial={animationType !== 'back' && { x: 1000 }}
           animate={{ x: -1000 * position }}
           exit={
             animationType === 'back' && {
-              x: 1000 * (position + projects.length),
+              x: 1000 * (position + 1),
               transition: { duration: 1 },
             }
           }
           transition={{
-            duration: entering && animationType !== 'back' ? 1 : 0.5,
-            delay: entering && animationType === 'forward' ? 1.5 : 0,
+            duration: entering ? 0.6 : 0.5,
+            delay:
+              entering && animationType === 'forward'
+                ? 1.9
+                : entering
+                ? 0.9
+                : 0,
           }}
         >
           {projects.map((item, index) => (

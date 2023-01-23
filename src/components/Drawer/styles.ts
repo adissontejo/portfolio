@@ -7,7 +7,7 @@ export type ContainerProps = {
   gridArea: string;
   color: keyof Theme['colors'];
   rightToLeftPosition: number;
-  transitioning: boolean;
+  hover: boolean;
 };
 
 export const Container = styled(motion.button)<ContainerProps>`
@@ -29,7 +29,7 @@ export const Container = styled(motion.button)<ContainerProps>`
 
   > .bar {
     position: relative;
-    right: 0;
+    right: ${p => (p.hover ? 15 : 0)}px;
 
     width: 100%;
     height: 50px;
@@ -83,7 +83,7 @@ export const Container = styled(motion.button)<ContainerProps>`
   > .column {
     position: fixed;
     top: 0;
-    right: -100vw;
+    right: calc(-100vw + ${p => (p.hover ? 15 : 0)}px);
     z-index: 100;
 
     width: calc(${p => (p.rightToLeftPosition + 1) * 60}px + 100vw);
@@ -94,28 +94,6 @@ export const Container = styled(motion.button)<ContainerProps>`
 
     @media ${p => p.theme.queries.small} {
       width: calc(${p => (p.rightToLeftPosition + 1) * 20}px + 100vw);
-    }
-  }
-
-  &:hover {
-    > .bar {
-      right: ${p => (p.transitioning ? 0 : 15)}px;
-
-      @media ${p => p.theme.queries.small} {
-        right: ${p => (p.transitioning ? 0 : 7)}px;
-      }
-
-      > .label-wrapper {
-        opacity: 0.8;
-      }
-    }
-
-    > .column {
-      right: calc(-100vw + ${p => (p.transitioning ? 0 : 15)}px);
-
-      @media ${p => p.theme.queries.small} {
-        right: calc(-100vw + ${p => (p.transitioning ? 0 : 7)}px);
-      }
     }
   }
 `;

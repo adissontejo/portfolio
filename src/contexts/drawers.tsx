@@ -9,6 +9,7 @@ import {
   useState,
 } from 'react';
 import { useRouter } from 'next/router';
+import { AnimatePresence } from 'framer-motion';
 
 import { useMediaQuery } from '~/hooks';
 import { DrawerId } from '~/data';
@@ -16,10 +17,11 @@ import { DrawerId } from '~/data';
 import { useStylesContext } from './styles';
 
 export type DrawersContextType = {
-  activeDrawer?: DrawerId;
+  activeDrawer: DrawerId;
   setActiveDrawer: Dispatch<SetStateAction<DrawerId>>;
+  hover: DrawerId;
+  changeHover: (id: DrawerId | null) => void;
   transitioning: boolean;
-  setTransitioning: Dispatch<SetStateAction<boolean>>;
   columnWidth: number;
   isInitialPage: boolean;
   animationType: 'load' | 'back' | 'forward';
@@ -35,6 +37,7 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
 
   const [activeDrawer, setActiveDrawer] = useState<DrawerId>(null);
   const [transitioning, setTransitioning] = useState(false);
+  const [hover, setHover] = useState<DrawerId>(null);
 
   const isInitialPage = useRef(true);
   const actionQueue = useRef<{
@@ -49,6 +52,14 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
   const isMobile = useMediaQuery(theme.queries.small);
 
   const columnWidth = isMobile ? 20 : 60;
+
+  const changeHover = (id: DrawerId | null) => {
+    if (transitioning) {
+      return;
+    }
+
+    setHover(id);
+  };
 
   const openDrawer = (id: DrawerId) => {
     if (router.pathname === `/${id}`) {
@@ -103,14 +114,18 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
-    if (!transitioning && actionQueue.current) {
-      if (actionQueue.current.type === 'open') {
-        openDrawer(actionQueue.current.id);
-      } else {
-        closeDrawer(actionQueue.current.id);
-      }
+    if (!transitioning) {
+      setHover(null);
 
-      actionQueue.current = null;
+      if (actionQueue.current) {
+        if (actionQueue.current.type === 'open') {
+          openDrawer(actionQueue.current.id);
+        } else {
+          closeDrawer(actionQueue.current.id);
+        }
+
+        actionQueue.current = null;
+      }
     }
   }, [transitioning]);
 
@@ -119,8 +134,9 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
       value={{
         activeDrawer,
         setActiveDrawer,
+        hover,
+        changeHover,
         transitioning,
-        setTransitioning,
         columnWidth,
         isInitialPage: isInitialPage.current,
         animationType: animationType.current,
@@ -129,7 +145,9 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
         closeDrawer,
       }}
     >
-      {children}
+      <AnimatePresence onExitComplete={() => setTransitioning(false)}>
+        {children}
+      </AnimatePresence>
     </DrawersContext.Provider>
   );
 };

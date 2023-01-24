@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
 
 export const Container = styled.div`
   margin: 25px 0 0;
@@ -38,85 +37,35 @@ export const NamesContainer = styled.div`
   }
 `;
 
-export const ArrowButton = styled(motion.button)`
-  height: 50px;
-
-  background: ${p => p.theme.colors.light};
-
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-
-  cursor: pointer;
-
-  @media ${p => p.theme.queries.small} {
-    height: 35px;
-  }
-
-  &.back {
-    justify-content: flex-end;
-
-    > .icon {
-      margin: 0 15px 0 0;
-    }
-  }
-
-  &.forward {
-    margin: 0 0 0 auto;
-
-    > .icon {
-      margin: 0 0 0 15px;
-    }
-  }
-
-  > .icon {
-    width: 21px;
-    height: 21px;
-
-    color: ${p => p.theme.colors.green};
-
-    transition: opacity 0.2s;
-
-    @media ${p => p.theme.queries.small} {
-      width: 18px;
-      height: 18px;
-    }
-  }
-
-  &:hover {
-    > .icon {
-      opacity: 0.6;
-    }
-  }
-`;
-
 export const AboutContainer = styled.div`
   position: relative;
-  margin: 50px 0 0;
 
   width: 1000px;
 
   overflow: hidden;
 
   > .about-wrapper {
-    display: flex;
+    padding: 50px 0 0;
 
     width: auto;
+
+    display: flex;
   }
 `;
 
 export type OpacityFilterProps = {
-  type: 'left' | 'right';
+  type: 'top' | 'left' | 'right';
 };
 
 export const OpacityFilter = styled.div<OpacityFilterProps>`
   position: absolute;
   top: 0;
-  ${p => p.type}: 0;
+  ${p => p.type !== 'right' && 'left: 0;'}
+  ${p => p.type === 'right' && 'right: 0;'}
   z-index: 10;
 
-  width: 30px;
-  height: 100%;
+  width: ${p => (p.type === 'top' ? '100%' : '30px')};
+  height: ${p => (p.type === 'top' ? '30px' : '100%')};
   background: linear-gradient(
     to ${p => p.type},
     rgba(50, 116, 109, 0),

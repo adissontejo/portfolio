@@ -28,9 +28,6 @@ export const Container = styled(motion.button)<ContainerProps>`
   }
 
   > .bar {
-    position: relative;
-    right: ${p => (p.hover ? 15 : 0)}px;
-
     width: 100%;
     height: 50px;
     background: ${p => p.theme.colors[p.color]};
@@ -38,8 +35,6 @@ export const Container = styled(motion.button)<ContainerProps>`
     display: flex;
     align-items: center;
     overflow: hidden;
-
-    transition: right 0.2s;
 
     @media ${p => p.theme.queries.small} {
       height: 35px;
@@ -83,14 +78,12 @@ export const Container = styled(motion.button)<ContainerProps>`
   > .column {
     position: fixed;
     top: 0;
-    right: calc(-100vw + ${p => (p.hover ? 15 : 0)}px);
+    right: -100vw;
     z-index: 100;
 
     width: calc(${p => (p.rightToLeftPosition + 1) * 60}px + 100vw);
     height: 100vh;
     background: ${p => p.theme.colors[p.color]};
-
-    transition: right 0.2s;
 
     @media ${p => p.theme.queries.small} {
       width: calc(${p => (p.rightToLeftPosition + 1) * 20}px + 100vw);

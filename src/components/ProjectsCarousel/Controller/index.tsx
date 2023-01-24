@@ -1,21 +1,18 @@
 import { motion } from 'framer-motion';
-import {
-  MdOutlineArrowBackIosNew,
-  MdOutlineArrowForwardIos,
-} from 'react-icons/md';
 
 import { useDrawersContext } from '~/contexts';
 import { projects } from '~/data';
+
 import { About } from './About';
 import { Name } from './Name';
 
 import {
   AboutContainer,
-  ArrowButton,
   Container,
   NamesContainer,
   OpacityFilter,
 } from './styles';
+import { ArrowButton } from './ArrowButton';
 
 export type ControllerProps = {
   back: () => void;
@@ -36,24 +33,7 @@ export const Controller = ({
   return (
     <>
       <Container>
-        <div className="arrow-wrapper">
-          <ArrowButton
-            className="back"
-            onClick={back}
-            initial={animationType !== 'back' && { width: 0 }}
-            animate={{
-              width: '100%',
-              transition: {
-                duration: 1,
-                delay: animationType === 'forward' ? 1.5 : 0.5,
-              },
-            }}
-            exit={animationType === 'back' && { width: 0 }}
-            transition={{ duration: 1 }}
-          >
-            <MdOutlineArrowBackIosNew className="icon" />
-          </ArrowButton>
-        </div>
+        <ArrowButton type="back" onClick={back} />
         <NamesContainer>
           <motion.div
             className="names-wrapper"
@@ -71,44 +51,29 @@ export const Controller = ({
             ))}
           </motion.div>
         </NamesContainer>
-        <div className="arrow-wrapper">
-          <ArrowButton
-            className="forward"
-            onClick={forward}
-            initial={animationType !== 'back' && { width: 0 }}
-            animate={{
-              width: '100%',
-              transition: {
-                duration: 1,
-                delay: animationType === 'forward' ? 1.5 : 0.5,
-              },
-            }}
-            exit={animationType === 'back' && { width: 0 }}
-            transition={{ duration: 1 }}
-          >
-            <MdOutlineArrowForwardIos className="icon" />
-          </ArrowButton>
-        </div>
+        <ArrowButton type="forward" onClick={forward} />
       </Container>
       <AboutContainer>
+        <OpacityFilter type="top" />
         <OpacityFilter type="left" />
+        <OpacityFilter type="right" />
         <motion.div
           className="about-wrapper"
-          initial={animationType !== 'back' && { x: 1000 }}
-          animate={{ x: -1000 * position }}
+          initial={animationType !== 'back' && { y: '-110%' }}
+          animate={{ x: -1000 * position, y: 0 }}
           exit={
             animationType === 'back' && {
-              x: 1000 * (position + 1),
+              y: '-110%',
               transition: { duration: 1 },
             }
           }
           transition={{
-            duration: entering ? 0.6 : 0.5,
+            duration: entering ? 1 : 0.5,
             delay:
               entering && animationType === 'forward'
-                ? 1.9
+                ? 1.5
                 : entering
-                ? 0.9
+                ? 0.5
                 : 0,
           }}
         >
@@ -122,7 +87,6 @@ export const Controller = ({
             />
           ))}
         </motion.div>
-        <OpacityFilter type="right" />
       </AboutContainer>
     </>
   );

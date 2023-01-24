@@ -39,6 +39,16 @@ export const Carousel = styled.div`
       height: 146px;
     }
 
+    > .border {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 10;
+
+      width: 100%;
+      height: 100%;
+    }
+
     > .carousel {
       display: flex;
     }

@@ -61,6 +61,25 @@ export const ProjectsCarousel = () => {
         <OpacityFilter type="left" />
         <Carousel>
           <div className="scene">
+            <motion.div className="border">
+              <svg
+                width="100%"
+                height="100%"
+                viewBox="0 0 436 254"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <motion.path
+                  d="M 1 1 H 435 V 253 H 1 Z"
+                  stroke="white"
+                  strokeWidth={1}
+                  radius={0}
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 1 }}
+                />
+              </svg>
+            </motion.div>
             <motion.div
               className="carousel"
               initial={

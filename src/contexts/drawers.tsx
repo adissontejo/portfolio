@@ -10,6 +10,7 @@ import {
 } from 'react';
 import { useRouter } from 'next/router';
 import { AnimatePresence } from 'framer-motion';
+import disableScroll from 'disable-scroll';
 
 import { useMediaQuery } from '~/hooks';
 import { DrawerId } from '~/data';
@@ -19,8 +20,6 @@ import { useStylesContext } from './styles';
 export type DrawersContextType = {
   activeDrawer: DrawerId;
   setActiveDrawer: Dispatch<SetStateAction<DrawerId>>;
-  hover: DrawerId;
-  changeHover: (id: DrawerId | null) => void;
   transitioning: boolean;
   columnWidth: number;
   isInitialPage: boolean;
@@ -37,7 +36,6 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
 
   const [activeDrawer, setActiveDrawer] = useState<DrawerId>(null);
   const [transitioning, setTransitioning] = useState(false);
-  const [hover, setHover] = useState<DrawerId>(null);
 
   const isInitialPage = useRef(true);
   const actionQueue = useRef<{
@@ -53,14 +51,6 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
 
   const columnWidth = isMobile ? 20 : 60;
 
-  const changeHover = (id: DrawerId | null) => {
-    if (transitioning) {
-      return;
-    }
-
-    setHover(id);
-  };
-
   const openDrawer = (id: DrawerId) => {
     if (router.pathname === `/${id}`) {
       return;
@@ -74,6 +64,8 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
 
       return;
     }
+
+    disableScroll.on();
 
     exitingDrawer.current = null;
 
@@ -102,6 +94,8 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
+    disableScroll.on();
+
     exitingDrawer.current = id;
 
     animationType.current = 'back';
@@ -115,7 +109,7 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (!transitioning) {
-      setHover(null);
+      disableScroll.off();
 
       if (actionQueue.current) {
         if (actionQueue.current.type === 'open') {
@@ -134,8 +128,6 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
       value={{
         activeDrawer,
         setActiveDrawer,
-        hover,
-        changeHover,
         transitioning,
         columnWidth,
         isInitialPage: isInitialPage.current,

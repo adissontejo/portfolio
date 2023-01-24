@@ -1,12 +1,12 @@
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { MdOutlineArrowBackIosNew } from 'react-icons/md';
 
 import { useDrawersContext } from '~/contexts';
 import { drawers } from '~/data';
 import { Drawers } from '~/types';
 
-import { BackBtn, Container } from './styles';
+import { Container } from './styles';
+import { BackButton } from './BackButton';
 
 export type DrawerScreenProps = {
   id: Drawers;
@@ -21,58 +21,31 @@ export const DrawerScreen = ({
 }: DrawerScreenProps) => {
   const { color, title, rightToLeftPosition } = drawers[id];
 
-  const { columnWidth, animationType, hover, closeDrawer } =
-    useDrawersContext();
-
-  const x = `calc(100vw - ${
-    (rightToLeftPosition + 1) * columnWidth + (hover === id ? 15 : 0)
-  }px)`;
+  const { columnWidth, animationType } = useDrawersContext();
 
   return (
     <Container
       className={className}
       color={color}
       rightToLeftPosition={rightToLeftPosition}
-      initial={animationType === 'forward' && { x }}
-      animate={{ x: 0 }}
-      exit={{ x }}
-      transition={{ duration: 1.5 }}
-    >
-      <BackBtn
-        color={color}
-        initial={animationType !== 'back' && { width: 0 }}
-        animate={{
-          width: 'min(max(265px, 75vw), 485px)',
-        }}
-        exit={
-          animationType === 'back' && {
-            width: 0,
-            transition: { duration: 0.7, delay: 0.3 },
-          }
+      initial={
+        animationType === 'forward' && {
+          x: `calc(100vw - ${(rightToLeftPosition + 1) * columnWidth + 15}px)`,
         }
-        transition={{
-          duration: animationType === 'forward' ? 0.7 : 1,
-          delay: animationType === 'forward' ? 0.5 : 1,
-        }}
-        onClick={() => closeDrawer(id)}
-      >
-        <motion.div
-          className="label-wrapper"
-          initial={animationType !== 'back' && { x: 'min(80vw, 560px)' }}
-          animate={{ x: 0 }}
-          exit={{
-            x: 'min(80vw, 560px)',
-            transition: { duration: 0.7, delay: 0.3 },
-          }}
-          transition={{
-            duration: animationType === 'forward' ? 0.7 : 1,
-            delay: animationType === 'forward' ? 0.5 : 1,
-          }}
-        >
-          <p className="label">voltar</p>
-          <MdOutlineArrowBackIosNew className="icon" />
-        </motion.div>
-      </BackBtn>
+      }
+      animate={
+        animationType === 'forward' && {
+          x: 0,
+        }
+      }
+      exit={
+        animationType === 'back' && {
+          x: `calc(100vw - ${(rightToLeftPosition + 1) * columnWidth}px)`,
+        }
+      }
+      transition={{ duration: 1.5, times: [0, 0.1, 1] }}
+    >
+      <BackButton id={id} color={color} />
       <motion.div
         className="title-wrapper"
         initial={

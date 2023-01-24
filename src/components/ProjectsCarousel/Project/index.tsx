@@ -1,10 +1,11 @@
+import Image, { StaticImageData } from 'next/image';
+
 import { Container } from './styles';
 import { useMeasures } from '../useMeasures';
-import Image from 'next/image';
 import { useTranslateX } from '../useTranslateX';
 
 export type ProjectProps = {
-  src: string;
+  src: StaticImageData;
   index: number;
   length: number;
   position: number;
@@ -17,7 +18,14 @@ export const Project = ({ src, index, position, length }: ProjectProps) => {
 
   return (
     <Container style={{ x }}>
-      <Image className="image" src={src} alt="Projeto" fill />
+      <Image
+        className="image"
+        src={src}
+        alt="Projeto"
+        fill
+        quality={70}
+        placeholder="blur"
+      />
     </Container>
   );
 };

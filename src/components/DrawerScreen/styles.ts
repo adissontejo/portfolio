@@ -12,7 +12,6 @@ export const Container = styled(motion.div)<ContainerProps>`
   position: fixed;
   top: 0;
   left: 0;
-  padding: 45px 0 0;
 
   z-index: ${p => (2 - p.rightToLeftPosition) * 10 + 5};
 
@@ -30,15 +29,17 @@ export const Container = styled(motion.div)<ContainerProps>`
     margin: 64px 0 0 72px;
     align-self: flex-start;
 
+    height: 71px;
+
     @media ${p => p.theme.queries.small} {
       margin: 50px 0 0;
       align-self: center;
+
+      height: 55px;
     }
 
     > .title {
-      @media ${p => p.theme.queries.small} {
-        height: 55px;
-      }
+      height: 100%;
     }
   }
 `;

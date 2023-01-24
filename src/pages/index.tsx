@@ -16,6 +16,7 @@ const Home = () => {
   const isRegularOrLower = useMediaQuery(theme.queries.regularAndLower);
 
   const [iterationCount, setIterationCount] = useState(0);
+  const [opening, setOpening] = useState(false);
 
   return (
     <Container>
@@ -51,7 +52,12 @@ const Home = () => {
         </motion.div>
       </motion.div>
       {Object.keys(drawers).map((item: DrawerId) => (
-        <Drawer key={item} id={item} />
+        <Drawer
+          key={item}
+          id={item}
+          opening={opening}
+          setOpening={setOpening}
+        />
       ))}
     </Container>
   );

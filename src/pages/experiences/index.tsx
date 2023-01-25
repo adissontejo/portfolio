@@ -2,10 +2,26 @@ import Head from 'next/head';
 import { motion } from 'framer-motion';
 
 import { ProjectsCarousel } from '~/components';
+import { useInViewAnimation } from '~/hooks';
+import { AnimationVariants } from '~/types';
 
 import { Container, Section } from './styles';
 
 const Experiences = () => {
+  const animationStates = useInViewAnimation(0);
+
+  const barVariants: AnimationVariants = {
+    initial: {
+      x: '-100%',
+    },
+    whileInView: {
+      x: 0,
+      transition: {
+        duration: 1,
+      },
+    },
+  };
+
   return (
     <Container id="experiences">
       <Head>
@@ -20,10 +36,8 @@ const Experiences = () => {
         <div className="experience">
           <motion.div
             className="bar"
-            initial={{ x: '-100%' }}
-            whileInView={{ x: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true, margin: '0px 0px -200px' }}
+            variants={barVariants}
+            {...animationStates}
           />
           <p className="label">Estágio no Tribunal de Contas da União</p>
         </div>

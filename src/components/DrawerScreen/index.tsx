@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 
 import { useDrawersContext } from '~/contexts';
 import { drawers } from '~/data';
-import { Drawers } from '~/types';
+import { AnimationVariants, Drawers } from '~/types';
 
 import { Container } from './styles';
 import { BackButton } from './BackButton';
@@ -21,67 +21,68 @@ export const DrawerScreen = ({
 }: DrawerScreenProps) => {
   const { color, title, rightToLeftPosition } = drawers[id];
 
-  const { columnWidth, animationType } = useDrawersContext();
+  const { columnWidth, animationType, animationStates } = useDrawersContext();
+
+  const containerVariants: AnimationVariants = {
+    forwardInitial: {
+      x: `calc(100vw - ${(rightToLeftPosition + 1) * columnWidth + 15}px)`,
+    },
+    animate: {
+      x: 0,
+      transition: {
+        duration: 1.5,
+      },
+    },
+    backExit: {
+      x: `calc(100vw - ${(rightToLeftPosition + 1) * columnWidth}px)`,
+      transition: {
+        duration: 1.5,
+      },
+    },
+  };
+
+  const titleVariants: AnimationVariants = {
+    forwardInitial: {
+      opacity: 0,
+      y: -30,
+    },
+    animate: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 1.5,
+      },
+    },
+    backExit: {
+      opacity: 0,
+      y: -30,
+      transition: {
+        duration: 1.5,
+      },
+    },
+  };
 
   return (
     <Container
       className={className}
       color={color}
       rightToLeftPosition={rightToLeftPosition}
-      initial={
-        animationType === 'forward' && {
-          x: `calc(100vw - ${(rightToLeftPosition + 1) * columnWidth + 15}px)`,
-        }
-      }
-      animate={
-        animationType === 'forward' && {
-          x: 0,
-        }
-      }
-      exit={
-        animationType === 'back' && {
-          x: `calc(100vw - ${(rightToLeftPosition + 1) * columnWidth}px)`,
-        }
-      }
-      transition={{ duration: 1.5, times: [0, 0.1, 1] }}
+      variants={containerVariants}
+      {...animationStates}
     >
       <BackButton id={id} color={color} />
-      <motion.div
-        className="title-wrapper"
-        initial={
-          animationType !== 'back' && {
-            opacity: 0,
-            y: -35,
-          }
-        }
-        animate={{
-          opacity: 1,
-          y: 15,
-          transition: {
-            duration: 2.5,
-            delay: 0,
-          },
-        }}
-        exit={
-          animationType === 'back' && {
-            opacity: 0,
-            y: -35,
-            transition: { duration: 1.5 },
-          }
-        }
-        transition={{ duration: 2 }}
-      >
+      <motion.div className="title-wrapper" variants={titleVariants}>
         <motion.img
           className="title"
           src={`/drawer-titles/${id}.svg`}
           alt={title}
           draggable={false}
-          initial={{ y: 15 }}
-          animate={{ y: -15 }}
+          initial={{ y: 20 }}
+          animate={{ y: 0 }}
           transition={{
             ease: 'easeInOut',
             duration: 10,
-            delay: 2,
+            delay: animationType === 'forward' ? 1.5 : 0,
             repeat: Infinity,
             repeatType: 'reverse',
           }}

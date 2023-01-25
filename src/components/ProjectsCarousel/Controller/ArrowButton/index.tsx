@@ -4,7 +4,7 @@ import {
   MdOutlineArrowForwardIos,
 } from 'react-icons/md';
 
-import { useDrawersContext } from '~/contexts';
+import { AnimationVariants } from '~/types';
 
 import { Container } from './styles';
 
@@ -14,25 +14,35 @@ export type ArrowButtonProps = {
 };
 
 export const ArrowButton = ({ type, onClick }: ArrowButtonProps) => {
-  const { animationType } = useDrawersContext();
-
   const Icon =
     type === 'back' ? MdOutlineArrowBackIos : MdOutlineArrowForwardIos;
 
   const x = type === 'back' ? '-100%' : '100%';
 
+  const variants: AnimationVariants = {
+    enterInitial: {
+      x,
+    },
+    backInitial: {
+      x: 0,
+    },
+    whileInView: {
+      x: 0,
+      transition: {
+        duration: 1,
+      },
+    },
+    backExit: {
+      x,
+      transition: {
+        duration: 1,
+      },
+    },
+  };
+
   return (
     <Container arrowType={type} onClick={onClick}>
-      <motion.div
-        className="bar"
-        initial={animationType !== 'back' && { x }}
-        animate={{ x: 0 }}
-        exit={animationType === 'back' && { x, transition: { duration: 1 } }}
-        transition={{
-          duration: 1,
-          delay: animationType === 'forward' ? 1.5 : 0.5,
-        }}
-      />
+      <motion.div className="bar" variants={variants} />
       <Icon className="icon" />
     </Container>
   );

@@ -44,7 +44,7 @@ export const AboutContainer = styled.div`
 
   overflow: hidden;
 
-  > .about-wrapper {
+  .about-wrapper {
     padding: 50px 0 0;
 
     width: auto;

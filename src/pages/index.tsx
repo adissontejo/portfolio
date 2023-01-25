@@ -6,35 +6,39 @@ import { Drawer, Logo } from '~/components';
 import { useDrawersContext, useStylesContext } from '~/contexts';
 import { DrawerId, drawers } from '~/data';
 import { useMediaQuery } from '~/hooks';
+import { AnimationVariants } from '~/types';
 
 import { Container } from './styles';
 
 const Home = () => {
   const { theme } = useStylesContext();
-  const { animationType } = useDrawersContext();
+  const { animationType, animationStates } = useDrawersContext();
 
   const isRegularOrLower = useMediaQuery(theme.queries.regularAndLower);
 
   const [iterationCount, setIterationCount] = useState(0);
   const [opening, setOpening] = useState(false);
 
+  const logoVariants: AnimationVariants = {
+    loadInitial: {
+      opacity: 0,
+      x: isRegularOrLower ? 0 : -50,
+      y: isRegularOrLower ? -50 : 0,
+    },
+    animate: {
+      opacity: 1,
+      x: 0,
+      y: 0,
+      transition: { duration: 3 },
+    },
+  };
+
   return (
-    <Container>
+    <Container {...animationStates}>
       <Head>
         <title>Ádisson</title>
       </Head>
-      <motion.div
-        initial={
-          animationType === 'load' && {
-            opacity: 0,
-            x: isRegularOrLower ? 0 : -50,
-            y: isRegularOrLower ? -50 : 0,
-          }
-        }
-        animate={{ opacity: 1, x: 0, y: 0 }}
-        transition={{ delay: 0, duration: 3 }}
-        className="logo-wrapper"
-      >
+      <motion.div className="logo-wrapper" variants={logoVariants}>
         <motion.div
           initial={{ x: 0, y: 0 }}
           animate={{
@@ -43,7 +47,7 @@ const Home = () => {
           }}
           transition={{
             ease: 'easeInOut',
-            duration: 10,
+            duration: 12,
             delay: animationType === 'load' && iterationCount === 0 ? 3 : 0,
           }}
           onAnimationComplete={() => setIterationCount(prev => prev + 1)}

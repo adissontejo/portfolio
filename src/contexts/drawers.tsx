@@ -14,6 +14,7 @@ import disableScroll from 'disable-scroll';
 
 import { useMediaQuery } from '~/hooks';
 import { DrawerId } from '~/data';
+import { AnimationStates } from '~/types';
 
 import { useStylesContext } from './styles';
 
@@ -22,9 +23,8 @@ export type DrawersContextType = {
   setActiveDrawer: Dispatch<SetStateAction<DrawerId>>;
   transitioning: boolean;
   columnWidth: number;
-  isInitialPage: boolean;
   animationType: 'load' | 'back' | 'forward';
-  exitingDrawer: DrawerId;
+  animationStates: AnimationStates;
   openDrawer: (id: DrawerId) => void;
   closeDrawer: (id: DrawerId) => void;
 };
@@ -37,19 +37,38 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
   const [activeDrawer, setActiveDrawer] = useState<DrawerId>(null);
   const [transitioning, setTransitioning] = useState(false);
 
-  const isInitialPage = useRef(true);
   const actionQueue = useRef<{
     type: 'open' | 'close';
     id: DrawerId;
   }>(null);
   const animationType = useRef<'load' | 'back' | 'forward'>('load');
-  const exitingDrawer = useRef<DrawerId>(null);
 
   const { theme } = useStylesContext();
 
   const isMobile = useMediaQuery(theme.queries.small);
 
   const columnWidth = isMobile ? 20 : 60;
+
+  const animationStates = {
+    initial: [
+      'all',
+      'initial',
+      animationType.current !== 'back' ? 'enterInitial' : '',
+      `${animationType.current}Initial`,
+    ],
+    animate: [
+      'all',
+      'animate',
+      animationType.current !== 'back' ? 'enterAnimate' : '',
+      `${animationType.current}Animate`,
+    ],
+    exit: [
+      'all',
+      'exit',
+      animationType.current !== 'back' ? 'enterExit' : '',
+      `${animationType.current}Exit`,
+    ],
+  } as AnimationStates;
 
   const openDrawer = (id: DrawerId) => {
     if (router.pathname === `/${id}`) {
@@ -67,15 +86,9 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
 
     disableScroll.on();
 
-    exitingDrawer.current = null;
-
     animationType.current = 'forward';
-
     setActiveDrawer(id);
-
     setTransitioning(true);
-
-    isInitialPage.current = false;
 
     router.replace(`/${id}`);
   };
@@ -96,12 +109,8 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
 
     disableScroll.on();
 
-    exitingDrawer.current = id;
-
     animationType.current = 'back';
-
     setActiveDrawer(id);
-
     setTransitioning(true);
 
     router.replace('/');
@@ -130,9 +139,8 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
         setActiveDrawer,
         transitioning,
         columnWidth,
-        isInitialPage: isInitialPage.current,
+        animationStates,
         animationType: animationType.current,
-        exitingDrawer: exitingDrawer.current,
         openDrawer,
         closeDrawer,
       }}

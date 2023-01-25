@@ -1,8 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
 import { useDrawersContext } from '~/contexts';
 import { projects } from '~/data';
+import { useInViewAnimation } from '~/hooks';
+import { AnimationVariants } from '~/types';
 
 import { Carousel, Container, OpacityFilter } from './styles';
 import { Controller } from './Controller';
@@ -10,24 +12,18 @@ import { Project } from './Project';
 import { useMeasures } from './useMeasures';
 
 export const ProjectsCarousel = () => {
-  const { animationType, transitioning } = useDrawersContext();
+  const { transitioning, animationType } = useDrawersContext();
 
   const { width } = useMeasures();
+
+  const animationStates = useInViewAnimation(
+    animationType === 'forward' ? 1 : 0
+  );
 
   const [position, setPosition] = useState(0);
   const [entering, setEntering] = useState(true);
 
   const positionQueue = useRef<number>(0);
-
-  const selected = useMemo(() => {
-    const value = position % projects.length;
-
-    if (value < 0) {
-      return value + projects.length;
-    }
-
-    return value;
-  }, [position]);
 
   const back = () => {
     if (entering || transitioning) {
@@ -55,8 +51,61 @@ export const ProjectsCarousel = () => {
     }
   }, [entering, transitioning]);
 
+  const containerVariants: AnimationVariants = {
+    whileInView: {
+      transition: {
+        delayChildren: 0.5,
+      },
+    },
+  };
+
+  const borderVariants: AnimationVariants = {
+    enterInitial: {
+      pathLength: 0,
+    },
+    backInitial: {
+      pathLength: 1,
+    },
+    whileInView: {
+      pathLength: 1,
+      transition: {
+        duration: 1,
+        delay: 1,
+      },
+    },
+    backExit: {
+      pathLength: 0,
+      transition: {
+        duration: 1,
+      },
+    },
+  };
+
+  const carouselVariants: AnimationVariants = {
+    enterInitial: {
+      x: width * projects.length,
+    },
+    backInitial: {
+      x: 0,
+    },
+    whileInView: {
+      x: 0,
+      transition: {
+        duration: 1,
+      },
+    },
+    backExit: {
+      x: width * (projects.length - position),
+      transition: { duration: 1, delay: 0 },
+    },
+  };
+
   return (
-    <Container>
+    <Container
+      variants={containerVariants}
+      viewport={{ once: true, margin: '-500px 0px 0px 0px' }}
+      {...animationStates}
+    >
       <div className="carousel-wrapper">
         <OpacityFilter type="left" />
         <Carousel>
@@ -74,56 +123,35 @@ export const ProjectsCarousel = () => {
                   stroke="white"
                   strokeWidth={1}
                   radius={0}
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 1 }}
+                  variants={borderVariants}
                 />
               </svg>
             </motion.div>
             <motion.div
-              className="carousel"
-              initial={
-                animationType !== 'back' && { x: width * projects.length }
-              }
               animate={{ x: -width * position }}
-              exit={
-                animationType === 'back' && {
-                  x: width * (projects.length - position),
-                  transition: { duration: 1, delay: 0 },
-                }
-              }
-              transition={{
-                duration: entering ? 1 : 0.5,
-                delay:
-                  entering && animationType === 'forward'
-                    ? 1.5
-                    : entering
-                    ? 0.5
-                    : 0,
-              }}
-              onAnimationComplete={() => setEntering(false)}
+              transition={{ duration: 0.5 }}
             >
-              {projects.map((item, index) => (
-                <Project
-                  src={item.src}
-                  key={index}
-                  index={index}
-                  length={projects.length}
-                  position={position}
-                />
-              ))}
+              <motion.div
+                className="carousel"
+                variants={carouselVariants}
+                onAnimationComplete={() => setEntering(false)}
+              >
+                {projects.map((item, index) => (
+                  <Project
+                    src={item.src}
+                    key={index}
+                    index={index}
+                    length={projects.length}
+                    position={position}
+                  />
+                ))}
+              </motion.div>
             </motion.div>
           </div>
         </Carousel>
         <OpacityFilter type="right" />
       </div>
-      <Controller
-        back={back}
-        forward={forward}
-        selected={selected}
-        position={position}
-        entering={entering}
-      />
+      <Controller back={back} forward={forward} position={position} />
     </Container>
   );
 };

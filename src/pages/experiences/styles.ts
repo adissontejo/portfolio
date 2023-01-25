@@ -39,7 +39,7 @@ export const Section = styled.section`
       position: absolute;
       top: 0;
       left: 0;
-      z-index: 0;
+      z-index: -1;
 
       width: 100%;
       height: 100%;
@@ -47,16 +47,14 @@ export const Section = styled.section`
     }
 
     > .label {
-      position: relative;
-      z-index: 1;
-      margin: 19px 72px 19px 0;
+      margin: 10px 72px 10px 0;
 
       color: ${p => p.theme.colors.green};
       font-size: 1rem;
-      text-align: center;
+      text-align: end;
 
       @media (max-width: 480px) {
-        margin: 19px 5px;
+        margin: 10px 5px;
         align-self: center;
       }
     }

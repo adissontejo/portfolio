@@ -1,6 +1,7 @@
 import styled from 'styled-components';
+import { motion } from 'framer-motion';
 
-export const Container = styled.div`
+export const Container = styled(motion.div)`
   width: 100vw;
 
   display: flex;
@@ -49,7 +50,7 @@ export const Carousel = styled.div`
       height: 100%;
     }
 
-    > .carousel {
+    .carousel {
       display: flex;
     }
   }

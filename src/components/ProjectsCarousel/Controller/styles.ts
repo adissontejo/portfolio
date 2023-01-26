@@ -32,7 +32,7 @@ export const NamesContainer = styled.div`
     gap: 550px;
 
     @media ${p => p.theme.queries.small} {
-      gap: max(762px, calc(1120px - 100%));
+      gap: max(762px, calc(1120px - 100vw));
     }
   }
 `;

@@ -7,7 +7,6 @@ export type ContainerProps = {
   gridArea: string;
   color: keyof Theme['colors'];
   rightToLeftPosition: number;
-  hover: boolean;
 };
 
 export const Container = styled(m.button)<ContainerProps>`

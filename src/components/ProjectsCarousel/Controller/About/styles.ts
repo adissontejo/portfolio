@@ -11,7 +11,7 @@ export const Container = styled(m.div)`
 export const Text = styled.p`
   padding: 0 5px;
 
-  width: min(940px, 95%);
+  width: min(940px, 95vw);
 
   color: ${p => p.theme.colors.light};
   font-size: 1rem;

@@ -143,7 +143,6 @@ export const Drawer = ({ id, opening, setOpening }: DrawerProps) => {
       color={color}
       rightToLeftPosition={rightToLeftPosition}
       onClick={onClick}
-      hover={false}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       variants={containerVariants}

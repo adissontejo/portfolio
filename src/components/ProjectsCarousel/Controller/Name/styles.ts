@@ -11,6 +11,6 @@ export const Container = styled(m.h2)`
   text-align: center;
 
   @media ${p => p.theme.queries.small} {
-    min-width: min(238px, calc(100% - 120px));
+    min-width: min(238px, calc(100vw - 120px));
   }
 `;

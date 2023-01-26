@@ -22,6 +22,7 @@ export const Project = ({ src, index, position, length }: ProjectProps) => {
         className="image"
         src={src}
         alt="Projeto"
+        draggable={false}
         fill
         quality={70}
         placeholder="blur"

@@ -17,23 +17,21 @@ export const ArrowButton = ({ type, onClick }: ArrowButtonProps) => {
   const Icon =
     type === 'back' ? MdOutlineArrowBackIos : MdOutlineArrowForwardIos;
 
-  const x = type === 'back' ? '-100%' : '100%';
-
   const variants: AnimationVariants = {
     enterInitial: {
-      x,
+      width: 0,
     },
     backInitial: {
-      x: 0,
+      width: '100%',
     },
     whileInView: {
-      x: 0,
+      width: '100%',
       transition: {
         duration: 1,
       },
     },
     backExit: {
-      x,
+      width: 0,
       transition: {
         duration: 1,
       },

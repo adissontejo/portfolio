@@ -1,27 +1,10 @@
 import Head from 'next/head';
-import { m } from 'framer-motion';
 
-import { ProjectsCarousel } from '~/components';
-import { useInViewAnimation } from '~/hooks';
-import { AnimationVariants } from '~/types';
+import { ProfessionalExperiences, ProjectsCarousel } from '~/components';
 
 import { Container, Section } from './styles';
 
 const Experiences = () => {
-  const animationStates = useInViewAnimation(0);
-
-  const barVariants: AnimationVariants = {
-    initial: {
-      x: '-100%',
-    },
-    whileInView: {
-      x: 0,
-      transition: {
-        duration: 1,
-      },
-    },
-  };
-
   return (
     <Container id="experiences">
       <Head>
@@ -33,10 +16,7 @@ const Experiences = () => {
       </Section>
       <Section>
         <h4 className="subtitle">experiência profissional</h4>
-        <div className="experience">
-          <m.div className="bar" variants={barVariants} {...animationStates} />
-          <p className="label">Estágio no Tribunal de Contas da União</p>
-        </div>
+        <ProfessionalExperiences />
       </Section>
     </Container>
   );

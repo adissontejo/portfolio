@@ -25,7 +25,7 @@ export const Container = styled.button<ContainerProps>`
   > .bar {
     position: absolute;
     top: 0;
-    left: 0;
+    ${p => (p.arrowType === 'back' ? 'left' : 'right')}: 0;
     z-index: -1;
 
     width: 100%;

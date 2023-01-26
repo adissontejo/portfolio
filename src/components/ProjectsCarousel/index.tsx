@@ -103,7 +103,7 @@ export const ProjectsCarousel = () => {
   return (
     <Container
       variants={containerVariants}
-      viewport={{ once: true, margin: '-500px 0px 0px 0px' }}
+      viewport={{ once: true, margin: '0px 0px -200px 0px' }}
       {...animationStates}
     >
       <div className="carousel-wrapper">

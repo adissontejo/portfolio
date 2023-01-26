@@ -14,6 +14,6 @@ export const Text = styled.p`
   width: min(940px, 95%);
 
   color: ${p => p.theme.colors.light};
-  font-size: 1.2rem;
+  font-size: 1rem;
   text-align: center;
 `;

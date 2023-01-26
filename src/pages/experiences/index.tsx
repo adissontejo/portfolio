@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 import { ProjectsCarousel } from '~/components';
 import { useInViewAnimation } from '~/hooks';
@@ -34,11 +34,7 @@ const Experiences = () => {
       <Section>
         <h4 className="subtitle">experiência profissional</h4>
         <div className="experience">
-          <motion.div
-            className="bar"
-            variants={barVariants}
-            {...animationStates}
-          />
+          <m.div className="bar" variants={barVariants} {...animationStates} />
           <p className="label">Estágio no Tribunal de Contas da União</p>
         </div>
       </Section>

@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 import { projects } from '~/data';
 import { AnimationVariants } from '~/types';
@@ -47,7 +47,7 @@ export const Controller = ({ back, forward, position }: ControllerProps) => {
       <Container>
         <ArrowButton type="back" onClick={back} />
         <NamesContainer>
-          <motion.div
+          <m.div
             className="names-wrapper"
             animate={{ x: -1000 * position }}
             transition={{ duration: 0.5 }}
@@ -61,7 +61,7 @@ export const Controller = ({ back, forward, position }: ControllerProps) => {
                 length={projects.length}
               />
             ))}
-          </motion.div>
+          </m.div>
         </NamesContainer>
         <ArrowButton type="forward" onClick={forward} />
       </Container>
@@ -69,11 +69,8 @@ export const Controller = ({ back, forward, position }: ControllerProps) => {
         <OpacityFilter type="top" />
         <OpacityFilter type="left" />
         <OpacityFilter type="right" />
-        <motion.div
-          animate={{ x: -1000 * position }}
-          transition={{ duration: 0.5 }}
-        >
-          <motion.div className="about-wrapper" variants={aboutVariants}>
+        <m.div animate={{ x: -1000 * position }} transition={{ duration: 0.5 }}>
+          <m.div className="about-wrapper" variants={aboutVariants}>
             {projects.map((item, index) => (
               <About
                 key={index}
@@ -83,8 +80,8 @@ export const Controller = ({ back, forward, position }: ControllerProps) => {
                 length={projects.length}
               />
             ))}
-          </motion.div>
-        </motion.div>
+          </m.div>
+        </m.div>
       </AboutContainer>
     </>
   );

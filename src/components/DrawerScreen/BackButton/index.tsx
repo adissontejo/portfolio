@@ -1,5 +1,5 @@
 import { MdOutlineArrowBackIosNew } from 'react-icons/md';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 import { useDrawersContext } from '~/contexts';
 import { DrawerId } from '~/data';
@@ -15,7 +15,7 @@ export const BackButton = ({ id, color }: BackButtonProps) => {
   const { closeDrawer } = useDrawersContext();
 
   const barVariants: AnimationVariants = {
-    forwardInitial: {
+    enterInitial: {
       x: '-100%',
     },
     animate: {
@@ -23,6 +23,12 @@ export const BackButton = ({ id, color }: BackButtonProps) => {
       transition: {
         duration: 0.7,
         delay: 0.8,
+      },
+    },
+    loadAnimate: {
+      x: 0,
+      transition: {
+        duration: 0.7,
       },
     },
     backExit: {
@@ -35,7 +41,7 @@ export const BackButton = ({ id, color }: BackButtonProps) => {
 
   return (
     <Container color={color} onClick={() => closeDrawer(id)}>
-      <motion.div className="bar" variants={barVariants} />
+      <m.div className="bar" variants={barVariants} />
       <div className="label-wrapper">
         <p className="label">voltar</p>
         <MdOutlineArrowBackIosNew className="icon" />

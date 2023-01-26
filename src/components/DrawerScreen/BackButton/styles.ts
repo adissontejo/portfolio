@@ -11,7 +11,7 @@ export const Container = styled.button<ContainerProps>`
   margin: 45px 0 0;
   align-self: flex-start;
 
-  width: 75vw;
+  width: 75%;
   min-height: 50px;
   min-width: 265px;
   max-width: 485px;

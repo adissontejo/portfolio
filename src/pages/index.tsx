@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Head from 'next/head';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 import { Drawer, Logo } from '~/components';
 import { useDrawersContext, useStylesContext } from '~/contexts';
@@ -38,8 +38,8 @@ const Home = () => {
       <Head>
         <title>Ádisson</title>
       </Head>
-      <motion.div className="logo-wrapper" variants={logoVariants}>
-        <motion.div
+      <m.div className="logo-wrapper" variants={logoVariants}>
+        <m.div
           initial={{ x: 0, y: 0 }}
           animate={{
             x: isRegularOrLower || iterationCount % 2 === 1 ? 0 : -30,
@@ -53,8 +53,8 @@ const Home = () => {
           onAnimationComplete={() => setIterationCount(prev => prev + 1)}
         >
           <Logo />
-        </motion.div>
-      </motion.div>
+        </m.div>
+      </m.div>
       {Object.keys(drawers).map((item: DrawerId) => (
         <Drawer
           key={item}

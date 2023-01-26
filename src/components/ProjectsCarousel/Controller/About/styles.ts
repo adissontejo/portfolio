@@ -1,7 +1,7 @@
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
-export const Container = styled(motion.div)`
+export const Container = styled(m.div)`
   min-width: 1000px;
 
   display: flex;
@@ -11,7 +11,7 @@ export const Container = styled(motion.div)`
 export const Text = styled.p`
   padding: 0 5px;
 
-  width: min(940px, 95vw);
+  width: min(940px, 95%);
 
   color: ${p => p.theme.colors.light};
   font-size: 1.2rem;

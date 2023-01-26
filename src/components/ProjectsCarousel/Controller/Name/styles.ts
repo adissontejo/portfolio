@@ -1,7 +1,7 @@
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
-export const Container = styled(motion.h2)`
+export const Container = styled(m.h2)`
   padding: 0 5px;
 
   min-width: 450px;
@@ -11,6 +11,6 @@ export const Container = styled(motion.h2)`
   text-align: center;
 
   @media ${p => p.theme.queries.small} {
-    min-width: min(238px, calc(100vw - 120px));
+    min-width: min(238px, calc(100% - 120px));
   }
 `;

@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 import { useDrawersContext } from '~/contexts';
 import { drawers } from '~/data';
@@ -42,7 +42,7 @@ export const DrawerScreen = ({
   };
 
   const titleVariants: AnimationVariants = {
-    forwardInitial: {
+    enterInitial: {
       opacity: 0,
       y: -30,
     },
@@ -50,14 +50,22 @@ export const DrawerScreen = ({
       opacity: 1,
       y: 0,
       transition: {
-        duration: 1.5,
+        duration: 1,
+        delay: 0.5,
+      },
+    },
+    loadAnimate: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 1,
       },
     },
     backExit: {
       opacity: 0,
       y: -30,
       transition: {
-        duration: 1.5,
+        duration: 1,
       },
     },
   };
@@ -71,8 +79,8 @@ export const DrawerScreen = ({
       {...animationStates}
     >
       <BackButton id={id} color={color} />
-      <motion.div className="title-wrapper" variants={titleVariants}>
-        <motion.img
+      <m.div className="title-wrapper" variants={titleVariants}>
+        <m.img
           className="title"
           src={`/drawer-titles/${id}.svg`}
           alt={title}
@@ -82,12 +90,12 @@ export const DrawerScreen = ({
           transition={{
             ease: 'easeInOut',
             duration: 10,
-            delay: animationType === 'forward' ? 1.5 : 0,
+            delay: animationType === 'forward' ? 1.5 : 1,
             repeat: Infinity,
             repeatType: 'reverse',
           }}
         />
-      </motion.div>
+      </m.div>
       {children}
     </Container>
   );

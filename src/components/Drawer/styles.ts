@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 import { Theme } from '~/styles';
 
@@ -10,7 +10,7 @@ export type ContainerProps = {
   hover: boolean;
 };
 
-export const Container = styled(motion.button)<ContainerProps>`
+export const Container = styled(m.button)<ContainerProps>`
   grid-area: ${p => p.gridArea};
   z-index: ${p => (2 - p.rightToLeftPosition) * 10};
   position: relative;
@@ -35,6 +35,8 @@ export const Container = styled(motion.button)<ContainerProps>`
     display: flex;
     align-items: center;
     overflow: hidden;
+
+    will-change: transform;
 
     @media ${p => p.theme.queries.small} {
       height: 35px;
@@ -84,6 +86,8 @@ export const Container = styled(motion.button)<ContainerProps>`
     width: calc(${p => (p.rightToLeftPosition + 1) * 60}px + 100vw);
     height: 100vh;
     background: ${p => p.theme.colors[p.color]};
+
+    will-change: transform;
 
     @media ${p => p.theme.queries.small} {
       width: calc(${p => (p.rightToLeftPosition + 1) * 20}px + 100vw);

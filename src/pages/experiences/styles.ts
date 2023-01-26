@@ -27,8 +27,8 @@ export const Section = styled.section`
     align-self: flex-start;
 
     width: 480px;
-    min-width: 50vw;
-    max-width: 100vw;
+    min-width: 50%;
+    max-width: 100%;
 
     display: flex;
     flex-direction: column;

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 export const Container = styled.div`
   margin: 25px 0 0;
 
-  width: 100vw;
+  width: 100%;
 
   display: flex;
   align-items: center;
@@ -22,7 +22,7 @@ export const NamesContainer = styled.div`
   width: 450px;
 
   @media ${p => p.theme.queries.small} {
-    width: min(238px, calc(100vw - 120px));
+    width: min(238px, calc(100% - 120px));
   }
 
   > .names-wrapper {
@@ -32,7 +32,7 @@ export const NamesContainer = styled.div`
     gap: 550px;
 
     @media ${p => p.theme.queries.small} {
-      gap: max(762px, calc(1120px - 100vw));
+      gap: max(762px, calc(1120px - 100%));
     }
   }
 `;

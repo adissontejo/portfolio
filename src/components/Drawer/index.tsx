@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 import { useDrawersContext } from '~/contexts';
 import { DrawerId, drawers } from '~/data';
@@ -148,7 +148,7 @@ export const Drawer = ({ id, opening, setOpening }: DrawerProps) => {
       onMouseLeave={onMouseLeave}
       variants={containerVariants}
     >
-      <motion.div
+      <m.div
         className="bar"
         variants={slideVariants}
         animate={{ x: hover ? -15 : 0 }}
@@ -157,8 +157,8 @@ export const Drawer = ({ id, opening, setOpening }: DrawerProps) => {
           <p className="label">{label}</p>
           <img className="icon" src={`/drawer-icons/${id}.svg`} alt={label} />
         </div>
-      </motion.div>
-      <motion.div
+      </m.div>
+      <m.div
         className="column"
         variants={{ ...slideVariants, ...barVariants }}
         animate={{ x: hover ? -15 : 0 }}

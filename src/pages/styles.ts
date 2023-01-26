@@ -1,7 +1,7 @@
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
-export const Container = styled(motion.div)`
+export const Container = styled(m.div)`
   padding: 0 0 0 max(15%, calc(100vw - 1500px));
 
   width: 100vw;

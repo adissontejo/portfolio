@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 import { useDrawersContext } from '~/contexts';
 import { projects } from '~/data';
@@ -110,7 +110,7 @@ export const ProjectsCarousel = () => {
         <OpacityFilter type="left" />
         <Carousel>
           <div className="scene">
-            <motion.div className="border">
+            <m.div className="border">
               <svg
                 width="100%"
                 height="100%"
@@ -118,7 +118,7 @@ export const ProjectsCarousel = () => {
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
               >
-                <motion.path
+                <m.path
                   d="M 1 1 H 435 V 253 H 1 Z"
                   stroke="white"
                   strokeWidth={1}
@@ -126,12 +126,12 @@ export const ProjectsCarousel = () => {
                   variants={borderVariants}
                 />
               </svg>
-            </motion.div>
-            <motion.div
+            </m.div>
+            <m.div
               animate={{ x: -width * position }}
               transition={{ duration: 0.5 }}
             >
-              <motion.div
+              <m.div
                 className="carousel"
                 variants={carouselVariants}
                 onAnimationComplete={() => setEntering(false)}
@@ -145,8 +145,8 @@ export const ProjectsCarousel = () => {
                     position={position}
                   />
                 ))}
-              </motion.div>
-            </motion.div>
+              </m.div>
+            </m.div>
           </div>
         </Carousel>
         <OpacityFilter type="right" />

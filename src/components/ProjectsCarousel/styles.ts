@@ -1,8 +1,8 @@
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
-export const Container = styled(motion.div)`
-  width: 100vw;
+export const Container = styled(m.div)`
+  width: 100%;
 
   display: flex;
   flex-direction: column;
@@ -12,6 +12,8 @@ export const Container = styled(motion.div)`
   .carousel-wrapper {
     position: relative;
 
+    width: 100%;
+
     display: flex;
     justify-content: center;
   }
@@ -20,7 +22,7 @@ export const Container = styled(motion.div)`
 export const Carousel = styled.div`
   position: relative;
 
-  width: 100vw;
+  width: 100%;
   max-width: 2180px;
 
   display: flex;

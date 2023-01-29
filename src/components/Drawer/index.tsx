@@ -124,7 +124,7 @@ export const Drawer = ({ id, opening, setOpening }: DrawerProps) => {
     },
   };
 
-  const barVariants: AnimationVariants = {
+  const columnVariants: AnimationVariants = {
     loadInitial: {
       height: 0,
     },
@@ -159,7 +159,7 @@ export const Drawer = ({ id, opening, setOpening }: DrawerProps) => {
       </m.div>
       <m.div
         className="column"
-        variants={{ ...slideVariants, ...barVariants }}
+        variants={{ ...slideVariants, ...columnVariants }}
         animate={{ x: hover ? -15 : 0 }}
       />
     </Container>

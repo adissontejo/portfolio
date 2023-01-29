@@ -10,7 +10,7 @@ export const ProfessionalExperiences = () => {
   const { animationType } = useDrawersContext();
 
   const animationStates = useInViewAnimation(
-    animationType === 'forward' ? 1 : 0
+    animationType === 'forward' ? 3 : 2
   );
 
   const containerVariants: AnimationVariants = {

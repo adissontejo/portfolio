@@ -30,14 +30,14 @@ export const Controller = ({ back, forward, position }: ControllerProps) => {
     whileInView: {
       y: 0,
       transition: {
-        duration: 1.5,
+        duration: 1,
         delay: 1,
       },
     },
     backExit: {
       y: '-100%',
       transition: {
-        duration: 1.5,
+        duration: 1,
       },
     },
   };

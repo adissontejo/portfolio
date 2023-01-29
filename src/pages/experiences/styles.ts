@@ -19,4 +19,16 @@ export const Section = styled.section`
     color: ${p => p.theme.colors.light};
     font-size: 1rem;
   }
+
+  &:after {
+    content: '';
+
+    margin: 54px 0 0;
+
+    width: 75%;
+    max-width: 440px;
+    height: 1px;
+    background: ${p => p.theme.colors.light};
+    opacity: 0.25;
+  }
 `;

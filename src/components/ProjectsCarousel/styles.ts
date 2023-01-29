@@ -12,7 +12,7 @@ export const Container = styled(m.div)`
   .carousel-wrapper {
     position: relative;
 
-    width: 100%;
+    width: 3052px;
 
     display: flex;
     justify-content: center;
@@ -65,29 +65,19 @@ export type OpacityFilterProps = {
 export const OpacityFilter = styled.div<OpacityFilterProps>`
   position: relative;
   z-index: 1000;
-  ${p => p.type}: 440px;
+  ${p => p.type}: 436px;
 
   background: linear-gradient(
     to ${p => p.type},
     rgba(50, 116, 109, 0),
-    rgba(50, 116, 109, 0.1),
-    rgba(50, 116, 109, 0.2),
-    rgba(50, 116, 109, 0.3),
-    rgba(50, 116, 109, 0.4),
     rgba(50, 116, 109, 0.5),
-    rgba(50, 116, 109, 0.6),
-    rgba(50, 116, 109, 0.7),
     rgba(50, 116, 109, 0.8),
-    rgba(50, 116, 109, 0.9),
-    rgba(50, 116, 109, 1),
-    rgba(50, 116, 109, 1),
-    rgba(50, 116, 109, 1),
     rgba(50, 116, 109, 1),
     rgba(50, 116, 109, 1)
   );
 
   @media (min-width: 2140px) {
-    width: 450px;
+    width: 436px;
     height: 254px;
   }
 `;

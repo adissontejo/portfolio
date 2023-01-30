@@ -22,17 +22,17 @@ export const NamesContainer = styled.div`
   width: 450px;
 
   @media ${p => p.theme.queries.small} {
-    width: min(238px, calc(100% - 120px));
+    width: min(238px, calc(100vw - 120px));
   }
 
   > .names-wrapper {
     width: auto;
 
     display: flex;
-    gap: 550px;
+    gap: min(calc(100vw - 450px), 550px);
 
     @media ${p => p.theme.queries.small} {
-      gap: max(762px, calc(1120px - 100vw));
+      gap: max(calc(100vw - 238px), 120px);
     }
   }
 `;
@@ -40,7 +40,7 @@ export const NamesContainer = styled.div`
 export const AboutContainer = styled.div`
   position: relative;
 
-  width: 1000px;
+  width: min(100vw, 1000px);
 
   overflow: hidden;
 

@@ -1,4 +1,4 @@
-import { m } from 'framer-motion';
+import { motion, MotionValue, useTransform } from 'framer-motion';
 
 import { projects } from '~/data';
 import { AnimationVariants } from '~/types';
@@ -12,14 +12,21 @@ import {
 import { About } from './About';
 import { Name } from './Name';
 import { ArrowButton } from './ArrowButton';
+import { useMeasures } from '../useMeasures';
 
 export type ControllerProps = {
   back: () => void;
   forward: () => void;
-  position: number;
+  carouselX: MotionValue<number>;
 };
 
-export const Controller = ({ back, forward, position }: ControllerProps) => {
+export const Controller = ({ back, forward, carouselX }: ControllerProps) => {
+  const { imageWidth, textWidth } = useMeasures();
+
+  const x = useTransform(carouselX, [0, imageWidth], [0, textWidth], {
+    clamp: false,
+  });
+
   const aboutVariants: AnimationVariants = {
     enterInitial: {
       y: '-100%',
@@ -47,21 +54,17 @@ export const Controller = ({ back, forward, position }: ControllerProps) => {
       <Container>
         <ArrowButton type="back" onClick={back} />
         <NamesContainer>
-          <m.div
-            className="names-wrapper"
-            animate={{ x: -1000 * position }}
-            transition={{ duration: 0.5 }}
-          >
+          <motion.div className="names-wrapper" style={{ x }}>
             {projects.map((item, index) => (
               <Name
                 key={index}
                 name={item.name}
                 index={index}
-                position={position}
                 length={projects.length}
+                carouselX={carouselX}
               />
             ))}
-          </m.div>
+          </motion.div>
         </NamesContainer>
         <ArrowButton type="forward" onClick={forward} />
       </Container>
@@ -69,19 +72,19 @@ export const Controller = ({ back, forward, position }: ControllerProps) => {
         <OpacityFilter type="top" />
         <OpacityFilter type="left" />
         <OpacityFilter type="right" />
-        <m.div animate={{ x: -1000 * position }} transition={{ duration: 0.5 }}>
-          <m.div className="about-wrapper" variants={aboutVariants}>
+        <motion.div style={{ x }}>
+          <motion.div className="about-wrapper" variants={aboutVariants}>
             {projects.map((item, index) => (
               <About
                 key={index}
                 about={item.about}
                 index={index}
-                position={position}
                 length={projects.length}
+                carouselX={carouselX}
               />
             ))}
-          </m.div>
-        </m.div>
+          </motion.div>
+        </motion.div>
       </AboutContainer>
     </>
   );

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { m } from 'framer-motion';
+import { motion, PanInfo, useMotionValue } from 'framer-motion';
 
 import { useDrawersContext } from '~/contexts';
 import { projects } from '~/data';
@@ -14,7 +14,9 @@ import { useMeasures } from './useMeasures';
 export const ProjectsCarousel = () => {
   const { transitioning, animationType } = useDrawersContext();
 
-  const { width } = useMeasures();
+  const { imageWidth } = useMeasures();
+
+  const x = useMotionValue(0);
 
   const animationStates = useInViewAnimation(
     animationType === 'forward' ? 1 : 0
@@ -23,7 +25,8 @@ export const ProjectsCarousel = () => {
   const [position, setPosition] = useState(0);
   const [entering, setEntering] = useState(true);
 
-  const positionQueue = useRef<number>(0);
+  const positionQueue = useRef(0);
+  const duration = useRef(0.5);
 
   const back = () => {
     if (entering || transitioning) {
@@ -31,6 +34,8 @@ export const ProjectsCarousel = () => {
 
       return;
     }
+
+    duration.current = 0.5;
 
     setPosition(prev => prev - 1);
   };
@@ -42,11 +47,49 @@ export const ProjectsCarousel = () => {
       return;
     }
 
+    duration.current = 0.5;
+
     setPosition(prev => prev + 1);
+  };
+
+  const onDragEnd = (info: PanInfo) => {
+    const value = x.get();
+
+    const acceleration = -50000;
+
+    const velocity = info.velocity.x;
+
+    const distance = -(velocity ** 2) / (2 * acceleration);
+
+    const offset = info.offset.x;
+
+    if (offset >= 0) {
+      const target = value + distance;
+
+      const finalPosition = Math.floor(-target / imageWidth);
+
+      duration.current =
+        (Math.abs(target + finalPosition * imageWidth) * 0.3) / imageWidth +
+        0.2;
+
+      setPosition(finalPosition);
+    } else {
+      const target = value - distance;
+
+      const finalPosition = Math.ceil(-target / imageWidth);
+
+      duration.current =
+        (Math.abs(target + finalPosition * imageWidth) * 0.3) / imageWidth +
+        0.2;
+
+      setPosition(finalPosition);
+    }
   };
 
   useEffect(() => {
     if (!entering && !transitioning && positionQueue.current !== position) {
+      duration.current = 0.5;
+
       setPosition(positionQueue.current);
     }
   }, [entering, transitioning]);
@@ -83,7 +126,7 @@ export const ProjectsCarousel = () => {
 
   const carouselVariants: AnimationVariants = {
     enterInitial: {
-      x: width * projects.length,
+      x: imageWidth * projects.length,
     },
     backInitial: {
       x: 0,
@@ -95,7 +138,7 @@ export const ProjectsCarousel = () => {
       },
     },
     backExit: {
-      x: width * (projects.length - position),
+      x: imageWidth * (projects.length - position),
       transition: { duration: 1, delay: 0 },
     },
   };
@@ -110,28 +153,31 @@ export const ProjectsCarousel = () => {
         <OpacityFilter type="left" />
         <Carousel>
           <div className="scene">
-            <m.div className="border">
-              <svg
-                width="100%"
-                height="100%"
-                viewBox="0 0 436 254"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <m.path
-                  d="M 1 1 H 435 V 253 H 1 Z"
-                  stroke="white"
-                  strokeWidth={1}
-                  radius={0}
-                  variants={borderVariants}
-                />
-              </svg>
-            </m.div>
-            <m.div
-              animate={{ x: -width * position }}
-              transition={{ duration: 0.5 }}
+            <svg
+              className="border"
+              width="100%"
+              height="100%"
+              viewBox="0 0 436 254"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <m.div
+              <motion.path
+                d="M 1 1 H 435 V 253 H 1 Z"
+                stroke="white"
+                strokeWidth={1}
+                radius={0}
+                variants={borderVariants}
+              />
+            </svg>
+            <motion.div
+              animate={{ x: -position * imageWidth }}
+              transition={{ duration: duration.current }}
+              style={{ x, cursor: 'grab' }}
+              drag="x"
+              onDragEnd={(e, info) => onDragEnd(info)}
+              whileDrag={{ cursor: 'grabbing' }}
+            >
+              <motion.div
                 className="carousel"
                 variants={carouselVariants}
                 onAnimationComplete={() => setEntering(false)}
@@ -142,16 +188,16 @@ export const ProjectsCarousel = () => {
                     key={index}
                     index={index}
                     length={projects.length}
-                    position={position}
+                    carouselX={x}
                   />
                 ))}
-              </m.div>
-            </m.div>
+              </motion.div>
+            </motion.div>
           </div>
         </Carousel>
         <OpacityFilter type="right" />
       </div>
-      <Controller back={back} forward={forward} position={position} />
+      <Controller back={back} forward={forward} carouselX={x} />
     </Container>
   );
 };

@@ -1,4 +1,4 @@
-import { m } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   MdOutlineArrowBackIos,
   MdOutlineArrowForwardIos,
@@ -40,7 +40,7 @@ export const ArrowButton = ({ type, onClick }: ArrowButtonProps) => {
 
   return (
     <Container arrowType={type} onClick={onClick}>
-      <m.div className="bar" variants={variants} />
+      <motion.div className="bar" variants={variants} />
       <Icon className="icon" />
     </Container>
   );

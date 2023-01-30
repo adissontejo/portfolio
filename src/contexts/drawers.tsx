@@ -9,7 +9,7 @@ import {
   useState,
 } from 'react';
 import { useRouter } from 'next/router';
-import { AnimatePresence, domAnimation, LazyMotion } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import disableScroll from 'disable-scroll';
 
 import { useMediaQuery } from '~/hooks';
@@ -145,11 +145,9 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
         closeDrawer,
       }}
     >
-      <LazyMotion strict features={domAnimation}>
-        <AnimatePresence onExitComplete={() => setTransitioning(false)}>
-          {children}
-        </AnimatePresence>
-      </LazyMotion>
+      <AnimatePresence onExitComplete={() => setTransitioning(false)}>
+        {children}
+      </AnimatePresence>
     </DrawersContext.Provider>
   );
 };

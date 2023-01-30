@@ -1,4 +1,4 @@
-import { m } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 import { AnimationVariants } from '~/types';
 
@@ -61,13 +61,13 @@ export const Experience = ({ name, about, index }: ExperienceProps) => {
     <Container type={index % 2 === 0 ? 'left' : 'right'}>
       <div className="header">
         <p className="label">{name}</p>
-        <m.div className="bar" variants={barVariants} />
+        <motion.div className="bar" variants={barVariants} />
       </div>
       <div className="about-wrapper">
         <OpacityFilter />
-        <m.p className="about" variants={aboutVariants}>
+        <motion.p className="about" variants={aboutVariants}>
           {about}
-        </m.p>
+        </motion.p>
       </div>
     </Container>
   );

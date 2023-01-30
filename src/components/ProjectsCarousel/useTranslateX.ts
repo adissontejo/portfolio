@@ -1,52 +1,48 @@
-import { useEffect } from 'react';
-import { animate, useMotionValue, useTransform } from 'framer-motion';
+import { MotionValue, useTransform } from 'framer-motion';
+
+import { useMeasures } from './useMeasures';
 
 export type useTranslateXProps = {
   width: number;
-  position: number;
   index: number;
   length: number;
 };
 
-export const useTranslateX = ({
-  width,
-  position,
-  index,
-  length,
-}: useTranslateXProps) => {
-  const animatedPosition = useMotionValue(0);
+export const useTranslateX = (
+  carouselX: MotionValue<number>,
+  { width, index, length }: useTranslateXProps
+) => {
+  const { imageWidth } = useMeasures();
 
-  useEffect(() => {
-    animate(animatedPosition, position, {
-      duration: 0.5,
-    });
-  }, [position]);
+  const interpolateX = useTransform(carouselX, [0, imageWidth], [0, width], {
+    clamp: false,
+  });
 
-  const x = useTransform(animatedPosition, value => {
-    const max = length - 3;
-    const min = 3 - length;
+  const x = useTransform(interpolateX, value => {
+    const min = (3 - length) * width;
+    const max = -min;
 
-    if (index - value >= max) {
-      const floor = Math.floor((index - value - max) / length) + 1;
+    const initial = index * width;
 
-      return -floor * width * length;
+    if (initial + value >= max) {
+      const offset = Math.floor((initial + value - max) / (width * length)) + 1;
+
+      return -length * width * offset;
     }
 
-    if (index - value <= min) {
-      const floor = Math.floor((min - index + value) / length) + 1;
+    if (initial + value <= min) {
+      const offset = Math.floor((min - initial - value) / (width * length)) + 1;
 
-      return floor * width * length;
+      return length * width * offset;
     }
 
     return 0;
   });
 
   const opacity = useTransform(
-    [x, animatedPosition],
-    ([xValue, positionValue]: number[]) => {
-      const translate = xValue - positionValue * width + index * width;
-
-      if (translate <= -width || translate >= width) {
+    [x, interpolateX],
+    ([xValue, carouselXValue]: number[]) => {
+      if (Math.abs(xValue + carouselXValue + index * width) >= width) {
         return 0;
       }
 

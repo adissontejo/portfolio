@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { m } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 import { Theme } from '~/styles';
 
@@ -8,7 +8,7 @@ export type ContainerProps = {
   rightToLeftPosition: number;
 };
 
-export const Container = styled(m.div)<ContainerProps>`
+export const Container = styled(motion.div)<ContainerProps>`
   position: fixed;
   top: 0;
   left: 0;
@@ -24,8 +24,6 @@ export const Container = styled(m.div)<ContainerProps>`
   align-items: center;
   overflow-x: hidden;
   overflow-y: auto;
-
-  will-change: transform;
 
   > .title-wrapper {
     margin: 64px 0 0 72px;
@@ -50,7 +48,7 @@ export type BackBtnProps = {
   color: keyof Theme['colors'];
 };
 
-export const BackBtn = styled(m.button)<BackBtnProps>`
+export const BackBtn = styled(motion.button)<BackBtnProps>`
   position: relative;
   left: -15px;
   z-index: 20;

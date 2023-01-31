@@ -9,6 +9,7 @@ export const GlobalStyles = createGlobalStyle`
     font-family: 'Noto Sans Khmer', sans-serif;
     font-weight: 400;
 
+    color-scheme: light;
   }
 
   :root {
@@ -19,7 +20,7 @@ export const GlobalStyles = createGlobalStyle`
     }
   }
 
-  button {
+  button, label {
     -webkit-tap-highlight-color: transparent;
     border: none;
     background: none;

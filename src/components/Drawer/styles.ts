@@ -78,7 +78,6 @@ export const Container = styled(motion.button)<ContainerProps>`
     position: fixed;
     top: 0;
     right: -100vw;
-    z-index: 100;
 
     width: calc(${p => (p.rightToLeftPosition + 1) * 60}px + 100vw);
     height: 100vh;

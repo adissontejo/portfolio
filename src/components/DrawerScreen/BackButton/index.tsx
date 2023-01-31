@@ -14,25 +14,25 @@ export type BackButtonProps = ContainerProps & {
 export const BackButton = ({ id, color }: BackButtonProps) => {
   const { closeDrawer } = useDrawersContext();
 
-  const barVariants: AnimationVariants = {
+  const buttonVariants: AnimationVariants = {
     enterInitial: {
-      x: '-100%',
+      width: 0,
     },
     animate: {
-      x: 0,
+      width: '100%',
       transition: {
         duration: 0.7,
         delay: 0.8,
       },
     },
     loadAnimate: {
-      x: 0,
+      width: '100%',
       transition: {
         duration: 0.7,
       },
     },
     backExit: {
-      x: '-100%',
+      width: 0,
       transition: {
         duration: 0.7,
       },
@@ -40,12 +40,17 @@ export const BackButton = ({ id, color }: BackButtonProps) => {
   };
 
   return (
-    <Container color={color} onClick={() => closeDrawer(id)}>
-      <motion.div className="bar" variants={barVariants} />
-      <div className="label-wrapper">
-        <p className="label">voltar</p>
-        <MdOutlineArrowBackIosNew className="icon" />
-      </div>
+    <Container color={color}>
+      <motion.button
+        className="button"
+        variants={buttonVariants}
+        onClick={() => closeDrawer(id)}
+      >
+        <div className="label-wrapper">
+          <p className="label">voltar</p>
+          <MdOutlineArrowBackIosNew className="icon" />
+        </div>
+      </motion.button>
     </Container>
   );
 };

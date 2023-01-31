@@ -2,11 +2,29 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 
 export const Container = styled(motion.div)`
-  padding: 0 0 0 max(15%, calc(100vw - 1500px));
-
   width: 100vw;
   height: 100vh;
   background: ${p => p.theme.colors.background};
+
+  display: flex;
+  flex-direction: column;
+
+  transition: background-color 0.8s;
+
+  > header {
+    padding: 32px 0 0 36px;
+
+    width: 100vw;
+
+    display: flex;
+  }
+`;
+
+export const Grid = styled(motion.div)`
+  padding: 0 0 70px max(15%, calc(100vw - 1500px));
+
+  width: 100%;
+  height: 100%;
 
   display: grid;
   grid:
@@ -36,7 +54,7 @@ export const Container = styled(motion.div)`
     margin: 72px 65px 72px 0;
 
     @media ${p => p.theme.queries.regularAndLower} {
-      margin: 30px 0 13px;
+      margin: 24px 0 13px;
     }
   }
 `;

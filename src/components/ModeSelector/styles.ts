@@ -1,89 +1,108 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-  display: flex;
-  align-items: center;
+  position: relative;
+  z-index: 1;
 
-  > .checkbox {
-    width: 0;
-    height: 0;
-    visibility: hidden;
-  }
-
-  > .round-wrapper {
-    position: relative;
-    margin: 0 12px 0 0;
-
-    width: 18px;
-    height: 18px;
-    border-radius: 100%;
-    background: ${p => p.theme.colors.light};
-
+  > .selector {
     display: flex;
     align-items: center;
-    justify-content: center;
-    overflow: hidden;
+    gap: 12px;
 
     cursor: pointer;
 
-    > .border {
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 1;
+    > .round-wrapper {
+      position: relative;
 
-      width: 100%;
-      height: 100%;
-
+      width: 18px;
+      height: 18px;
       border-radius: 100%;
-      border: 1px solid
-        ${p =>
-          p.theme.mode === 'dark' ? p.theme.colors.light : p.theme.colors.dark};
+      background: ${p => p.theme.colors.light};
 
-      transition: border-color 0.8s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+
+      > .border {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+
+        width: 100%;
+        height: 100%;
+
+        border-radius: 100%;
+        border: 1px solid
+          ${p =>
+            p.theme.mode === 'dark'
+              ? p.theme.colors.light
+              : p.theme.colors.dark};
+
+        transition: border-color 0.8s;
+      }
+
+      > .round {
+        width: 100%;
+        height: 100%;
+        border-radius: 100%;
+        background: ${p => p.theme.colors.dark};
+
+        transition: background-color 0.8s;
+      }
     }
 
-    > .round {
-      width: 100%;
-      height: 100%;
-      border-radius: 100%;
-      background: ${p => p.theme.colors.dark};
+    > .label {
+      color: ${p =>
+        p.theme.mode === 'dark' ? p.theme.colors.light : p.theme.colors.purple};
+      font-size: 0.8rem;
 
-      transition: background-color 0.8s;
-    }
-  }
+      transition: color 0.8s;
 
-  > .label {
-    position: relative;
-    z-index: 1;
+      > .value {
+        position: absolute;
 
-    color: ${p =>
-      p.theme.mode === 'dark' ? p.theme.colors.light : p.theme.colors.purple};
-    font-size: 0.8rem;
+        visibility: hidden;
+      }
 
-    transition: color 0.8s;
-
-    cursor: pointer;
-
-    > .mode {
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: -1;
-
-      white-space: nowrap;
-
-      &::before {
-        content: 'modo ';
+      &::after {
+        content: 'escuro';
 
         visibility: hidden;
       }
     }
+  }
+`;
 
-    &::after {
-      content: 'escuro';
+export const Float = styled.span`
+  position: absolute;
+  top: 0;
+  left: 30px;
+  z-index: -1;
 
-      visibility: hidden;
-    }
+  color: ${p =>
+    p.theme.mode === 'dark' ? p.theme.colors.light : p.theme.colors.purple};
+  font-size: 0.8rem;
+
+  transition: color 0.8s;
+
+  &::before {
+    content: 'modo';
+
+    visibility: hidden;
+  }
+
+  > span {
+    position: absolute;
+    left: 100%;
+  }
+
+  .light::before {
+    content: 'claro';
+  }
+
+  .dark::before {
+    content: 'escuro';
   }
 `;

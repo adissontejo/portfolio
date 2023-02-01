@@ -1,23 +1,15 @@
-import { useId, useMemo, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { useMemo, useState } from 'react';
+import { motion } from 'framer-motion';
 import { setCookie } from 'cookies-next';
 
 import { useStylesContext } from '~/contexts';
 
-import { Container } from './styles';
+import { Container, Float } from './styles';
 
 export const ModeSelector = () => {
-  const id = useId();
-
   const { mode, setMode } = useStylesContext();
 
-  const [roundHover, setRoundHover] = useState(false);
-  const [labelHover, setLabelHover] = useState(false);
-
-  const hover = useMemo(
-    () => roundHover || labelHover,
-    [roundHover, labelHover]
-  );
+  const [hover, setHover] = useState(false);
 
   const hoverMode = useMemo(() => {
     if ((mode === 'dark') === hover) {
@@ -27,9 +19,8 @@ export const ModeSelector = () => {
     return 'dark';
   }, [mode, hover]);
 
-  const onChange = () => {
-    setRoundHover(false);
-    setLabelHover(false);
+  const onClick = () => {
+    setHover(false);
 
     setCookie('theme-mode', mode === 'dark' ? 'light' : 'dark');
 
@@ -38,77 +29,48 @@ export const ModeSelector = () => {
 
   return (
     <Container>
-      <input
-        id={id}
-        className="checkbox"
-        type="checkbox"
-        checked={mode === 'dark'}
-        onChange={onChange}
-      />
-      <label
-        className="round-wrapper"
-        htmlFor={id}
-        onMouseEnter={() => setRoundHover(true)}
-        onMouseLeave={() => setRoundHover(false)}
+      <button
+        className="selector"
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        onClick={onClick}
       >
-        <div className="border" />
-        <motion.div
-          className="round"
+        <div className="round-wrapper">
+          <div className="border" />
+          <motion.div
+            className="round"
+            initial={false}
+            animate={{
+              x: (mode === 'dark') !== hover ? 0 : -18,
+            }}
+          />
+        </div>
+        <p className="label">
+          modo&nbsp;
+          <span className="value">
+            {hoverMode === 'dark' ? 'escuro' : 'claro'}
+          </span>
+        </p>
+      </button>
+      <Float>
+        &nbsp;
+        <motion.span
+          className="light"
           initial={false}
           animate={{
-            x: (mode === 'dark') !== hover ? 0 : -18,
+            y: hoverMode === 'light' ? 0 : -20,
+            opacity: hoverMode === 'light' ? 1 : 0,
           }}
         />
-      </label>
-      <label className="label" htmlFor={id}>
-        <span
-          onMouseEnter={() => setLabelHover(true)}
-          onMouseLeave={() => setLabelHover(false)}
-        >
-          modo&nbsp;
-        </span>
-        <AnimatePresence initial={false} mode="popLayout">
-          {hoverMode === 'light' ? (
-            <motion.span
-              key="light"
-              className="mode"
-              initial={{
-                y: -20,
-                opacity: 0,
-              }}
-              animate={{
-                y: 0,
-                opacity: 1,
-              }}
-              exit={{
-                y: -20,
-                opacity: 0,
-              }}
-            >
-              claro
-            </motion.span>
-          ) : (
-            <motion.span
-              key="dark"
-              className="mode"
-              initial={{
-                y: 20,
-                opacity: 0,
-              }}
-              animate={{
-                y: 0,
-                opacity: 1,
-              }}
-              exit={{
-                y: 20,
-                opacity: 0,
-              }}
-            >
-              escuro
-            </motion.span>
-          )}
-        </AnimatePresence>
-      </label>
+        <motion.span
+          className="dark"
+          initial={false}
+          animate={{
+            y: hoverMode === 'dark' ? 0 : 20,
+            opacity: hoverMode === 'dark' ? 1 : 0,
+          }}
+        />
+      </Float>
     </Container>
   );
 };

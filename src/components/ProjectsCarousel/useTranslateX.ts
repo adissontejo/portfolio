@@ -3,52 +3,44 @@ import { MotionValue, useTransform } from 'framer-motion';
 import { useMeasures } from './useMeasures';
 
 export type useTranslateXProps = {
-  width: number;
   index: number;
   length: number;
 };
 
 export const useTranslateX = (
   carouselX: MotionValue<number>,
-  { width, index, length }: useTranslateXProps
+  { index, length }: useTranslateXProps
 ) => {
-  const { imageWidth } = useMeasures();
+  const { carouselWidth } = useMeasures();
 
-  const interpolateX = useTransform(carouselX, [0, imageWidth], [0, width], {
-    clamp: false,
-  });
+  const position = useTransform(carouselX, value => value / carouselWidth);
 
-  const x = useTransform(interpolateX, value => {
-    const min = (3 - length) * width;
+  const translate = useTransform(position, value => {
+    const min = 3 - length;
     const max = -min;
 
-    const initial = index * width;
+    if (index + value >= max) {
+      const overflow = Math.floor((index + value - max) / length) + 1;
 
-    if (initial + value >= max) {
-      const offset = Math.floor((initial + value - max) / (width * length)) + 1;
-
-      return -length * width * offset;
+      return -length * overflow;
     }
 
-    if (initial + value <= min) {
-      const offset = Math.floor((min - initial - value) / (width * length)) + 1;
+    if (index + value <= min) {
+      const overflow = Math.floor((min - index - value) / length) + 1;
 
-      return length * width * offset;
+      return length * overflow;
     }
 
     return 0;
   });
 
-  const opacity = useTransform(
-    [x, interpolateX],
-    ([xValue, carouselXValue]: number[]) => {
-      if (Math.abs(xValue + carouselXValue + index * width) >= width) {
-        return 0;
-      }
+  const x = useTransform(translate, [0, 1], ['0%', '100%'], { clamp: false });
 
-      return 1;
-    }
+  const offset = useTransform(
+    [translate, position],
+    ([translateValue, positionValue]: number[]) =>
+      translateValue + positionValue + index
   );
 
-  return { x, opacity };
+  return { x, offset };
 };

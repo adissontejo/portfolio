@@ -1,5 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
-import { motion, PanInfo, useMotionValue } from 'framer-motion';
+import { PointerEvent, useEffect, useRef, useState } from 'react';
+import {
+  animate,
+  motion,
+  useDragControls,
+  useMotionValue,
+} from 'framer-motion';
 
 import { useDrawersContext } from '~/contexts';
 import { projects } from '~/data';
@@ -14,83 +19,101 @@ import { useMeasures } from './useMeasures';
 export const ProjectsCarousel = () => {
   const { transitioning, animationType } = useDrawersContext();
 
-  const { imageWidth } = useMeasures();
+  const { carouselWidth } = useMeasures();
 
   const x = useMotionValue(0);
+
+  const dragControls = useDragControls();
 
   const animationStates = useInViewAnimation(
     animationType === 'forward' ? 1 : 0
   );
 
-  const [position, setPosition] = useState(0);
   const [entering, setEntering] = useState(true);
 
-  const positionQueue = useRef(0);
-  const duration = useRef(0.5);
+  const position = useRef(0);
+  const down = useRef(false);
+  const dragging = useRef(false);
+
+  const animateX = () => {
+    const value = -position.current * carouselWidth;
+
+    animate(x, value, {
+      duration: 0.5,
+    });
+  };
 
   const back = () => {
-    if (entering || transitioning) {
-      positionQueue.current--;
+    position.current--;
 
+    if (entering || transitioning) {
       return;
     }
 
-    duration.current = 0.5;
-
-    setPosition(prev => prev - 1);
+    animateX();
   };
 
   const forward = () => {
-    if (entering || transitioning) {
-      positionQueue.current++;
+    position.current++;
 
+    if (entering || transitioning) {
       return;
     }
 
-    duration.current = 0.5;
-
-    setPosition(prev => prev + 1);
+    animateX();
   };
 
-  const onDragEnd = (info: PanInfo) => {
-    const value = x.get();
+  const onPointerDown = () => {
+    down.current = true;
 
-    const acceleration = -50000;
+    document.body.style.cursor = 'grabbing';
 
-    const velocity = info.velocity.x;
+    const listener = () => {
+      down.current = false;
 
-    const distance = -(velocity ** 2) / (2 * acceleration);
+      dragging.current = false;
 
-    const offset = info.offset.x;
+      document.body.style.cursor = 'initial';
 
-    if (offset >= 0) {
-      const target = value + distance;
+      window.removeEventListener('pointerup', listener);
+    };
 
-      const finalPosition = Math.floor(-target / imageWidth);
+    window.addEventListener('pointerup', listener);
+  };
 
-      duration.current =
-        (Math.abs(target + finalPosition * imageWidth) * 0.3) / imageWidth +
-        0.2;
+  const onPointerMove = (e: PointerEvent<HTMLDivElement>) => {
+    if (Math.abs(e.movementX) < 3) {
+      return;
+    }
 
-      setPosition(finalPosition);
-    } else {
-      const target = value - distance;
+    if (!dragging.current && down.current) {
+      dragging.current = true;
 
-      const finalPosition = Math.ceil(-target / imageWidth);
-
-      duration.current =
-        (Math.abs(target + finalPosition * imageWidth) * 0.3) / imageWidth +
-        0.2;
-
-      setPosition(finalPosition);
+      dragControls.start(e);
     }
   };
 
-  useEffect(() => {
-    if (!entering && !transitioning && positionQueue.current !== position) {
-      duration.current = 0.5;
+  const modifyTarget = (target: number) => {
+    position.current = -Math.round(target / carouselWidth);
 
-      setPosition(positionQueue.current);
+    return -position.current * carouselWidth;
+  };
+
+  useEffect(() => {
+    const listener = () => {
+      down.current = false;
+
+      dragging.current = false;
+    };
+
+    window.addEventListener('pointerup', listener);
+
+    return () => window.removeEventListener('pointerup', listener);
+  }, []);
+
+  useEffect(() => {
+    if (!entering && !transitioning) {
+      animateX();
     }
   }, [entering, transitioning]);
 
@@ -106,14 +129,11 @@ export const ProjectsCarousel = () => {
     enterInitial: {
       pathLength: 0,
     },
-    backInitial: {
-      pathLength: 1,
-    },
     whileInView: {
       pathLength: 1,
       transition: {
-        duration: 1,
-        delay: 1,
+        duration: 0.8,
+        delay: 1.2,
       },
     },
     backExit: {
@@ -126,7 +146,7 @@ export const ProjectsCarousel = () => {
 
   const carouselVariants: AnimationVariants = {
     enterInitial: {
-      x: imageWidth * projects.length,
+      x: `${projects.length * 100}%`,
     },
     backInitial: {
       x: 0,
@@ -134,12 +154,14 @@ export const ProjectsCarousel = () => {
     whileInView: {
       x: 0,
       transition: {
-        duration: 1,
+        duration: 0.7,
       },
     },
     backExit: {
-      x: imageWidth * (projects.length - position),
-      transition: { duration: 1, delay: 0 },
+      x: `${projects.length * 100}%`,
+      transition: {
+        duration: 1,
+      },
     },
   };
 
@@ -161,26 +183,28 @@ export const ProjectsCarousel = () => {
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
-              <motion.path
-                d="M 1 1 H 435 V 253 H 1 Z"
-                stroke="white"
-                strokeWidth={1}
-                radius={0}
-                variants={borderVariants}
-              />
+              <motion.path d="M 1 1 H 435 V 253" variants={borderVariants} />
+              <motion.path d="M 1 1 V 253 H 435" variants={borderVariants} />
             </svg>
             <motion.div
-              animate={{ x: -position * imageWidth }}
-              transition={{ duration: duration.current }}
-              style={{ x, cursor: 'grab' }}
-              drag="x"
-              onDragEnd={(e, info) => onDragEnd(info)}
-              whileDrag={{ cursor: 'grabbing' }}
+              variants={carouselVariants}
+              onAnimationComplete={() => setEntering(false)}
             >
               <motion.div
                 className="carousel"
-                variants={carouselVariants}
-                onAnimationComplete={() => setEntering(false)}
+                drag={entering ? false : 'x'}
+                dragControls={dragControls}
+                dragListener={false}
+                dragTransition={{
+                  power: 0.05,
+                  timeConstant: 80,
+                  restDelta: 0,
+                  modifyTarget,
+                }}
+                onPointerDown={onPointerDown}
+                onPointerMove={onPointerMove}
+                style={{ x }}
+                whileDrag={{ cursor: 'grabbing' }}
               >
                 {projects.map((item, index) => (
                   <Project

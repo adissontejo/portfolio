@@ -28,6 +28,7 @@ export const ArrowButton = ({ type, onClick }: ArrowButtonProps) => {
       width: '100%',
       transition: {
         duration: 1,
+        delay: 1,
       },
     },
     backExit: {
@@ -39,9 +40,10 @@ export const ArrowButton = ({ type, onClick }: ArrowButtonProps) => {
   };
 
   return (
-    <Container arrowType={type} onClick={onClick}>
-      <motion.div className="bar" variants={variants} />
-      <Icon className="icon" />
+    <Container arrowType={type}>
+      <motion.button className="bar" variants={variants} onClick={onClick}>
+        <Icon className="icon" />
+      </motion.button>
     </Container>
   );
 };

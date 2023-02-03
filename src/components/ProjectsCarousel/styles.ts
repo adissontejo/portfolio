@@ -9,7 +9,7 @@ export const Container = styled(motion.div)`
   align-items: center;
   overflow: hidden;
 
-  .carousel-wrapper {
+  > .carousel-wrapper {
     position: relative;
 
     width: 3052px;
@@ -20,8 +20,6 @@ export const Container = styled(motion.div)`
 `;
 
 export const Carousel = styled.div`
-  position: relative;
-
   width: 100%;
   max-width: 2180px;
 
@@ -33,26 +31,37 @@ export const Carousel = styled.div`
   > .scene {
     position: relative;
 
-    width: 436px;
-    height: 254px;
-    display: flex;
-
-    @media ${p => p.theme.queries.small} {
-      width: 244px;
-      height: 146px;
-    }
-
     > .border {
       position: absolute;
       top: 0;
       left: 0;
+      z-index: 100;
 
       width: 100%;
       height: 100%;
+
+      pointer-events: none;
+      touch-action: none;
+
+      * {
+        stroke: ${p => p.theme.colors.light};
+        stroke-width: 1px;
+      }
     }
 
-    .carousel {
+    > div > .carousel {
+      width: 436px;
+      height: 254px;
+
       display: flex;
+
+      touch-action: none;
+      cursor: grab;
+
+      @media ${p => p.theme.queries.small} {
+        width: 244px;
+        height: 146px;
+      }
     }
   }
 `;
@@ -64,7 +73,7 @@ export type OpacityFilterProps = {
 export const OpacityFilter = styled.div<OpacityFilterProps>`
   position: relative;
   z-index: 1000;
-  ${p => p.type}: 436px;
+  ${p => p.type}: 420px;
 
   background: linear-gradient(
     to ${p => p.type},
@@ -74,6 +83,9 @@ export const OpacityFilter = styled.div<OpacityFilterProps>`
     rgba(50, 116, 109, 1),
     rgba(50, 116, 109, 1)
   );
+
+  pointer-events: none;
+  touch-action: none;
 
   @media (min-width: 2140px) {
     width: 436px;

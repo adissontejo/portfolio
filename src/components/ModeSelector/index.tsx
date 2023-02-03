@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { setCookie } from 'cookies-next';
 
 import { useStylesContext } from '~/contexts';
+import { AnimationVariants } from '~/types';
 
 import { Container, Float } from './styles';
 
@@ -27,8 +28,23 @@ export const ModeSelector = () => {
     setMode(mode === 'dark' ? 'light' : 'dark');
   };
 
+  const containerVariants: AnimationVariants = {
+    loadInitial: {
+      y: -35,
+      opacity: 0,
+    },
+    animate: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 1,
+        delay: 0.5,
+      },
+    },
+  };
+
   return (
-    <Container>
+    <Container variants={containerVariants}>
       <button
         className="selector"
         onMouseEnter={() => setHover(true)}

@@ -2,18 +2,24 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 
 export const Container = styled(motion.div)`
-  position: relative;
-  margin: 10px;
+  padding: 10px;
 
-  width: 416px;
-  height: 234px;
+  min-width: 100%;
+  min-height: 100%;
 
-  @media ${p => p.theme.queries.small} {
-    width: 224px;
-    height: 126px;
-  }
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  > .image {
-    object-fit: cover;
+  > .image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+
+    background: red;
+
+    > .image {
+      object-fit: cover;
+    }
   }
 `;

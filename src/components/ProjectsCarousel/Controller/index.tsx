@@ -1,18 +1,13 @@
+import { useEffect } from 'react';
 import { motion, MotionValue, useTransform } from 'framer-motion';
 
 import { projects } from '~/data';
 import { AnimationVariants } from '~/types';
 
-import {
-  AboutContainer,
-  Container,
-  NamesContainer,
-  OpacityFilter,
-} from './styles';
-import { About } from './About';
-import { Name } from './Name';
+import { Container, TextsContainer } from './styles';
 import { ArrowButton } from './ArrowButton';
 import { useMeasures } from '../useMeasures';
+import { ProjectText } from './ProjectText';
 
 export type ControllerProps = {
   back: () => void;
@@ -21,18 +16,29 @@ export type ControllerProps = {
 };
 
 export const Controller = ({ back, forward, carouselX }: ControllerProps) => {
-  const { imageWidth, textWidth } = useMeasures();
+  const { carouselWidth } = useMeasures();
 
-  const x = useTransform(carouselX, [0, imageWidth], [0, textWidth], {
+  const x = useTransform(carouselX, [0, carouselWidth], ['0%', '100%'], {
     clamp: false,
   });
 
-  const aboutVariants: AnimationVariants = {
+  useEffect(() => {
+    const listener = ({ key }: KeyboardEvent) => {
+      if (key === 'ArrowLeft') {
+        back();
+      } else if (key === 'ArrowRight') {
+        forward();
+      }
+    };
+
+    window.addEventListener('keydown', listener);
+
+    return () => window.removeEventListener('keydown', listener);
+  }, [back, forward]);
+
+  const textsVariants: AnimationVariants = {
     enterInitial: {
       y: '-100%',
-    },
-    backInitial: {
-      y: 0,
     },
     whileInView: {
       y: 0,
@@ -44,39 +50,24 @@ export const Controller = ({ back, forward, carouselX }: ControllerProps) => {
     backExit: {
       y: '-100%',
       transition: {
-        duration: 1,
+        duration: 0.5,
       },
     },
   };
 
   return (
-    <>
-      <Container>
+    <Container>
+      <div className="arrow-wrapper">
         <ArrowButton type="back" onClick={back} />
-        <NamesContainer>
-          <motion.div className="names-wrapper" style={{ x }}>
+        <ArrowButton type="forward" onClick={forward} />
+      </div>
+      <TextsContainer>
+        <motion.div className="texts-wrapper" variants={textsVariants}>
+          <motion.div className="carousel" style={{ x }}>
             {projects.map((item, index) => (
-              <Name
+              <ProjectText
                 key={index}
                 name={item.name}
-                index={index}
-                length={projects.length}
-                carouselX={carouselX}
-              />
-            ))}
-          </motion.div>
-        </NamesContainer>
-        <ArrowButton type="forward" onClick={forward} />
-      </Container>
-      <AboutContainer>
-        <OpacityFilter type="top" />
-        <OpacityFilter type="left" />
-        <OpacityFilter type="right" />
-        <motion.div style={{ x }}>
-          <motion.div className="about-wrapper" variants={aboutVariants}>
-            {projects.map((item, index) => (
-              <About
-                key={index}
                 about={item.about}
                 index={index}
                 length={projects.length}
@@ -85,7 +76,7 @@ export const Controller = ({ back, forward, carouselX }: ControllerProps) => {
             ))}
           </motion.div>
         </motion.div>
-      </AboutContainer>
-    </>
+      </TextsContainer>
+    </Container>
   );
 };

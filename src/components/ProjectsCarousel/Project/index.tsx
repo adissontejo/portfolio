@@ -2,7 +2,6 @@ import { MotionValue } from 'framer-motion';
 import Image, { StaticImageData } from 'next/image';
 
 import { Container } from './styles';
-import { useMeasures } from '../useMeasures';
 import { useTranslateX } from '../useTranslateX';
 
 export type ProjectProps = {
@@ -13,25 +12,24 @@ export type ProjectProps = {
 };
 
 export const Project = ({ src, index, length, carouselX }: ProjectProps) => {
-  const { imageWidth } = useMeasures();
-
   const { x } = useTranslateX(carouselX, {
-    width: imageWidth,
     index,
     length,
   });
 
   return (
     <Container style={{ x }}>
-      <Image
-        className="image"
-        src={src}
-        alt="Projeto"
-        draggable={false}
-        fill
-        quality={70}
-        placeholder="blur"
-      />
+      <div className="image-wrapper">
+        <Image
+          className="image"
+          src={src}
+          alt="Projeto"
+          draggable={false}
+          fill
+          quality={70}
+          placeholder="blur"
+        />
+      </div>
     </Container>
   );
 };

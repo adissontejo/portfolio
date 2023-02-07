@@ -1,7 +1,6 @@
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
 
-export const Container = styled(motion.div)`
+export const Container = styled.div`
   width: 100%;
 
   display: flex;
@@ -27,6 +26,10 @@ export const Carousel = styled.div`
   flex-direction: column;
   align-items: center;
   overflow: hidden;
+
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 
   > .scene {
     position: relative;
@@ -55,7 +58,6 @@ export const Carousel = styled.div`
 
       display: flex;
 
-      touch-action: none;
       cursor: grab;
 
       @media ${p => p.theme.queries.small} {

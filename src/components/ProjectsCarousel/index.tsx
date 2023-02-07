@@ -8,7 +8,6 @@ import {
 
 import { useDrawersContext } from '~/contexts';
 import { projects } from '~/data';
-import { useInViewAnimation } from '~/hooks';
 import { AnimationVariants } from '~/types';
 
 import { Carousel, Container, OpacityFilter } from './styles';
@@ -17,17 +16,13 @@ import { Project } from './Project';
 import { useMeasures } from './useMeasures';
 
 export const ProjectsCarousel = () => {
-  const { transitioning, animationType } = useDrawersContext();
+  const { transitioning } = useDrawersContext();
 
   const { carouselWidth } = useMeasures();
 
   const x = useMotionValue(0);
 
   const dragControls = useDragControls();
-
-  const animationStates = useInViewAnimation(
-    animationType === 'forward' ? 1 : 0
-  );
 
   const [entering, setEntering] = useState(true);
 
@@ -117,14 +112,6 @@ export const ProjectsCarousel = () => {
     }
   }, [entering, transitioning]);
 
-  const containerVariants: AnimationVariants = {
-    whileInView: {
-      transition: {
-        delayChildren: 0.5,
-      },
-    },
-  };
-
   const borderVariants: AnimationVariants = {
     enterInitial: {
       pathLength: 0,
@@ -133,7 +120,7 @@ export const ProjectsCarousel = () => {
       pathLength: 1,
       transition: {
         duration: 0.8,
-        delay: 1.2,
+        delay: 0.9,
       },
     },
     backExit: {
@@ -166,14 +153,10 @@ export const ProjectsCarousel = () => {
   };
 
   return (
-    <Container
-      variants={containerVariants}
-      viewport={{ once: true, margin: '0px 0px -200px 0px' }}
-      {...animationStates}
-    >
+    <Container>
       <div className="carousel-wrapper">
         <OpacityFilter type="left" />
-        <Carousel>
+        <Carousel draggable={false}>
           <div className="scene">
             <svg
               className="border"
@@ -189,6 +172,7 @@ export const ProjectsCarousel = () => {
             <motion.div
               variants={carouselVariants}
               onAnimationComplete={() => setEntering(false)}
+              draggable={false}
             >
               <motion.div
                 className="carousel"
@@ -201,6 +185,7 @@ export const ProjectsCarousel = () => {
                   restDelta: 0,
                   modifyTarget,
                 }}
+                draggable={false}
                 onPointerDown={onPointerDown}
                 onPointerMove={onPointerMove}
                 style={{ x }}

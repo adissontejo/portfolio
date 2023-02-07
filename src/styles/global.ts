@@ -25,10 +25,4 @@ export const GlobalStyles = createGlobalStyle`
     border: none;
     background: none;
   }
-
-  img {
-    -webkit-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-  }
 `;

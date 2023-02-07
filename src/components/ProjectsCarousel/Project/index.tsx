@@ -18,8 +18,8 @@ export const Project = ({ src, index, length, carouselX }: ProjectProps) => {
   });
 
   return (
-    <Container style={{ x }}>
-      <div className="image-wrapper">
+    <Container style={{ x }} draggable={false}>
+      <div className="image-wrapper" draggable={false}>
         <Image
           className="image"
           src={src}

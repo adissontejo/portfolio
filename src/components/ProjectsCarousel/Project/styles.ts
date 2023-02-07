@@ -13,10 +13,12 @@ export const Container = styled(motion.div)`
 
   > .image-wrapper {
     position: relative;
+
     width: 100%;
     height: 100%;
-
     background: red;
+
+    touch-action: none;
 
     > .image {
       object-fit: cover;

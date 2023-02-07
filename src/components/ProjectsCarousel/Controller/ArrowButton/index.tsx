@@ -28,7 +28,7 @@ export const ArrowButton = ({ type, onClick }: ArrowButtonProps) => {
       width: '100%',
       transition: {
         duration: 1,
-        delay: 1,
+        delay: 0.7,
       },
     },
     backExit: {

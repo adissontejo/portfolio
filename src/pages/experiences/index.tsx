@@ -1,8 +1,12 @@
 import Head from 'next/head';
 
-import { ProfessionalExperiences, ProjectsCarousel } from '~/components';
+import {
+  ProfessionalExperiences,
+  ProjectsCarousel,
+  Section,
+} from '~/components';
 
-import { Container, Section } from './styles';
+import { Container } from './styles';
 
 const Experiences = () => {
   return (
@@ -10,12 +14,10 @@ const Experiences = () => {
       <Head>
         <title>Ádisson · Experiências</title>
       </Head>
-      <Section>
-        <h4 className="subtitle">meus projetos</h4>
+      <Section title="meus projetos">
         <ProjectsCarousel />
       </Section>
-      <Section>
-        <h4 className="subtitle">experiência profissional</h4>
+      <Section title="experiência profissional">
         <ProfessionalExperiences />
       </Section>
     </Container>

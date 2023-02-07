@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { motion } from 'framer-motion';
 
 import { Theme } from '~/styles';
 
@@ -6,7 +7,7 @@ export type ContainerProps = {
   color: keyof Theme['colors'];
 };
 
-export const Container = styled.div<ContainerProps>`
+export const Container = styled(motion.div)<ContainerProps>`
   position: relative;
 
   margin: 45px 0 0;
@@ -28,9 +29,7 @@ export const Container = styled.div<ContainerProps>`
 
     cursor: pointer;
 
-    transform: translateX(-15px);
-
-    transition: transform 0.2s, background-color 0.8s;
+    transition: background-color 0.8s;
 
     > .label-wrapper {
       width: 100%;
@@ -48,7 +47,7 @@ export const Container = styled.div<ContainerProps>`
             : p.theme.colors[p.color]};
         font-size: 1rem;
 
-        transition: opacity 0.2s;
+        transition: color 0.8s;
 
         @media ${p => p.theme.queries.small} {
           font-size: 16px;
@@ -65,18 +64,12 @@ export const Container = styled.div<ContainerProps>`
         min-width: 21px;
         min-height: 21px;
 
+        transition: color 0.8s;
+
         @media ${p => p.theme.queries.small} {
           width: 18px;
           height: 18px;
         }
-      }
-    }
-
-    &:hover {
-      transform: translateX(0);
-
-      > .label-wrapper {
-        opacity: 0.8;
       }
     }
   }

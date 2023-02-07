@@ -44,7 +44,7 @@ export const Controller = ({ back, forward, carouselX }: ControllerProps) => {
       y: 0,
       transition: {
         duration: 1,
-        delay: 1,
+        delay: 0.7,
       },
     },
     backExit: {

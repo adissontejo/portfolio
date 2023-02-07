@@ -15,20 +15,20 @@ export type ExperienceProps = {
 export const Experience = ({ name, about, index }: ExperienceProps) => {
   const barVariants: AnimationVariants = {
     enterInitial: {
-      width: 0,
+      x: index % 2 === 0 ? '-101%' : '101%',
     },
     backInitial: {
-      width: '100%',
+      x: 0,
     },
     whileInView: {
-      width: '100%',
+      x: 0,
       transition: {
         duration: 1,
         delay: 0.5 * index,
       },
     },
     exit: {
-      width: 0,
+      x: index % 2 === 0 ? '-101%' : '101%',
       transition: {
         duration: 1,
       },
@@ -60,8 +60,11 @@ export const Experience = ({ name, about, index }: ExperienceProps) => {
   return (
     <Container type={index % 2 === 0 ? 'left' : 'right'}>
       <div className="header">
-        <p className="label">{name}</p>
-        <motion.div className="bar" variants={barVariants} />
+        <motion.div className="bar" variants={barVariants}>
+          <p className="label">
+            {name} <br />
+          </p>
+        </motion.div>
       </div>
       <div className="about-wrapper">
         <OpacityFilter />

@@ -37,10 +37,6 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
   const [activeDrawer, setActiveDrawer] = useState<DrawerId>(null);
   const [transitioning, setTransitioning] = useState(false);
 
-  const actionQueue = useRef<{
-    type: 'open' | 'close';
-    id: DrawerId;
-  }>(null);
   const animationType = useRef<'load' | 'back' | 'forward'>('load');
 
   const { theme } = useStylesContext();
@@ -71,19 +67,6 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
   } as AnimationStates;
 
   const openDrawer = (id: DrawerId) => {
-    if (router.pathname === `/${id}`) {
-      return;
-    }
-
-    if (transitioning) {
-      actionQueue.current = {
-        type: 'open',
-        id,
-      };
-
-      return;
-    }
-
     disableScroll.on();
 
     animationType.current = 'forward';
@@ -94,19 +77,6 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const closeDrawer = async (id: DrawerId) => {
-    if (router.pathname !== `/${id}`) {
-      return;
-    }
-
-    if (transitioning) {
-      actionQueue.current = {
-        type: 'close',
-        id,
-      };
-
-      return;
-    }
-
     disableScroll.on();
 
     animationType.current = 'back';
@@ -119,16 +89,6 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (!transitioning) {
       disableScroll.off();
-
-      if (actionQueue.current) {
-        if (actionQueue.current.type === 'open') {
-          openDrawer(actionQueue.current.id);
-        } else {
-          closeDrawer(actionQueue.current.id);
-        }
-
-        actionQueue.current = null;
-      }
     }
   }, [transitioning]);
 

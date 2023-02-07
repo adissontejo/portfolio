@@ -29,7 +29,9 @@ export const Drawer = ({ id, opening, setOpening }: DrawerProps) => {
     }
 
     if (transitioning) {
-      actionQueue.current = 'onMouseEnter';
+      if (actionQueue.current !== 'onClick') {
+        actionQueue.current = 'onMouseEnter';
+      }
 
       return;
     }
@@ -43,7 +45,9 @@ export const Drawer = ({ id, opening, setOpening }: DrawerProps) => {
     }
 
     if (transitioning) {
-      actionQueue.current = 'onMouseLeave';
+      if (actionQueue.current !== 'onClick') {
+        actionQueue.current = 'onMouseLeave';
+      }
 
       return;
     }

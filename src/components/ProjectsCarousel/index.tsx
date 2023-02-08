@@ -110,7 +110,7 @@ export const ProjectsCarousel = () => {
     if (!entering && !transitioning) {
       animateX();
     }
-  }, [entering, transitioning]);
+  }, [entering, transitioning, carouselWidth]);
 
   const borderVariants: AnimationVariants = {
     enterInitial: {

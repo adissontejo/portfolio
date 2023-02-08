@@ -1,6 +1,7 @@
 import Head from 'next/head';
 
 import {
+  AcademicActivities,
   ProfessionalExperiences,
   ProjectsCarousel,
   Section,
@@ -19,6 +20,9 @@ const Experiences = () => {
       </Section>
       <Section title="experiência profissional">
         <ProfessionalExperiences />
+      </Section>
+      <Section title="atividades acadêmicas">
+        <AcademicActivities />
       </Section>
     </Container>
   );

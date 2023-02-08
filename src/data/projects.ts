@@ -1,13 +1,13 @@
 import { StaticImageData } from 'next/image';
 import vampiro from 'public/projects/vampiro.png';
 
-type ProjectProps = {
+type Project = {
   name: string;
   about: string;
   src: StaticImageData;
 };
 
-export const projects: ProjectProps[] = [
+export const projects: Project[] = [
   {
     name: 'Vampiro',
     about:

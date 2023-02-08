@@ -15,6 +15,10 @@ export const GlobalStyles = createGlobalStyle`
   :root {
     font-size: 20px;
 
+    @media ${p => p.theme.queries.regularAndLower} {
+      font-size: 18px;
+    }
+
     @media ${p => p.theme.queries.small} {
       font-size: 16px;
     }

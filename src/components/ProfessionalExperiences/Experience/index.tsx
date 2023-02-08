@@ -13,9 +13,11 @@ export type ExperienceProps = {
 };
 
 export const Experience = ({ name, about, index }: ExperienceProps) => {
+  const type = index % 2 === 0 ? 'left' : 'right';
+
   const barVariants: AnimationVariants = {
     enterInitial: {
-      x: index % 2 === 0 ? '-101%' : '101%',
+      x: type === 'left' ? '-101%' : '101%',
     },
     backInitial: {
       x: 0,
@@ -28,7 +30,7 @@ export const Experience = ({ name, about, index }: ExperienceProps) => {
       },
     },
     exit: {
-      x: index % 2 === 0 ? '-101%' : '101%',
+      x: type === 'left' ? '-101%' : '101%',
       transition: {
         duration: 1,
       },
@@ -58,7 +60,7 @@ export const Experience = ({ name, about, index }: ExperienceProps) => {
   };
 
   return (
-    <Container type={index % 2 === 0 ? 'left' : 'right'}>
+    <Container type={type}>
       <div className="header">
         <motion.div className="bar" variants={barVariants}>
           <p className="label">

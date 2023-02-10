@@ -27,19 +27,20 @@ export const Container = styled(motion.div)<ContainerProps>`
 
   > .title-wrapper {
     margin: 64px 0 0 72px;
-    align-self: flex-start;
 
-    min-height: 71px;
+    width: 100%;
+
+    display: flex;
+    justify-content: flex-start;
 
     @media ${p => p.theme.queries.small} {
       margin: 50px 0 0;
-      align-self: center;
 
-      min-height: 55px;
+      justify-content: center;
     }
 
     > .title {
-      height: 100%;
+      max-width: calc(100% - 20px);
     }
   }
 `;

@@ -67,8 +67,8 @@ export const Container = styled(motion.div)<ContainerProps>`
         transition: color 0.8s;
 
         @media ${p => p.theme.queries.small} {
-          width: 18px;
-          height: 18px;
+          min-width: 18px;
+          min-height: 18px;
         }
       }
     }

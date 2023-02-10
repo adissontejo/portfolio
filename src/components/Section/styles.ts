@@ -24,7 +24,7 @@ export const Container = styled.section`
     }
   }
 
-  &::after {
+  &:has(+ &)::after {
     content: '';
 
     margin: 54px 0 0;

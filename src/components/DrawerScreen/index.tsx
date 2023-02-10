@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 import { useDrawersContext } from '~/contexts';
@@ -7,6 +7,7 @@ import { AnimationVariants, Drawers } from '~/types';
 
 import { Container } from './styles';
 import { BackButton } from './BackButton';
+import { BottomButtons } from './BottomButtons';
 
 export type DrawerScreenProps = {
   id: Drawers;
@@ -22,6 +23,8 @@ export const DrawerScreen = ({
   const { color, title, rightToLeftPosition } = drawers[id];
 
   const { columnWidth, animationType, animationStates } = useDrawersContext();
+
+  const containerRef = useRef<HTMLDivElement>();
 
   const containerVariants: AnimationVariants = {
     forwardInitial: {
@@ -72,6 +75,7 @@ export const DrawerScreen = ({
 
   return (
     <Container
+      ref={containerRef}
       className={className}
       color={color}
       rightToLeftPosition={rightToLeftPosition}
@@ -97,6 +101,7 @@ export const DrawerScreen = ({
         />
       </motion.div>
       {children}
+      <BottomButtons containerRef={containerRef} />
     </Container>
   );
 };

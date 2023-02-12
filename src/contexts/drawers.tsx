@@ -18,11 +18,16 @@ import { AnimationStates } from '~/types';
 
 import { useStylesContext } from './styles';
 
+type ScreenId = DrawerId | 'home';
+
 export type DrawersContextType = {
   activeDrawer: DrawerId;
   setActiveDrawer: Dispatch<SetStateAction<DrawerId>>;
   transitioning: boolean;
   columnWidth: number;
+  prevScreen: ScreenId;
+  currentScreen: ScreenId;
+  screenHistory: ScreenId[];
   animationType: 'load' | 'back' | 'forward';
   animationStates: AnimationStates;
   openDrawer: (id: DrawerId) => void;
@@ -37,7 +42,28 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
   const [activeDrawer, setActiveDrawer] = useState<DrawerId>(null);
   const [transitioning, setTransitioning] = useState(false);
 
+  const getCurrentScreen = () => {
+    const drawers: DrawerId[] = ['contact', 'experiences', 'qualifications'];
+
+    for (let i = 0; i < drawers.length; i++) {
+      const regex = new RegExp(`^/${drawers[i]}.*$`);
+
+      if (router.pathname.match(regex)) {
+        return drawers[i];
+      }
+    }
+
+    return 'home';
+  };
+
   const animationType = useRef<'load' | 'back' | 'forward'>('load');
+  const prevScreen = useRef<ScreenId>(null);
+  const currentScreen = useRef<ScreenId>(getCurrentScreen());
+  const screenHistory = useRef<ScreenId[]>(
+    currentScreen.current === 'home'
+      ? ['home']
+      : ['home', currentScreen.current]
+  );
 
   const { theme } = useStylesContext();
 
@@ -70,20 +96,35 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
     disableScroll.on();
 
     animationType.current = 'forward';
+    prevScreen.current = getCurrentScreen();
+    currentScreen.current = id;
+
+    screenHistory.current.push(id);
+
     setActiveDrawer(id);
     setTransitioning(true);
 
     router.replace(`/${id}`);
   };
 
-  const closeDrawer = async (id: DrawerId) => {
+  const closeDrawer = async () => {
+    if (screenHistory.current.length < 2) {
+      return;
+    }
+
     disableScroll.on();
 
     animationType.current = 'back';
-    setActiveDrawer(id);
+    prevScreen.current = screenHistory.current.pop();
+    currentScreen.current =
+      screenHistory.current[screenHistory.current.length - 1];
+
+    setActiveDrawer(prevScreen.current as DrawerId);
     setTransitioning(true);
 
-    router.replace('/');
+    router.replace(
+      currentScreen.current === 'home' ? '/' : `/${currentScreen.current}`
+    );
   };
 
   useEffect(() => {
@@ -101,6 +142,9 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
         columnWidth,
         animationStates,
         animationType: animationType.current,
+        prevScreen: prevScreen.current,
+        currentScreen: currentScreen.current,
+        screenHistory: screenHistory.current,
         openDrawer,
         closeDrawer,
       }}

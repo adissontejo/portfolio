@@ -1,12 +1,35 @@
-import { useEffect, useState } from 'react';
+import { MutableRefObject, useEffect, useMemo, useState } from 'react';
+import { MotionProps } from 'framer-motion';
 
 import { useDrawersContext } from '~/contexts';
+
+import { useMeasures } from './useMeasures';
 import { AnimationStates } from '~/types';
 
-export const useInViewAnimation = (minDelay: number) => {
+export type useInViewAnimationProps = {
+  minDelay?: number;
+  minAmount?: number;
+  once?: boolean;
+};
+
+export function useInViewAnimation<T extends HTMLElement>({
+  minDelay = 0.5,
+  minAmount = 0.5,
+  once = true,
+}: useInViewAnimationProps = {}) {
   const { animationStates, animationType } = useDrawersContext();
 
+  const { ref, element, viewport } = useMeasures<T>();
+
   const [enabled, setEnabled] = useState(false);
+
+  const amount = useMemo(() => {
+    if (!element.height || !viewport.height) {
+      return 1;
+    }
+
+    return Math.min(viewport.height / element.height, minAmount);
+  }, [viewport, element]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -14,11 +37,15 @@ export const useInViewAnimation = (minDelay: number) => {
     }, minDelay * 1000);
   }, []);
 
+  type InViewProps = MotionProps &
+    AnimationStates & { ref: MutableRefObject<T> };
+
   if (!enabled) {
-    return animationStates;
+    return { ref, ...animationStates } as InViewProps;
   }
 
   return {
+    ref,
     ...animationStates,
     whileInView: [
       'all',
@@ -26,5 +53,9 @@ export const useInViewAnimation = (minDelay: number) => {
       animationType !== 'back' ? 'enterInView' : '',
       `${animationType}WhileInView`,
     ],
-  } as AnimationStates;
-};
+    viewport: {
+      amount,
+      once,
+    },
+  } as InViewProps;
+}

@@ -5,7 +5,7 @@ import { Theme } from '~/styles';
 
 export type ContainerProps = {
   color: keyof Theme['colors'];
-  rightToLeftPosition: number;
+  zIndex: number;
 };
 
 export const Container = styled(motion.div)<ContainerProps>`
@@ -13,9 +13,9 @@ export const Container = styled(motion.div)<ContainerProps>`
   top: 0;
   left: 0;
 
-  z-index: ${p => (2 - p.rightToLeftPosition) * 10 + 5};
+  z-index: ${p => p.zIndex};
 
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   background: ${p => p.theme.colors[p.color]};
 
@@ -26,7 +26,7 @@ export const Container = styled(motion.div)<ContainerProps>`
   overflow-y: auto;
 
   > .title-wrapper {
-    margin: 64px 0 0 72px;
+    padding: 64px 0 0 72px;
 
     width: 100%;
 
@@ -34,7 +34,7 @@ export const Container = styled(motion.div)<ContainerProps>`
     justify-content: flex-start;
 
     @media ${p => p.theme.queries.small} {
-      margin: 50px 0 0;
+      padding: 32px 0 0;
 
       justify-content: center;
     }

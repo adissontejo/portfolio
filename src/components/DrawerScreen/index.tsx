@@ -1,4 +1,4 @@
-import { ReactNode, useRef } from 'react';
+import { ReactNode, useEffect, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 import { useDrawersContext } from '~/contexts';
@@ -22,13 +22,52 @@ export const DrawerScreen = ({
 }: DrawerScreenProps) => {
   const { color, title, rightToLeftPosition } = drawers[id];
 
-  const { columnWidth, animationType, animationStates } = useDrawersContext();
+  const {
+    columnWidth,
+    animationType,
+    prevScreen,
+    currentScreen,
+    animationStates,
+  } = useDrawersContext();
 
   const containerRef = useRef<HTMLDivElement>();
 
+  const zIndex = useMemo(() => {
+    if (animationType === 'forward') {
+      if (prevScreen === 'home') {
+        return (2 - rightToLeftPosition) * 10 + 5;
+      }
+
+      if (prevScreen === id) {
+        return 0;
+      }
+
+      return 100;
+    }
+
+    if (currentScreen === 'home') {
+      return (2 - rightToLeftPosition) * 10 + 5;
+    }
+
+    if (currentScreen === id) {
+      return 0;
+    }
+
+    return 100;
+  }, [prevScreen, currentScreen, animationType]);
+
+  useEffect(() => {
+    if (animationType === 'back') {
+      containerRef.current.scrollTo({ top: containerRef.current.scrollHeight });
+    }
+  }, []);
+
   const containerVariants: AnimationVariants = {
     forwardInitial: {
-      x: `calc(100vw - ${(rightToLeftPosition + 1) * columnWidth + 15}px)`,
+      x:
+        prevScreen === 'home'
+          ? `calc(100vw - ${(rightToLeftPosition + 1) * columnWidth + 15}px)`
+          : '100vw',
     },
     animate: {
       x: 0,
@@ -37,7 +76,10 @@ export const DrawerScreen = ({
       },
     },
     backExit: {
-      x: `calc(100vw - ${(rightToLeftPosition + 1) * columnWidth}px)`,
+      x:
+        currentScreen === 'home'
+          ? `calc(100vw - ${(rightToLeftPosition + 1) * columnWidth}px)`
+          : '100vw',
       transition: {
         duration: 1.5,
       },
@@ -78,11 +120,11 @@ export const DrawerScreen = ({
       ref={containerRef}
       className={className}
       color={color}
-      rightToLeftPosition={rightToLeftPosition}
+      zIndex={zIndex}
       variants={containerVariants}
       {...animationStates}
     >
-      <BackButton id={id} color={color} />
+      <BackButton id={id} />
       <motion.div className="title-wrapper" variants={titleVariants}>
         <motion.img
           className="title"
@@ -101,7 +143,7 @@ export const DrawerScreen = ({
         />
       </motion.div>
       {children}
-      <BottomButtons containerRef={containerRef} />
+      <BottomButtons id={id} containerRef={containerRef} />
     </Container>
   );
 };

@@ -4,72 +4,68 @@ import { motion } from 'framer-motion';
 import { Theme } from '~/styles';
 
 export type ContainerProps = {
+  background: keyof Theme['colors'];
   color: keyof Theme['colors'];
 };
 
 export const Container = styled(motion.div)<ContainerProps>`
   position: relative;
-
-  margin: 45px 0 0;
+  left: -50px;
+  margin: 45px 0;
   align-self: flex-start;
 
-  width: 75%;
   min-height: 50px;
-  min-width: 265px;
-  max-width: 485px;
+
+  display: flex;
+  justify-content: flex-end;
+  overflow: hidden;
 
   @media ${p => p.theme.queries.small} {
     min-height: 35px;
   }
 
   > .button {
-    width: 100%;
+    width: 80vw;
     height: 100%;
-    background: ${p => p.theme.colors.background};
+    min-width: 290px;
+    max-width: 520px;
+    background: ${p => p.theme.colors[p.background]};
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 15px;
 
     cursor: pointer;
 
     transition: background-color 0.8s;
 
-    > .label-wrapper {
-      width: 100%;
-      height: 100%;
+    > .label {
+      color: ${p =>
+        p.theme.mode === 'dark' || p.background !== 'background'
+          ? p.theme.colors.light
+          : p.theme.colors[p.color]};
+      font-size: 1rem;
 
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 15px;
+      transition: color 0.8s;
+    }
 
-      > .label {
-        color: ${p =>
-          p.theme.mode === 'dark'
-            ? p.theme.colors.light
-            : p.theme.colors[p.color]};
-        font-size: 1rem;
+    > .icon {
+      margin: 0 33px 0 0;
 
-        transition: color 0.8s;
+      min-width: 21px;
+      min-height: 21px;
 
-        @media ${p => p.theme.queries.small} {
-          font-size: 16px;
-        }
-      }
+      color: ${p =>
+        p.theme.mode === 'dark' || p.background !== 'background'
+          ? p.theme.colors.light
+          : p.theme.colors[p.color]};
 
-      > .icon {
-        margin: 0 33px 0 0;
+      transition: color 0.8s;
 
-        color: ${p =>
-          p.theme.mode === 'dark'
-            ? p.theme.colors.light
-            : p.theme.colors[p.color]};
-        min-width: 21px;
-        min-height: 21px;
-
-        transition: color 0.8s;
-
-        @media ${p => p.theme.queries.small} {
-          min-width: 18px;
-          min-height: 18px;
-        }
+      @media ${p => p.theme.queries.small} {
+        min-width: 18px;
+        min-height: 18px;
       }
     }
   }

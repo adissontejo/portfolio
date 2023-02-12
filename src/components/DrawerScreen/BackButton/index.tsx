@@ -1,24 +1,35 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { MdOutlineArrowBackIosNew } from 'react-icons/md';
-import { motion } from 'framer-motion';
 
 import { useDrawersContext } from '~/contexts';
-import { DrawerId } from '~/data';
+import { DrawerId, drawers } from '~/data';
 import { AnimationVariants } from '~/types';
 
-import { Container, ContainerProps } from './styles';
+import { Container } from './styles';
 
-export type BackButtonProps = ContainerProps & {
+export type BackButtonProps = {
   id: DrawerId;
 };
 
-export const BackButton = ({ id, color }: BackButtonProps) => {
-  const { transitioning, closeDrawer } = useDrawersContext();
+export const BackButton = ({ id }: BackButtonProps) => {
+  const {
+    transitioning,
+    prevScreen,
+    currentScreen,
+    screenHistory,
+    closeDrawer,
+  } = useDrawersContext();
 
   const [hover, setHover] = useState(false);
   const [closing, setClosing] = useState(false);
 
   const actionQueue = useRef<'onMouseEnter' | 'onMouseLeave' | 'onClick'>(null);
+
+  const backColor = useMemo(() => {
+    const backScreen = screenHistory[screenHistory.length - 2];
+
+    return backScreen === 'home' ? 'background' : drawers[backScreen].color;
+  }, []);
 
   const onMouseEnter = () => {
     if (closing) {
@@ -90,43 +101,46 @@ export const BackButton = ({ id, color }: BackButtonProps) => {
 
   const containerVariants: AnimationVariants = {
     enterInitial: {
-      x: '-101%',
+      width: 0,
     },
     animate: {
-      x: 0,
+      width: 'auto',
       transition: {
         duration: 0.7,
-        delay: 0.8,
+        delay: prevScreen === 'home' ? 0.8 : 0,
       },
     },
     loadAnimate: {
-      x: 0,
+      width: 'auto',
       transition: {
         duration: 0.7,
       },
     },
     backExit: {
-      x: '-101%',
+      width: 0,
       transition: {
         duration: 0.7,
+        delay: currentScreen === 'home' ? 0 : 0.8,
       },
     },
   };
 
   return (
-    <Container color={color} variants={containerVariants}>
-      <motion.button
+    <Container
+      color={drawers[id].color}
+      background={backColor}
+      variants={containerVariants}
+      animate={{ x: hover ? 15 : 0 }}
+    >
+      <button
         className="button"
-        animate={{ x: hover ? -5 : -20 }}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         onClick={onClick}
       >
-        <div className="label-wrapper">
-          <p className="label">voltar</p>
-          <MdOutlineArrowBackIosNew className="icon" />
-        </div>
-      </motion.button>
+        <p className="label">voltar</p>
+        <MdOutlineArrowBackIosNew className="icon" />
+      </button>
     </Container>
   );
 };

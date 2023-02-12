@@ -1,7 +1,7 @@
-import { ReactNode, useMemo } from 'react';
+import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 
-import { useInViewAnimation, useMeasures } from '~/hooks';
+import { useInViewAnimation } from '~/hooks';
 import { AnimationVariants } from '~/types';
 
 import { Container } from './styles';
@@ -12,17 +12,7 @@ export type SectionProps = {
 };
 
 export const Section = ({ title, children }: SectionProps) => {
-  const { ref, element, viewport } = useMeasures<HTMLDivElement>();
-
-  const animationStates = useInViewAnimation(0.5);
-
-  const amount = useMemo(() => {
-    if (!element.height || !viewport.height) {
-      return 1;
-    }
-
-    return Math.min(viewport.height / element.height, 0.5);
-  }, [viewport, element]);
+  const inViewProps = useInViewAnimation<HTMLDivElement>();
 
   const titleVariants: AnimationVariants = {
     enterInitial: {
@@ -65,12 +55,7 @@ export const Section = ({ title, children }: SectionProps) => {
 
   return (
     <Container>
-      <motion.div
-        ref={ref}
-        className="wrapper"
-        viewport={{ once: true, amount }}
-        {...animationStates}
-      >
+      <motion.div className="wrapper" {...inViewProps}>
         <motion.h4 className="title" variants={titleVariants}>
           {title}
         </motion.h4>

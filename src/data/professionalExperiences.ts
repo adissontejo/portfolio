@@ -9,14 +9,14 @@ export const professionalExperiences: ProfessionalExperience[] = [
   {
     name: 'Estágio no Tribunal de Contas da União',
     about:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat',
+      'Atualmente, estagio no Tribunal de Contas da União (TCU) como desenvolvedor Oracle SQL APEX, onde desenvolvo sistemas front-end integrados com bancos de dados SQL para o tribunal.',
     init: '2021',
     end: 'atualmente',
   },
   {
     name: 'Projeto Freelancer Weptek',
     about:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat',
+      'Participei do desenvolvimento do projeto freelancer Weptek, site PWA e mobile feito com ReactJS que tem o objetivo de realizar viagens de carro compartilhadas e integrar a comunicação e o agendamento entre os motoristas e passageiros.',
     init: '2021',
     end: '2022',
   },

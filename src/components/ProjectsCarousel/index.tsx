@@ -29,6 +29,7 @@ export const ProjectsCarousel = () => {
   const position = useRef(0);
   const down = useRef(false);
   const dragging = useRef(false);
+  const interval = useRef<NodeJS.Timer>(null);
 
   const animateX = () => {
     const value = -position.current * carouselWidth;
@@ -70,10 +71,14 @@ export const ProjectsCarousel = () => {
 
       document.body.style.cursor = 'initial';
 
+      resetInterval();
+
       window.removeEventListener('pointerup', listener);
     };
 
     window.addEventListener('pointerup', listener);
+
+    resetInterval();
   };
 
   const onPointerMove = (e: PointerEvent<HTMLDivElement>) => {
@@ -94,19 +99,23 @@ export const ProjectsCarousel = () => {
     return -position.current * carouselWidth;
   };
 
+  const resetInterval = () => {
+    if (interval.current !== null) {
+      clearInterval(interval.current);
+
+      interval.current = null;
+    }
+
+    if (transitioning || entering || down.current) {
+      return;
+    }
+
+    interval.current = setInterval(forward, 9000);
+  };
+
   useEffect(() => {
-    const listener = () => {
-      down.current = false;
+    resetInterval();
 
-      dragging.current = false;
-    };
-
-    window.addEventListener('pointerup', listener);
-
-    return () => window.removeEventListener('pointerup', listener);
-  }, []);
-
-  useEffect(() => {
     if (!entering && !transitioning) {
       animateX();
     }
@@ -153,7 +162,7 @@ export const ProjectsCarousel = () => {
   };
 
   return (
-    <Container>
+    <Container onPointerMove={resetInterval}>
       <div className="carousel-wrapper">
         <OpacityFilter type="left" />
         <Carousel draggable={false}>
@@ -206,7 +215,11 @@ export const ProjectsCarousel = () => {
         </Carousel>
         <OpacityFilter type="right" />
       </div>
-      <Controller back={back} forward={forward} carouselX={x} />
+      <Controller
+        back={() => [resetInterval(), back()]}
+        forward={() => [resetInterval(), forward()]}
+        carouselX={x}
+      />
     </Container>
   );
 };

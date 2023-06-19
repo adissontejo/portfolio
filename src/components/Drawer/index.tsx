@@ -3,17 +3,22 @@ import { motion } from 'framer-motion';
 
 import { useDrawersContext } from '~/contexts';
 import { DrawerId, drawers } from '~/data';
+import { theme } from '~/styles';
 import { AnimationVariants } from '~/types';
 
-import { Container } from './styles';
-
-export type DrawerProps = {
+export interface DrawerProps {
   id: DrawerId;
   opening: boolean;
   setOpening: Dispatch<SetStateAction<boolean>>;
-};
+  className?: string;
+}
 
-export const Drawer = ({ id, opening, setOpening }: DrawerProps) => {
+export const Drawer = ({
+  id,
+  className = '',
+  opening,
+  setOpening,
+}: DrawerProps) => {
   const { color, label, rightToLeftPosition } = drawers[id];
 
   const { activeDrawer, columnWidth, transitioning, openDrawer } =
@@ -142,30 +147,42 @@ export const Drawer = ({ id, opening, setOpening }: DrawerProps) => {
   };
 
   return (
-    <Container
-      gridArea={id}
-      color={color}
-      rightToLeftPosition={rightToLeftPosition}
+    <motion.div
+      className={`${className} relative flex w-full cursor-pointer justify-end self-end lg:self-center lg:justify-self-end`}
+      style={{ zIndex: (2 - rightToLeftPosition) * 10 }}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       variants={containerVariants}
     >
       <motion.div
-        className="bar"
+        className={`h-[35px] w-full overflow-hidden pl-[30px] sm:h-[50px]`}
         variants={slideVariants}
-        animate={{ x: hover ? -15 : 0 }}
       >
-        <div className="label-wrapper">
-          <p className="label">{label}</p>
-          <img className="icon" src={`/drawer-icons/${id}.svg`} alt={label} />
-        </div>
+        <motion.div
+          className="flex h-full w-full items-center"
+          style={{ backgroundColor: theme.colors[color] as string }}
+          animate={{ x: hover ? -15 : 0 }}
+        >
+          <div className="flex items-center gap-4 lg:flex-row-reverse lg:justify-end">
+            <img
+              className="h-18 ml-4 sm:h-auto lg:ml-0"
+              src={`/drawer-icons/${id}.svg`}
+              alt={label}
+            />
+            <p className="text-light lg:ml-8 lg:text-xl">{label}</p>
+          </div>
+        </motion.div>
       </motion.div>
       <motion.div
-        className="column"
-        variants={{ ...slideVariants, ...columnVariants }}
+        className="fixed top-0 h-full w-[40px] sm:w-[80px]"
+        style={{
+          backgroundColor: theme.colors[color] as string,
+          right: rightToLeftPosition * columnWidth - 20,
+        }}
+        variants={columnVariants}
         animate={{ x: hover ? -15 : 0 }}
       />
-    </Container>
+    </motion.div>
   );
 };

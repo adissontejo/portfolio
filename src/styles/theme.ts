@@ -1,3 +1,10 @@
+import resolveConfig from 'tailwindcss/resolveConfig';
+import tailwind from 'tailwind.config';
+
+const { theme } = resolveConfig(tailwind);
+
+export { theme };
+
 export const baseTheme = {
   colors: {
     purple: '#37188e',

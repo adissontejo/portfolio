@@ -1,6 +1,8 @@
 import App, { AppContext, AppProps } from 'next/app';
 import { getCookie } from 'cookies-next';
 
+import '~/styles/global.css';
+
 import { ContextProvider } from '~/contexts';
 
 type MyAppProps = AppProps & {

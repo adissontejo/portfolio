@@ -1,3 +1,4 @@
+import { getCookie } from 'cookies-next';
 import Document, {
   DocumentContext,
   Head,
@@ -8,6 +9,8 @@ import Document, {
 import { ServerStyleSheet } from 'styled-components';
 
 class MyDocument extends Document {
+  props: Document['props'] & { themeMode: 'dark' | 'ligh' };
+
   static async getInitialProps(ctx: DocumentContext) {
     const sheet = new ServerStyleSheet();
     const originalRenderPage = ctx.renderPage;
@@ -19,8 +22,13 @@ class MyDocument extends Document {
         });
 
       const initialProps = await Document.getInitialProps(ctx);
+
+      const themeMode =
+        getCookie('theme-mode', { req: ctx.req, res: ctx.res }) || 'light';
+
       return {
         ...initialProps,
+        themeMode,
         styles: [
           <>
             {initialProps.styles}
@@ -35,7 +43,7 @@ class MyDocument extends Document {
 
   render() {
     return (
-      <Html lang="pt">
+      <Html lang="pt-BR" className={this.props.themeMode}>
         <Head>
           <meta charSet="utf-8" />
           <link rel="preconnect" href="https://fonts.googleapis.com" />

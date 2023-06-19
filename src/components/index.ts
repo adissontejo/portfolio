@@ -6,3 +6,4 @@ export * from './ModeSelector';
 export * from './ProfessionalExperiences';
 export * from './ProjectsCarousel';
 export * from './Section';
+export * from './ThemeSelector';

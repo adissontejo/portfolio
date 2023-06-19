@@ -10,7 +10,6 @@ export type ContainerProps = {
 };
 
 export const Container = styled(motion.button)<ContainerProps>`
-  grid-area: ${p => p.gridArea};
   z-index: ${p => (2 - p.rightToLeftPosition) * 10};
   position: relative;
 

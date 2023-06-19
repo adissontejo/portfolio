@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { ThemeProvider } from 'styled-components';
 
-import { darkTheme, GlobalStyles, lightTheme, Theme } from '~/styles';
+import { darkTheme, lightTheme, Theme } from '~/styles';
 
 export type StylesContextType = {
   theme: Theme;
@@ -33,10 +33,7 @@ export const StylesProvider = ({
 
   return (
     <StylesContext.Provider value={{ theme, mode, setMode }}>
-      <ThemeProvider theme={theme}>
-        <GlobalStyles />
-        {children}
-      </ThemeProvider>
+      <ThemeProvider theme={theme}>{children}</ThemeProvider>
     </StylesContext.Provider>
   );
 };

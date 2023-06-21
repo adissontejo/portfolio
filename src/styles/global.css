@@ -1,3 +1,35 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --drawer-column-width: 20px;
+
+    @media screen and screen(sm) {
+      --drawer-column-width: 60px;
+    }
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+    font-family: 'Noto Sans Khmer', sans-serif;
+    font-weight: 400;
+  }
+
+  button,
+  label {
+    -webkit-tap-highlight-color: transparent;
+    border: none;
+    background: none;
+  }
+
+  #__next {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+}

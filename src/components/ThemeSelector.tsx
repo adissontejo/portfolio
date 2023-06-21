@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { setCookie } from 'cookies-next';
 import { motion } from 'framer-motion';
 
-import { AnimationVariants } from '~/types';
+import { useDrawersContext } from '~/contexts';
 
 export interface ThemeSelectorProps {
   initialMode?: 'light' | 'dark';
@@ -13,6 +13,8 @@ export const ThemeSelector = ({
 }: ThemeSelectorProps) => {
   const [mode, setMode] = useState(initialMode);
   const [hover, setHover] = useState(false);
+
+  const { variants } = useDrawersContext();
 
   const hoverMode = useMemo(() => {
     if ((mode === 'dark') === hover) {
@@ -37,23 +39,30 @@ export const ThemeSelector = ({
     html.classList.add(newMode);
   };
 
-  const containerVariants: AnimationVariants = {
-    loadInitial: {
-      y: -35,
-      opacity: 0,
-    },
-    animate: {
+  const themeSelectorVariants = variants({
+    default: {
       y: 0,
       opacity: 1,
-      transition: {
-        duration: 1,
-        delay: 0.5,
+    },
+
+    load: {
+      initial: {
+        y: -35,
+        opacity: 0,
+      },
+      animate: {
+        y: 0,
+        opacity: 1,
+        transition: {
+          duration: 1,
+          delay: 0.5,
+        },
       },
     },
-  };
+  });
 
   return (
-    <motion.div variants={containerVariants} className="relative z-10">
+    <motion.div className="relative z-10" variants={themeSelectorVariants}>
       <button
         className="flex cursor-pointer items-center gap-[12px]"
         onMouseEnter={() => setHover(true)}

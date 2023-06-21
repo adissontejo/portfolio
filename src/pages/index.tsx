@@ -5,50 +5,51 @@ import Head from 'next/head';
 import { motion } from 'framer-motion';
 
 import { Drawer, Logo, ThemeSelector } from '~/components';
-import { useDrawersContext, useStylesContext } from '~/contexts';
-import { useMediaQuery } from '~/hooks';
-import { AnimationVariants } from '~/types';
+import { useDrawersContext } from '~/contexts';
 
 interface HomeProps {
   themeMode: 'light' | 'dark';
 }
 
 const Home = ({ themeMode }: HomeProps) => {
-  const { theme } = useStylesContext();
-  const { animationType, animationStates } = useDrawersContext();
+  const { animationType, animationStates, variants } = useDrawersContext();
 
-  const isRegularOrLower = useMediaQuery(theme.queries.regularAndLower);
-
-  const barWidth = isRegularOrLower
-    ? 'calc(100vw - 36px)'
-    : 'min(85vw - 380px, 1120px)';
+  // Grid container width - 30px of padding
+  const barWidth = 'calc(min(80rem, 91.6667vw) - 30px)';
 
   const [iterationCount, setIterationCount] = useState(0);
   const [opening, setOpening] = useState(false);
 
-  const logoVariants: AnimationVariants = {
-    loadInitial: {
-      opacity: 0,
-      x: barWidth,
-    },
-    animate: {
+  const logoVariants = variants({
+    default: {
       opacity: 1,
       x: 0,
-      transition: {
-        duration: 2,
-        delay: 1.5,
-        opacity: {
-          duration: 1.5,
-          delay: 2,
+    },
+
+    load: {
+      initial: {
+        opacity: 0,
+        x: barWidth,
+      },
+      animate: {
+        opacity: 1,
+        x: 0,
+        transition: {
+          duration: 2,
+          delay: 1.5,
+          opacity: {
+            duration: 1.5,
+            delay: 2,
+          },
         },
       },
     },
-  };
+  });
 
   return (
     <motion.div
-      {...animationStates}
       className="flex h-full w-full flex-col items-end bg-light transition-dark-mode dark:bg-dark"
+      {...animationStates}
     >
       <Head>
         <title>Ádisson</title>
@@ -62,11 +63,11 @@ const Home = ({ themeMode }: HomeProps) => {
           variants={logoVariants}
         >
           <motion.div
-            className="pr-[70px] sm:pr-[190px] lg:pr-0"
+            className="pr-[70px] var-[x-target_0] var-[y-target_-30px] sm:pr-[190px] lg:pr-0 lg:var-[x-target_-30px] lg:var-[y-target_0]"
             initial={{ x: 0, y: 0 }}
             animate={{
-              x: isRegularOrLower || iterationCount % 2 === 1 ? 0 : -30,
-              y: isRegularOrLower && iterationCount % 2 === 0 ? -30 : 0,
+              x: iterationCount % 2 === 0 ? 'var(--x-target)' : 0,
+              y: iterationCount % 2 === 0 ? 'var(--y-target)' : 0,
             }}
             transition={{
               ease: 'easeInOut',

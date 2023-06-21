@@ -16,28 +16,15 @@ module.exports = {
     },
   },
   plugins: [
-    plugin(function ({ addBase, addUtilities }) {
+    plugin(function ({ theme, addBase, addUtilities, matchUtilities }) {
+      const colorVariables = {};
+
+      Object.entries(theme('colors')).forEach(([key, value]) => {
+        colorVariables[`--${key}-color`] = value;
+      });
+
       addBase({
-        '*': {
-          margin: 0,
-          padding: 0,
-          boxSizing: 'border-box',
-
-          fontFamily: "'Noto Sans Khmer', sans-serif",
-          fontWeight: 400,
-        },
-
-        'button, label': {
-          '-webkit-tap-highlight-color': 'transparent',
-          border: 'none',
-          background: 'none',
-        },
-
-        '#__next': {
-          width: '100vw',
-          height: '100vh',
-          overflow: 'hidden',
-        },
+        ':root': colorVariables,
       });
 
       addUtilities({
@@ -46,6 +33,16 @@ module.exports = {
             'color, background-color, border-color, text-decoration-color, fill, stroke',
           transitionDuration: '800ms',
           transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+        },
+      });
+
+      matchUtilities({
+        var: variable => {
+          const [name, value] = variable.split(' ');
+
+          return {
+            [`--${name}`]: value,
+          };
         },
       });
     }),

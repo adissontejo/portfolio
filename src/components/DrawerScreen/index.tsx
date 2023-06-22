@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 
 import { useDrawersContext } from '~/contexts';
 import { drawers } from '~/data';
+import { getColumnLeftPos } from '~/lib';
 import { AnimationVariants, Drawers } from '~/types';
 
 import { Container } from './styles';
@@ -22,13 +23,13 @@ export const DrawerScreen = ({
 }: DrawerScreenProps) => {
   const { color, title, rightToLeftPosition } = drawers[id];
 
-  const {
-    columnWidth,
-    animationType,
-    prevScreen,
-    currentScreen,
-    animationStates,
-  } = useDrawersContext();
+  const columnLeftPos = getColumnLeftPos(id);
+
+  // columnLeftPos - 15px hover
+  const openingTranslateX = `calc(${columnLeftPos} - 15px)`;
+
+  const { animationType, prevScreen, currentScreen, animationStates } =
+    useDrawersContext();
 
   const containerRef = useRef<HTMLDivElement>();
 
@@ -64,10 +65,7 @@ export const DrawerScreen = ({
 
   const containerVariants: AnimationVariants = {
     forwardInitial: {
-      x:
-        prevScreen === 'home'
-          ? `calc(100vw - ${(rightToLeftPosition + 1) * columnWidth + 15}px)`
-          : '100vw',
+      x: prevScreen === 'home' ? openingTranslateX : '100vw',
     },
     animate: {
       x: 0,
@@ -76,10 +74,7 @@ export const DrawerScreen = ({
       },
     },
     backExit: {
-      x:
-        currentScreen === 'home'
-          ? `calc(100vw - ${(rightToLeftPosition + 1) * columnWidth}px)`
-          : '100vw',
+      x: currentScreen === 'home' ? columnLeftPos : '100vw',
       transition: {
         duration: 1.5,
       },

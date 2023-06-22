@@ -1,11 +1,9 @@
-import { Theme } from '~/styles';
-
-type DrawerProps = {
-  color: keyof Theme['colors'];
+interface DrawerProps {
+  color: 'brown' | 'purple' | 'green';
   rightToLeftPosition: number;
   label: string;
   title: string;
-};
+}
 
 export const drawers = {
   experiences: {

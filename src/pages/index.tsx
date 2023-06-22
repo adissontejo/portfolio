@@ -18,7 +18,6 @@ const Home = ({ themeMode }: HomeProps) => {
   const barWidth = 'calc(min(80rem, 91.6667vw) - 30px)';
 
   const [iterationCount, setIterationCount] = useState(0);
-  const [opening, setOpening] = useState(false);
 
   const logoVariants = variants({
     default: {
@@ -79,19 +78,9 @@ const Home = ({ themeMode }: HomeProps) => {
             <Logo className="pl-[30px]" />
           </motion.div>
         </motion.div>
-        <Drawer
-          id="experiences"
-          opening={opening}
-          setOpening={setOpening}
-          className="lg:col-span-2 lg:row-start-1"
-        />
-        <Drawer id="qualifications" opening={opening} setOpening={setOpening} />
-        <Drawer
-          id="contact"
-          opening={opening}
-          setOpening={setOpening}
-          className="lg:col-span-2"
-        />
+        <Drawer id="experiences" className="lg:col-span-2 lg:row-start-1" />
+        <Drawer id="qualifications" />
+        <Drawer id="contact" className="lg:col-span-2" />
       </motion.div>
     </motion.div>
   );

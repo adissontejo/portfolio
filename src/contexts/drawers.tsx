@@ -10,9 +10,8 @@ import {
 } from 'react';
 import { useRouter } from 'next/router';
 import { AnimatePresence, Target, TargetAndTransition } from 'framer-motion';
-import disableScroll from 'disable-scroll';
 
-import { useScreens } from '~/hooks';
+import { useScreens, useSyncEffect } from '~/hooks';
 import { DrawerId } from '~/data';
 import { AnimationStates } from '~/types';
 
@@ -83,11 +82,7 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
   const navigationType = useRef<NavigationType>('load');
   const prevScreen = useRef<ScreenId>(null);
   const currentScreen = useRef<ScreenId>(getCurrentScreen());
-  const screenHistory = useRef<ScreenId[]>(
-    currentScreen.current === 'home'
-      ? ['home']
-      : ['home', currentScreen.current]
-  );
+  const screenHistory = useRef<ScreenId[]>([]);
 
   const screens = useScreens();
 
@@ -107,7 +102,6 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
       `${navigationType.current}Animate`,
     ],
     exit: [
-      'default',
       'exit',
       navigationType.current !== 'back' ? 'enterExit' : '',
       `${navigationType.current}Exit`,
@@ -133,7 +127,13 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
 
   const variants = (config: VariantsFunctionProps): AnimationVariants => {
     return {
-      default: config.default,
+      default: {
+        ...config.default,
+        transition: {
+          duration: 1,
+          delay: 0,
+        },
+      },
       loadInitial: config.load?.initial,
       loadAnimate: config.load?.animate,
       loadExit: config.load?.exit,
@@ -150,45 +150,39 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const openDrawer = (id: DrawerId) => {
-    disableScroll.on();
-
-    navigationType.current = 'forward';
-    prevScreen.current = getCurrentScreen();
-    currentScreen.current = id;
-
-    screenHistory.current.push(id);
-
-    setActiveDrawer(id);
-    setTransitioning(true);
-
-    router.replace(`/${id}`);
+    router.push(`/${id}`);
   };
 
-  const closeDrawer = async () => {
-    if (screenHistory.current.length < 2) {
-      return;
-    }
-
-    disableScroll.on();
-
-    navigationType.current = 'back';
-    prevScreen.current = screenHistory.current.pop();
-    currentScreen.current =
-      screenHistory.current[screenHistory.current.length - 1];
-
-    setActiveDrawer(prevScreen.current as DrawerId);
-    setTransitioning(true);
-
-    router.replace(
-      currentScreen.current === 'home' ? '/' : `/${currentScreen.current}`
-    );
+  const closeDrawer = () => {
+    router.back();
   };
 
-  useEffect(() => {
-    if (!transitioning) {
-      disableScroll.off();
+  useSyncEffect(() => {
+    setTransitioning(true);
+
+    const screen = getCurrentScreen();
+
+    currentScreen.current = screen;
+
+    if (screenHistory.current.length === 0) {
+      navigationType.current = 'load';
+
+      prevScreen.current = null;
+
+      screenHistory.current = screen === 'home' ? ['home'] : ['home', screen];
+    } else if (screenHistory.current.includes(screen)) {
+      navigationType.current = 'back';
+
+      prevScreen.current = screenHistory.current.pop();
+    } else {
+      navigationType.current = 'forward';
+
+      prevScreen.current =
+        screenHistory.current[screenHistory.current.length - 1];
+
+      screenHistory.current.push(screen);
     }
-  }, [transitioning]);
+  }, [router.pathname]);
 
   return (
     <DrawersContext.Provider

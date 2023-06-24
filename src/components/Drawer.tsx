@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { motion } from 'framer-motion';
 
@@ -16,76 +16,74 @@ export const Drawer = ({ id, className = '' }: DrawerProps) => {
 
   const columnLeftPos = getColumnLeftPos(id);
 
-  // go to screenX = 0 -> - columnLeftPos + 15px hover
-  const openingTranslateX = `calc(15px - ${columnLeftPos})`;
-  // start at screenX = 0 -> - columnLeftPos
-  const closingTranslateX = `calc(-1 * ${columnLeftPos})`;
-
-  const [hover, setHover] = useState(false);
-
   const router = useRouter();
 
-  const { prevScreen, currentScreen, navigationType, transitioning, variants } =
-    useDrawersContext();
+  const actionQueue = useRef<'onMouseEnter' | 'onMouseLeave' | 'onClick'>(null);
 
-  const opening = useMemo(() => {
-    return transitioning && navigationType === 'forward';
-  }, [transitioning, navigationType]);
+  const {
+    activeDrawer,
+    setActiveDrawer,
+    prevScreen,
+    currentScreen,
+    transitioning,
+    variants,
+  } = useDrawersContext();
 
-  const closing = useMemo(() => {
-    return transitioning && navigationType === 'back';
-  }, [transitioning, navigationType]);
+  const hover = activeDrawer === id;
 
-  const shouldHover = useMemo(() => {
-    const shouldNotHover = (opening && currentScreen !== id) || closing;
+  const slideXWithoutHover = `calc(-1 * ${columnLeftPos})`;
+  const slideXWithHover = `calc(${slideXWithoutHover} + 15px)`;
+  const slideX = hover ? slideXWithHover : slideXWithoutHover;
 
-    return (hover || (opening && currentScreen === id)) && !shouldNotHover;
-  }, [hover, opening, currentScreen, closing]);
+  const onMouseEnter = () => {
+    if (transitioning) {
+      actionQueue.current = 'onMouseEnter';
+
+      return;
+    }
+
+    setActiveDrawer(id);
+  };
+
+  const onMouseLeave = () => {
+    if (transitioning) {
+      actionQueue.current = 'onMouseLeave';
+
+      return;
+    }
+
+    setActiveDrawer(prev => (prev === id ? null : prev));
+  };
 
   const onClick = () => {
-    if (opening) {
+    if (currentScreen !== 'home') {
+      return;
+    }
+
+    if (transitioning && prevScreen !== id) {
+      actionQueue.current = 'onClick';
+
       return;
     }
 
     router.push(`/${id}`);
   };
 
-  const slide = {
-    default: {
-      x: 0,
-    },
+  useEffect(() => {
+    if (transitioning || actionQueue.current === null) {
+      return;
+    }
 
-    forward: {
-      exit: {
-        x: currentScreen === id ? openingTranslateX : '100vw',
-        transition: {
-          duration: currentScreen === id ? 1.5 : 1,
-        },
-      },
-    },
+    const actions = { onMouseEnter, onMouseLeave, onClick };
 
-    back: {
-      initial: {
-        x: prevScreen === id ? closingTranslateX : '100vw',
-      },
-      animate: {
-        x: 0,
-        transition: {
-          duration: prevScreen === id ? 1.5 : 1,
-        },
-      },
-    },
-  };
+    actions[actionQueue.current]();
+  }, [transitioning]);
 
   const barVariants = variants({
     default: {
-      ...slide.default,
+      x: 0,
       width: '100%',
     },
-
-    forward: slide.forward,
-
-    back: slide.back,
 
     load: {
       initial: {
@@ -99,17 +97,34 @@ export const Drawer = ({ id, className = '' }: DrawerProps) => {
         },
       },
     },
+
+    forward: {
+      exit: {
+        x: currentScreen === id ? slideX : '100vw',
+        transition: {
+          duration: currentScreen === id ? 1.5 : 1,
+        },
+      },
+    },
+
+    back: {
+      initial: {
+        x: prevScreen === id ? slideX : '100vw',
+      },
+      animate: {
+        x: 0,
+        transition: {
+          duration: prevScreen === id ? 1.5 : 1,
+        },
+      },
+    },
   });
 
   const columnVariants = variants({
     default: {
-      ...slide.default,
+      x: 0,
       height: '100%',
     },
-
-    forward: slide.forward,
-
-    back: slide.back,
 
     load: {
       initial: {
@@ -123,6 +138,27 @@ export const Drawer = ({ id, className = '' }: DrawerProps) => {
         },
       },
     },
+
+    forward: {
+      exit: {
+        x: '100vw',
+        transition: {
+          duration: 1,
+        },
+      },
+    },
+
+    back: {
+      initial: {
+        x: '100vw',
+      },
+      animate: {
+        x: 0,
+        transition: {
+          duration: 1,
+        },
+      },
+    },
   });
 
   return (
@@ -130,37 +166,35 @@ export const Drawer = ({ id, className = '' }: DrawerProps) => {
       className={`${className} relative flex w-full cursor-pointer justify-end self-end lg:self-center lg:justify-self-end`}
       style={{ zIndex: (2 - rightToLeftPosition) * 10 }}
       onClick={onClick}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
     >
       <motion.div
         className="h-[35px] w-full overflow-hidden pl-[30px] sm:h-[50px]"
         variants={barVariants}
       >
         <motion.div
-          className="flex h-full w-full items-center"
+          className="flex h-full w-full items-center gap-4 lg:flex-row-reverse lg:justify-end"
           style={{ backgroundColor: `var(--${color}-color)` }}
-          animate={{ x: shouldHover ? -15 : 0 }}
+          animate={{ x: hover ? -15 : 0 }}
         >
-          <div className="flex items-center gap-4 lg:flex-row-reverse lg:justify-end">
-            <img
-              className="h-18 ml-4 sm:h-auto lg:ml-0"
-              src={`/drawer-icons/${id}.svg`}
-              alt={label}
-            />
-            <p className="text-light lg:ml-8 lg:text-xl">{label}</p>
-          </div>
+          <img
+            className="h-18 ml-4 sm:h-auto lg:ml-0"
+            src={`/drawer-icons/${id}.svg`}
+            alt={label}
+          />
+          <p className="text-light sm:text-xl lg:ml-8">{label}</p>
         </motion.div>
       </motion.div>
       <motion.div
-        className="fixed top-0 h-full w-[calc(var(--drawer-column-width)+30px)]"
+        className="fixed top-0 h-full w-screen"
         style={{ left: columnLeftPos }}
         variants={columnVariants}
       >
         <motion.div
           className="h-full w-full"
           style={{ backgroundColor: `var(--${color}-color)` }}
-          animate={{ x: shouldHover ? -15 : 0 }}
+          animate={{ x: hover ? -15 : 0 }}
         />
       </motion.div>
     </button>

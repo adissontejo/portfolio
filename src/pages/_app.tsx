@@ -9,10 +9,10 @@ type MyAppProps = AppProps & {
   themeMode: 'light' | 'dark';
 };
 
-const MyApp = ({ Component, pageProps, router, themeMode }: MyAppProps) => {
+const MyApp = ({ Component, pageProps, themeMode }: MyAppProps) => {
   return (
     <ContextProvider themeInitialMode={themeMode}>
-      <Component key={router.pathname} {...pageProps} />
+      <Component {...pageProps} />
     </ContextProvider>
   );
 };

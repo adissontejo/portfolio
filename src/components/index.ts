@@ -1,6 +1,6 @@
 export * from './AcademicActivities';
 export * from './Drawer';
-export * from './DrawerScreen';
+export * from './DrawerScreen.tsx';
 export * from './Logo';
 export * from './ModeSelector';
 export * from './ProfessionalExperiences';

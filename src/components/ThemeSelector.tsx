@@ -39,7 +39,7 @@ export const ThemeSelector = ({
     html.classList.add(newMode);
   };
 
-  const themeSelectorVariants = variants({
+  const containerVariants = variants({
     default: {
       y: 0,
       opacity: 1,
@@ -62,7 +62,7 @@ export const ThemeSelector = ({
   });
 
   return (
-    <motion.div className="relative z-10" variants={themeSelectorVariants}>
+    <motion.div className="relative z-[2]" variants={containerVariants}>
       <button
         className="flex cursor-pointer items-center gap-[12px]"
         onMouseEnter={() => setHover(true)}

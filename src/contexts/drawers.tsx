@@ -3,6 +3,7 @@ import {
   Dispatch,
   ReactNode,
   SetStateAction,
+  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -11,50 +12,48 @@ import {
 import { useRouter } from 'next/router';
 import { AnimatePresence, Target, TargetAndTransition } from 'framer-motion';
 
-import { useScreens, useSyncEffect } from '~/hooks';
 import { DrawerId } from '~/data';
-import { AnimationStates } from '~/types';
+import { useSyncEffect } from '~/hooks';
+import { getScreenFromPathname } from '~/lib';
 
 type ScreenId = DrawerId | 'home';
 
 type NavigationType = 'load' | 'back' | 'forward';
 
+type NavigationState = NavigationType | 'enter';
+
 type AnimationType = 'initial' | 'animate' | 'exit';
 
-type AnimationKeys =
-  | `${NavigationType}${Capitalize<AnimationType>}`
-  | AnimationType
-  | 'default';
+type VariantKey = `${NavigationType}-${AnimationType}`;
 
-type AnimationProps = Partial<Record<AnimationType, TargetAndTransition>> & {
-  initial?: Target;
-};
+type AnimationProps = Partial<
+  Record<AnimationType, TargetAndTransition> & {
+    initial?: Target;
+  }
+>;
 
-type AnimationVariants = Partial<Record<AnimationKeys, TargetAndTransition>> & {
-  [Property in `${NavigationType}Initial` | 'initial' | 'default']: Target;
-};
+type AnimationVariants = Partial<
+  Record<VariantKey, TargetAndTransition> & {
+    [Property in `${NavigationType}-initial`]: Target;
+  }
+>;
 
-type AnimationsFunctionProps = Partial<Record<NavigationType, AnimationProps>> &
-  AnimationProps;
-
-type VariantsFunctionProps = Partial<Record<NavigationType, AnimationProps>> &
-  AnimationProps & { default?: Target };
+type VariantsFunctionProps = Partial<
+  Record<NavigationState, AnimationProps> & {
+    default: Target;
+  }
+>;
 
 export interface DrawersContextType {
   activeDrawer: DrawerId;
   setActiveDrawer: Dispatch<SetStateAction<DrawerId>>;
   transitioning: boolean;
-  columnWidth: number;
   prevScreen: ScreenId;
   currentScreen: ScreenId;
   screenHistory: ScreenId[];
   animationType: 'load' | 'back' | 'forward';
   navigationType: NavigationType;
-  animationStates: AnimationStates;
-  animations: (config: AnimationsFunctionProps) => AnimationProps;
   variants: (config: VariantsFunctionProps) => AnimationVariants;
-  openDrawer: (id: DrawerId) => void;
-  closeDrawer: (id: DrawerId) => void;
 }
 
 export const DrawersContext = createContext({} as DrawersContextType);
@@ -65,124 +64,134 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
   const [activeDrawer, setActiveDrawer] = useState<DrawerId>(null);
   const [transitioning, setTransitioning] = useState(false);
 
-  const getCurrentScreen = () => {
-    const drawers: DrawerId[] = ['contact', 'experiences', 'qualifications'];
-
-    for (let i = 0; i < drawers.length; i++) {
-      const regex = new RegExp(`^/${drawers[i]}.*$`);
-
-      if (router.pathname.match(regex)) {
-        return drawers[i];
-      }
-    }
-
-    return 'home';
-  };
-
   const navigationType = useRef<NavigationType>('load');
   const prevScreen = useRef<ScreenId>(null);
-  const currentScreen = useRef<ScreenId>(getCurrentScreen());
-  const screenHistory = useRef<ScreenId[]>([]);
-
-  const screens = useScreens();
-
-  const columnWidth = screens.sm ? 60 : 20;
-
-  const animationStates = {
-    initial: [
-      'default',
-      'initial',
-      navigationType.current !== 'back' ? 'enterInitial' : '',
-      `${navigationType.current}Initial`,
-    ],
-    animate: [
-      'default',
-      'animate',
-      navigationType.current !== 'back' ? 'enterAnimate' : '',
-      `${navigationType.current}Animate`,
-    ],
-    exit: [
-      'exit',
-      navigationType.current !== 'back' ? 'enterExit' : '',
-      `${navigationType.current}Exit`,
-    ],
-  } as AnimationStates;
-
-  const animations = (config: AnimationsFunctionProps): AnimationProps => {
-    return {
-      initial: {
-        ...config.initial,
-        ...config[navigationType.current]?.initial,
-      },
-      animate: {
-        ...config.animate,
-        ...config[navigationType.current]?.animate,
-      },
-      exit: {
-        ...config.exit,
-        ...config[navigationType.current]?.exit,
-      },
-    };
-  };
+  const currentScreen = useRef<ScreenId>(
+    getScreenFromPathname(router.pathname)
+  );
+  const screenHistory = useRef<ScreenId[]>([currentScreen.current]);
+  const maskedBack = useRef(currentScreen.current !== 'home');
 
   const variants = (config: VariantsFunctionProps): AnimationVariants => {
-    return {
-      default: {
-        ...config.default,
+    const animationVariants: AnimationVariants = {};
+
+    const navigationTypes: NavigationState[] = ['load', 'back', 'forward'];
+    const animationTypes: AnimationType[] = ['initial', 'animate', 'exit'];
+
+    navigationTypes.forEach(navigation => {
+      const navigationConfig = config[navigation] || {};
+      const enterConfig = config.enter || {};
+
+      animationTypes.forEach(animation => {
+        const target = {
+          ...config.default,
+          ...(navigation !== 'back' ? enterConfig[animation] : {}),
+          ...navigationConfig[animation],
+        } as Target;
+
+        animationVariants[`${navigation}-${animation}`] = target;
+      });
+
+      // Remove animate and exit from variants if back navigation is masked
+      if (maskedBack.current) {
+        const canAnimateLoad = prevScreen.current !== null;
+
+        if (navigation !== 'load' || !canAnimateLoad) {
+          animationVariants[`${navigation}-animate`] = {};
+        }
+
+        animationVariants[`${navigation}-exit`] = {};
+      }
+    });
+
+    if (maskedBack.current) {
+      // Ensure that the screen stays visible if the back navigation is masked
+      animationVariants['back-exit'] = {
+        x: 0,
         transition: {
-          duration: 1,
-          delay: 0,
+          duration: 1.5,
         },
-      },
-      loadInitial: config.load?.initial,
-      loadAnimate: config.load?.animate,
-      loadExit: config.load?.exit,
-      backInitial: config.back?.initial,
-      backAnimate: config.back?.animate,
-      backExit: config.back?.exit,
-      forwardInitial: config.forward?.initial,
-      forwardAnimate: config.forward?.animate,
-      forwardExit: config.forward?.exit,
-      initial: config.initial,
-      animate: config.animate,
-      exit: config.exit,
-    };
+      };
+    }
+
+    return animationVariants;
   };
 
-  const openDrawer = (id: DrawerId) => {
-    router.push(`/${id}`);
-  };
+  const onRouteChangeStart = useCallback(
+    (pathname: string) => {
+      setTransitioning(true);
 
-  const closeDrawer = () => {
-    router.back();
-  };
+      const screen = getScreenFromPathname(pathname);
+
+      if (screen === currentScreen.current) {
+        return;
+      }
+
+      currentScreen.current = screen;
+
+      if (maskedBack.current) {
+        // if back navigation is masked and screen is on home
+        if (screen === 'home') {
+          navigationType.current = 'back';
+
+          screenHistory.current = ['home'];
+        } // if back navigation is masked and screen is back to the drawer
+        else {
+          navigationType.current = 'load';
+
+          prevScreen.current = 'home';
+
+          screenHistory.current.push(screen);
+        }
+      } else if (screenHistory.current.includes(screen)) {
+        navigationType.current = 'back';
+
+        prevScreen.current = screenHistory.current.pop();
+      } else {
+        navigationType.current = 'forward';
+
+        prevScreen.current =
+          screenHistory.current[screenHistory.current.length - 1];
+
+        screenHistory.current.push(screen);
+      }
+    },
+    [screenHistory.current, currentScreen.current, maskedBack.current]
+  );
 
   useSyncEffect(() => {
-    setTransitioning(true);
-
-    const screen = getCurrentScreen();
-
-    currentScreen.current = screen;
-
-    if (screenHistory.current.length === 0) {
-      navigationType.current = 'load';
-
-      prevScreen.current = null;
-
-      screenHistory.current = screen === 'home' ? ['home'] : ['home', screen];
-    } else if (screenHistory.current.includes(screen)) {
-      navigationType.current = 'back';
-
-      prevScreen.current = screenHistory.current.pop();
-    } else {
-      navigationType.current = 'forward';
-
-      prevScreen.current =
-        screenHistory.current[screenHistory.current.length - 1];
-
-      screenHistory.current.push(screen);
+    if (maskedBack.current && !transitioning && prevScreen.current !== null) {
+      maskedBack.current = false;
     }
-  }, [router.pathname]);
+  }, [transitioning]);
+
+  useEffect(() => {
+    if (currentScreen.current !== 'home' && prevScreen.current === null) {
+      const { pathname } = router;
+
+      maskedBack.current = true;
+
+      setTimeout(() => {
+        router.replace('/').then(() => {
+          setTimeout(() => {
+            router.push(pathname);
+          }, 10);
+        });
+      }, 10);
+    }
+  }, []);
+
+  useEffect(() => {
+    router.events.on('routeChangeStart', onRouteChangeStart);
+
+    return () => router.events.off('routeChangeStart', onRouteChangeStart);
+  }, [onRouteChangeStart]);
+
+  useEffect(() => {
+    if (!transitioning && currentScreen.current !== 'home') {
+      setActiveDrawer(null);
+    }
+  }, [transitioning]);
 
   return (
     <DrawersContext.Provider
@@ -190,17 +199,12 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
         activeDrawer,
         setActiveDrawer,
         transitioning,
-        columnWidth,
-        animationStates,
         animationType: navigationType.current,
         navigationType: navigationType.current,
         prevScreen: prevScreen.current,
         currentScreen: currentScreen.current,
         screenHistory: screenHistory.current,
-        animations,
         variants,
-        openDrawer,
-        closeDrawer,
       }}
     >
       <AnimatePresence onExitComplete={() => setTransitioning(false)}>

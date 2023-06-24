@@ -29,3 +29,5 @@ export const drawers = {
 export type Drawers = typeof drawers;
 
 export type DrawerId = keyof Drawers;
+
+export type ScreenId = DrawerId | 'home';

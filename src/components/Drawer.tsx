@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { motion } from 'framer-motion';
 
-import { useDrawersContext } from '~/contexts';
+import { useDrawersContext, useScreenContext } from '~/contexts';
 import { DrawerId, drawers } from '~/data';
 import { getColumnLeftPos } from '~/lib';
 
@@ -20,14 +20,10 @@ export const Drawer = ({ id, className = '' }: DrawerProps) => {
 
   const actionQueue = useRef<'onMouseEnter' | 'onMouseLeave' | 'onClick'>(null);
 
-  const {
-    activeDrawer,
-    setActiveDrawer,
-    prevScreen,
-    currentScreen,
-    transitioning,
-    variants,
-  } = useDrawersContext();
+  const { activeDrawer, setActiveDrawer, prevScreen, currentScreen, variants } =
+    useDrawersContext();
+
+  const { entering, exiting } = useScreenContext();
 
   const hover = activeDrawer === id;
 
@@ -36,7 +32,11 @@ export const Drawer = ({ id, className = '' }: DrawerProps) => {
   const slideX = hover ? slideXWithHover : slideXWithoutHover;
 
   const onMouseEnter = () => {
-    if (transitioning) {
+    if (exiting || actionQueue.current === 'onClick') {
+      return;
+    }
+
+    if (entering) {
       actionQueue.current = 'onMouseEnter';
 
       return;
@@ -46,7 +46,11 @@ export const Drawer = ({ id, className = '' }: DrawerProps) => {
   };
 
   const onMouseLeave = () => {
-    if (transitioning) {
+    if (exiting || actionQueue.current === 'onClick') {
+      return;
+    }
+
+    if (entering) {
       actionQueue.current = 'onMouseLeave';
 
       return;
@@ -56,11 +60,11 @@ export const Drawer = ({ id, className = '' }: DrawerProps) => {
   };
 
   const onClick = () => {
-    if (currentScreen !== 'home') {
+    if (exiting) {
       return;
     }
 
-    if (transitioning && prevScreen !== id) {
+    if (entering && prevScreen !== id) {
       actionQueue.current = 'onClick';
 
       return;
@@ -70,14 +74,16 @@ export const Drawer = ({ id, className = '' }: DrawerProps) => {
   };
 
   useEffect(() => {
-    if (transitioning || actionQueue.current === null) {
+    if (entering || exiting || actionQueue.current === null) {
       return;
     }
 
     const actions = { onMouseEnter, onMouseLeave, onClick };
 
     actions[actionQueue.current]();
-  }, [transitioning]);
+
+    actionQueue.current = null;
+  }, [entering, exiting]);
 
   const barVariants = variants({
     default: {

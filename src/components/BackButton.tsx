@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { motion } from 'framer-motion';
 import { MdOutlineArrowBackIosNew } from 'react-icons/md';
 
-import { useDrawersContext } from '~/contexts';
+import { useDrawersContext, useScreenContext } from '~/contexts';
 import { DrawerId, drawers } from '~/data';
 
 export interface BackButtonProps {
@@ -19,8 +19,9 @@ export const BackButton = ({ drawerId }: BackButtonProps) => {
 
   const router = useRouter();
 
-  const { prevScreen, currentScreen, transitioning, variants } =
-    useDrawersContext();
+  const { prevScreen, currentScreen, variants } = useDrawersContext();
+
+  const { entering, exiting } = useScreenContext();
 
   const backStyle = useRef(
     (() => {
@@ -43,7 +44,11 @@ export const BackButton = ({ drawerId }: BackButtonProps) => {
   };
 
   const onMouseEnter = () => {
-    if (transitioning) {
+    if (exiting) {
+      return;
+    }
+
+    if (entering) {
       actionQueue.current = 'onMouseEnter';
 
       return;
@@ -53,7 +58,11 @@ export const BackButton = ({ drawerId }: BackButtonProps) => {
   };
 
   const onMouseLeave = () => {
-    if (transitioning) {
+    if (exiting) {
+      return;
+    }
+
+    if (entering) {
       actionQueue.current = 'onMouseLeave';
 
       return;
@@ -63,14 +72,14 @@ export const BackButton = ({ drawerId }: BackButtonProps) => {
   };
 
   useEffect(() => {
-    if (transitioning || actionQueue.current === null) {
+    if (entering || exiting || actionQueue.current === null) {
       return;
     }
 
     const actions = { onMouseEnter, onMouseLeave };
 
     actions[actionQueue.current]();
-  }, [transitioning]);
+  }, [entering, exiting]);
 
   const buttonVariants = variants({
     default: {
@@ -119,7 +128,7 @@ export const BackButton = ({ drawerId }: BackButtonProps) => {
             style={backStyle}
           >
             <motion.button
-              className="relative left-1 flex h-full w-full items-center justify-end gap-4 bg-inherit transition-dark-mode"
+              className="relative left-1 flex h-full w-full items-center justify-end gap-4 bg-inherit transition-dark-mode dark:text-light"
               onMouseEnter={onMouseEnter}
               onMouseLeave={onMouseLeave}
               onClick={onClick}

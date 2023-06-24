@@ -1,14 +1,19 @@
-import { createContext, ReactNode, useContext, useMemo, useRef } from 'react';
+import { createContext, ReactNode, useContext, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 import { ScreenId } from '~/data';
 import { useSyncEffect } from '~/hooks';
 import { getScreenFromPathname } from '~/lib';
 
-import { useDrawersContext } from './drawers';
+import {
+  AnimationType,
+  NavigationType,
+  useDrawersContext,
+  VariantKey,
+} from './drawers';
 
-type ExitType = 'forward' | 'back';
-type EnterType = 'load' | ExitType;
+type EnterType = NavigationType;
+type ExitType = Exclude<NavigationType, 'load'>;
 
 export interface ScreenContextData {
   id: ScreenId;
@@ -18,13 +23,7 @@ export interface ScreenContextData {
   exiting: boolean;
 }
 
-const ScreenContext = createContext<ScreenContextData>({
-  id: 'home',
-  enterType: 'load',
-  exitType: 'forward',
-  entering: true,
-  exiting: false,
-});
+const ScreenContext = createContext({} as ScreenContextData);
 
 export interface ScreenProviderProps {
   pathname: string;
@@ -36,16 +35,10 @@ export const ScreenProvider = ({ pathname, children }: ScreenProviderProps) => {
   const enterType = useRef<EnterType>('load');
   const exitType = useRef<ExitType>('forward');
 
-  const { prevScreen, currentScreen, navigationType, transitioning } =
+  const { screens, setScreens, currentScreen, navigationType } =
     useDrawersContext();
 
-  const entering = useMemo(() => {
-    return currentScreen === id && transitioning;
-  }, [currentScreen, transitioning]);
-
-  const exiting = useMemo(() => {
-    return prevScreen === id && transitioning;
-  }, [prevScreen, transitioning]);
+  const { entering = false, exiting = false } = screens[id] || {};
 
   useSyncEffect(() => {
     if (currentScreen === id) {
@@ -54,6 +47,27 @@ export const ScreenProvider = ({ pathname, children }: ScreenProviderProps) => {
       exitType.current = navigationType as ExitType;
     }
   }, [currentScreen, navigationType]);
+
+  const onAnimationComplete = (variant: VariantKey) => {
+    const [navigation, animation] = variant.split('-') as [
+      NavigationType,
+      AnimationType
+    ];
+
+    if (navigation === navigationType && animation === 'exit') {
+      setScreens(prev => ({
+        ...prev,
+        [id]: {
+          entering: false,
+          exiting: false,
+        },
+        [currentScreen]: {
+          entering: false,
+          exiting: false,
+        },
+      }));
+    }
+  };
 
   const animationStates = {
     initial: [`${enterType.current}-initial`],
@@ -65,13 +79,17 @@ export const ScreenProvider = ({ pathname, children }: ScreenProviderProps) => {
     <ScreenContext.Provider
       value={{
         id,
-        enterType: enterType.current,
-        exitType: exitType.current,
         entering,
         exiting,
+        enterType: enterType.current,
+        exitType: exitType.current,
       }}
     >
-      <motion.div className="contents" {...animationStates}>
+      <motion.div
+        className="contents"
+        {...animationStates}
+        onAnimationComplete={onAnimationComplete}
+      >
         {children}
       </motion.div>
     </ScreenContext.Provider>

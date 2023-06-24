@@ -18,13 +18,20 @@ import { getScreenFromPathname } from '~/lib';
 
 type ScreenId = DrawerId | 'home';
 
-type NavigationType = 'load' | 'back' | 'forward';
+type ScreenData = {
+  entering: boolean;
+  exiting: boolean;
+};
+
+type Screens = Partial<Record<ScreenId, ScreenData>>;
+
+export type NavigationType = 'load' | 'back' | 'forward';
 
 type NavigationState = NavigationType | 'enter';
 
-type AnimationType = 'initial' | 'animate' | 'exit';
+export type AnimationType = 'initial' | 'animate' | 'exit';
 
-type VariantKey = `${NavigationType}-${AnimationType}`;
+export type VariantKey = `${NavigationType}-${AnimationType}`;
 
 type AnimationProps = Partial<
   Record<AnimationType, TargetAndTransition> & {
@@ -45,9 +52,10 @@ type VariantsFunctionProps = Partial<
 >;
 
 export interface DrawersContextType {
+  screens: Screens;
+  setScreens: Dispatch<SetStateAction<Screens>>;
   activeDrawer: DrawerId;
   setActiveDrawer: Dispatch<SetStateAction<DrawerId>>;
-  transitioning: boolean;
   prevScreen: ScreenId;
   currentScreen: ScreenId;
   screenHistory: ScreenId[];
@@ -61,8 +69,8 @@ export const DrawersContext = createContext({} as DrawersContextType);
 export const DrawersProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
 
+  const [screens, setScreens] = useState<Screens>({});
   const [activeDrawer, setActiveDrawer] = useState<DrawerId>(null);
-  const [transitioning, setTransitioning] = useState(false);
 
   const navigationType = useRef<NavigationType>('load');
   const prevScreen = useRef<ScreenId>(null);
@@ -119,13 +127,24 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
 
   const onRouteChangeStart = useCallback(
     (pathname: string) => {
-      setTransitioning(true);
-
+      const preview = currentScreen.current;
       const screen = getScreenFromPathname(pathname);
 
-      if (screen === currentScreen.current) {
+      if (screen === preview) {
         return;
       }
+
+      setScreens(prev => ({
+        ...prev,
+        [preview]: {
+          entering: false,
+          exiting: true,
+        },
+        [screen]: {
+          entering: true,
+          exiting: false,
+        },
+      }));
 
       currentScreen.current = screen;
 
@@ -160,10 +179,20 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
   );
 
   useSyncEffect(() => {
-    if (maskedBack.current && !transitioning && prevScreen.current !== null) {
+    const screen = screens[currentScreen.current];
+
+    if (screen?.entering) {
+      return;
+    }
+
+    if (currentScreen.current !== 'home') {
+      setActiveDrawer(null);
+    }
+
+    if (maskedBack.current && prevScreen.current !== null) {
       maskedBack.current = false;
     }
-  }, [transitioning]);
+  }, [screens]);
 
   useEffect(() => {
     if (currentScreen.current !== 'home' && prevScreen.current === null) {
@@ -187,18 +216,13 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
     return () => router.events.off('routeChangeStart', onRouteChangeStart);
   }, [onRouteChangeStart]);
 
-  useEffect(() => {
-    if (!transitioning && currentScreen.current !== 'home') {
-      setActiveDrawer(null);
-    }
-  }, [transitioning]);
-
   return (
     <DrawersContext.Provider
       value={{
+        screens,
+        setScreens,
         activeDrawer,
         setActiveDrawer,
-        transitioning,
         animationType: navigationType.current,
         navigationType: navigationType.current,
         prevScreen: prevScreen.current,
@@ -207,9 +231,7 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
         variants,
       }}
     >
-      <AnimatePresence onExitComplete={() => setTransitioning(false)}>
-        {children}
-      </AnimatePresence>
+      <AnimatePresence>{children}</AnimatePresence>
     </DrawersContext.Provider>
   );
 };

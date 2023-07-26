@@ -1,54 +1,64 @@
 import { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/router';
 import { motion } from 'framer-motion';
 import { MdOutlineArrowBackIosNew } from 'react-icons/md';
 
-import { useDrawersContext, useScreenContext } from '~/contexts';
-import { DrawerId, drawers } from '~/data';
+import { useDrawersContext } from '~/contexts';
+import { drawers } from '~/data';
+import { useDrawer, useSyncEffect } from '~/hooks';
 
 export interface BackButtonProps {
-  drawerId: DrawerId;
+  className?: string;
 }
 
-export const BackButton = ({ drawerId }: BackButtonProps) => {
-  const { color } = drawers[drawerId];
-
+export const BackButton = ({ className = '' }: BackButtonProps) => {
   const [hover, setHover] = useState(false);
 
   const actionQueue = useRef<'onMouseEnter' | 'onMouseLeave'>(null);
 
-  const router = useRouter();
+  const {
+    transitioning,
+    screenHistory,
+    prevScreen,
+    currentScreen,
+    closeDrawer,
+    variants,
+  } = useDrawersContext();
 
-  const { prevScreen, currentScreen, variants } = useDrawersContext();
+  const { id, color } = useDrawer();
 
-  const { entering, exiting } = useScreenContext();
+  const backScreen = useSyncEffect(() => {
+    return screenHistory[screenHistory.length - 2] || null;
+  }, []);
 
-  const backStyle = useRef(
-    (() => {
-      if (prevScreen === null || prevScreen === 'home') {
-        return { color: `var(--${color}-color)` };
-      }
+  const containerStyle = useSyncEffect(() => {
+    if (backScreen === null || backScreen === 'home') {
+      return { color: `var(--${color}-color)` };
+    }
 
-      const { color: prevColor } = drawers[prevScreen];
+    return {};
+  }, []);
 
-      return { backgroundColor: `var(--${prevColor}-color)` };
-    })()
-  ).current;
+  const buttonStyle = useSyncEffect(() => {
+    if (backScreen !== null && backScreen !== 'home') {
+      const { color: prevColor } = drawers[backScreen];
+
+      return {
+        color: 'var(--light-color)',
+        backgroundColor: `var(--${prevColor}-color)`,
+      };
+    }
+  }, []);
 
   const onClick = () => {
-    if (currentScreen !== drawerId) {
+    if (currentScreen !== id) {
       return;
     }
 
-    router.back();
+    closeDrawer();
   };
 
   const onMouseEnter = () => {
-    if (exiting) {
-      return;
-    }
-
-    if (entering) {
+    if (transitioning) {
       actionQueue.current = 'onMouseEnter';
 
       return;
@@ -58,11 +68,7 @@ export const BackButton = ({ drawerId }: BackButtonProps) => {
   };
 
   const onMouseLeave = () => {
-    if (exiting) {
-      return;
-    }
-
-    if (entering) {
+    if (transitioning) {
       actionQueue.current = 'onMouseLeave';
 
       return;
@@ -72,26 +78,26 @@ export const BackButton = ({ drawerId }: BackButtonProps) => {
   };
 
   useEffect(() => {
-    if (entering || exiting || actionQueue.current === null) {
+    if (transitioning || actionQueue.current === null) {
       return;
     }
 
     const actions = { onMouseEnter, onMouseLeave };
 
     actions[actionQueue.current]();
-  }, [entering, exiting]);
+  }, [transitioning]);
 
   const buttonVariants = variants({
     default: {
-      width: 'auto',
+      x: 0,
     },
 
     enter: {
       initial: {
-        width: 0,
+        x: '-100%',
       },
       animate: {
-        width: 'auto',
+        x: 0,
         transition: {
           duration: 0.7,
           delay: prevScreen === 'home' ? 0.8 : 0,
@@ -101,7 +107,7 @@ export const BackButton = ({ drawerId }: BackButtonProps) => {
 
     load: {
       animate: {
-        width: 'auto',
+        x: 0,
         transition: {
           duration: 0.7,
         },
@@ -110,7 +116,7 @@ export const BackButton = ({ drawerId }: BackButtonProps) => {
 
     back: {
       exit: {
-        width: 0,
+        x: '-100%',
         transition: {
           duration: 0.7,
           delay: currentScreen === 'home' ? 0 : 0.8,
@@ -120,26 +126,22 @@ export const BackButton = ({ drawerId }: BackButtonProps) => {
   });
 
   return (
-    <div className="mt-14 h-[35px] w-4/5 max-w-lg self-start overflow-hidden sm:h-[50px]">
-      <motion.div className="h-full w-full" variants={buttonVariants}>
-        <div className="h-full w-full pr-5">
-          <div
-            className="relative -left-5 h-full w-full bg-light transition-dark-mode dark:bg-dark"
-            style={backStyle}
-          >
-            <motion.button
-              className="relative left-1 flex h-full w-full items-center justify-end gap-4 bg-inherit transition-dark-mode dark:text-light"
-              onMouseEnter={onMouseEnter}
-              onMouseLeave={onMouseLeave}
-              onClick={onClick}
-              animate={{ x: hover ? 15 : 0 }}
-            >
-              <p className="sm:text-lg">voltar</p>
-              <MdOutlineArrowBackIosNew className="mr-8 text-[18px] sm:text-[21px]" />
-            </motion.button>
-          </div>
-        </div>
-      </motion.div>
-    </div>
+    <motion.div
+      className={`${className} w-4/5 max-w-lg pt-14`}
+      style={containerStyle}
+      variants={buttonVariants}
+    >
+      <motion.button
+        className="relative -left-5 flex h-[35px] w-full items-center justify-end gap-4 bg-light transition-dark-mode dark:bg-dark dark:text-light sm:h-[50px]"
+        style={buttonStyle}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        onClick={onClick}
+        animate={{ x: hover ? 15 : 0 }}
+      >
+        <p className="sm:text-lg">voltar</p>
+        <MdOutlineArrowBackIosNew className="mr-8 text-[18px] sm:text-[21px]" />
+      </motion.button>
+    </motion.div>
   );
 };

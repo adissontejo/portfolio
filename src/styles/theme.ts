@@ -1,7 +1,11 @@
-import resolveConfig from 'tailwindcss/resolveConfig';
-import tailwind from 'tailwind.config';
+import { Config } from 'tailwindcss/types';
 
-const { theme } = resolveConfig(tailwind);
+const { theme } = preval<Config>`
+  const tailwind = require('../../tailwind.config');
+  const resolveConfig = require('tailwindcss/resolveConfig');
+
+  module.exports = resolveConfig(tailwind);
+`;
 
 export { theme };
 

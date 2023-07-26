@@ -3,7 +3,6 @@ import {
   Dispatch,
   ReactNode,
   SetStateAction,
-  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -13,17 +12,9 @@ import { useRouter } from 'next/router';
 import { AnimatePresence, Target, TargetAndTransition } from 'framer-motion';
 
 import { DrawerId } from '~/data';
-import { useSyncEffect } from '~/hooks';
 import { getScreenFromPathname } from '~/lib';
 
 type ScreenId = DrawerId | 'home';
-
-type ScreenData = {
-  entering: boolean;
-  exiting: boolean;
-};
-
-type Screens = Partial<Record<ScreenId, ScreenData>>;
 
 export type NavigationType = 'load' | 'back' | 'forward';
 
@@ -52,8 +43,7 @@ type VariantsFunctionProps = Partial<
 >;
 
 export interface DrawersContextType {
-  screens: Screens;
-  setScreens: Dispatch<SetStateAction<Screens>>;
+  transitioning: boolean;
   activeDrawer: DrawerId;
   setActiveDrawer: Dispatch<SetStateAction<DrawerId>>;
   prevScreen: ScreenId;
@@ -61,15 +51,17 @@ export interface DrawersContextType {
   screenHistory: ScreenId[];
   animationType: 'load' | 'back' | 'forward';
   navigationType: NavigationType;
+  openDrawer: (id: DrawerId) => void;
+  closeDrawer: () => void;
   variants: (config: VariantsFunctionProps) => AnimationVariants;
 }
 
-export const DrawersContext = createContext({} as DrawersContextType);
+export const DrawersContext = createContext<DrawersContextType>(null);
 
 export const DrawersProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
 
-  const [screens, setScreens] = useState<Screens>({});
+  const [transitioning, setTransitioning] = useState(false);
   const [activeDrawer, setActiveDrawer] = useState<DrawerId>(null);
 
   const navigationType = useRef<NavigationType>('load');
@@ -77,8 +69,12 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
   const currentScreen = useRef<ScreenId>(
     getScreenFromPathname(router.pathname)
   );
-  const screenHistory = useRef<ScreenId[]>([currentScreen.current]);
-  const maskedBack = useRef(currentScreen.current !== 'home');
+  const screenHistory = useRef<ScreenId[]>(
+    currentScreen.current === 'home'
+      ? ['home']
+      : ['home', currentScreen.current]
+  );
+  const actionQueue = useRef<['openDrawer', DrawerId] | 'closeDrawer'>(null);
 
   const variants = (config: VariantsFunctionProps): AnimationVariants => {
     const animationVariants: AnimationVariants = {};
@@ -99,128 +95,113 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
 
         animationVariants[`${navigation}-${animation}`] = target;
       });
-
-      // Remove animate and exit from variants if back navigation is masked
-      if (maskedBack.current) {
-        const canAnimateLoad = prevScreen.current !== null;
-
-        if (navigation !== 'load' || !canAnimateLoad) {
-          animationVariants[`${navigation}-animate`] = {};
-        }
-
-        animationVariants[`${navigation}-exit`] = {};
-      }
     });
-
-    if (maskedBack.current) {
-      // Ensure that the screen stays visible if the back navigation is masked
-      animationVariants['back-exit'] = {
-        x: 0,
-        transition: {
-          duration: 1.5,
-        },
-      };
-    }
 
     return animationVariants;
   };
 
-  const onRouteChangeStart = useCallback(
-    (pathname: string) => {
-      const preview = currentScreen.current;
-      const screen = getScreenFromPathname(pathname);
-
-      if (screen === preview) {
-        return;
-      }
-
-      setScreens(prev => ({
-        ...prev,
-        [preview]: {
-          entering: false,
-          exiting: true,
-        },
-        [screen]: {
-          entering: true,
-          exiting: false,
-        },
-      }));
-
-      currentScreen.current = screen;
-
-      if (maskedBack.current) {
-        // if back navigation is masked and screen is on home
-        if (screen === 'home') {
-          navigationType.current = 'back';
-
-          screenHistory.current = ['home'];
-        } // if back navigation is masked and screen is back to the drawer
-        else {
-          navigationType.current = 'load';
-
-          prevScreen.current = 'home';
-
-          screenHistory.current.push(screen);
-        }
-      } else if (screenHistory.current.includes(screen)) {
-        navigationType.current = 'back';
-
-        prevScreen.current = screenHistory.current.pop();
-      } else {
-        navigationType.current = 'forward';
-
-        prevScreen.current =
-          screenHistory.current[screenHistory.current.length - 1];
-
-        screenHistory.current.push(screen);
-      }
-    },
-    [screenHistory.current, currentScreen.current, maskedBack.current]
-  );
-
-  useSyncEffect(() => {
-    const screen = screens[currentScreen.current];
-
-    if (screen?.entering) {
+  const openDrawer = (id: DrawerId) => {
+    if (id === currentScreen.current) {
       return;
     }
 
-    if (currentScreen.current !== 'home') {
-      setActiveDrawer(null);
+    if (
+      transitioning &&
+      (navigationType.current !== 'back' || id !== prevScreen.current)
+    ) {
+      actionQueue.current = ['openDrawer', id];
+
+      return;
     }
 
-    if (maskedBack.current && prevScreen.current !== null) {
-      maskedBack.current = false;
+    const open = () => {
+      prevScreen.current =
+        screenHistory.current[screenHistory.current.length - 1];
+
+      currentScreen.current = id;
+
+      navigationType.current = 'forward';
+
+      screenHistory.current.push(id);
+
+      router.replace(`/${id}`);
+
+      setTransitioning(true);
+    };
+
+    if (!transitioning) {
+      setTimeout(open, 200);
+    } else {
+      open();
     }
-  }, [screens]);
+  };
+
+  const closeDrawer = () => {
+    if (currentScreen.current === 'home') {
+      return;
+    }
+
+    if (transitioning && navigationType.current !== 'forward') {
+      actionQueue.current = 'closeDrawer';
+
+      return;
+    }
+
+    const close = () => {
+      prevScreen.current = currentScreen.current;
+
+      currentScreen.current =
+        screenHistory.current[screenHistory.current.length - 2] || 'home';
+
+      navigationType.current = 'back';
+
+      screenHistory.current.pop();
+
+      router.replace(
+        `/${currentScreen.current === 'home' ? '' : currentScreen.current}`,
+        undefined,
+        {
+          scroll: false,
+        }
+      );
+
+      setTransitioning(true);
+    };
+
+    if (!transitioning) {
+      setTimeout(close, 200);
+    } else {
+      close();
+    }
+  };
+
+  const onExitComplete = () => {
+    setActiveDrawer(null);
+
+    setTransitioning(false);
+  };
 
   useEffect(() => {
-    if (currentScreen.current !== 'home' && prevScreen.current === null) {
-      const { pathname } = router;
-
-      maskedBack.current = true;
-
-      setTimeout(() => {
-        router.replace('/').then(() => {
-          setTimeout(() => {
-            router.push(pathname);
-          }, 10);
-        });
-      }, 10);
+    if (transitioning || actionQueue.current === null) {
+      return;
     }
-  }, []);
 
-  useEffect(() => {
-    router.events.on('routeChangeStart', onRouteChangeStart);
+    if (actionQueue.current === 'closeDrawer') {
+      closeDrawer();
+    } else if (
+      typeof actionQueue.current === 'object' &&
+      actionQueue.current[0] === 'openDrawer'
+    ) {
+      openDrawer(actionQueue.current[1]);
+    }
 
-    return () => router.events.off('routeChangeStart', onRouteChangeStart);
-  }, [onRouteChangeStart]);
+    actionQueue.current = null;
+  }, [transitioning]);
 
   return (
     <DrawersContext.Provider
       value={{
-        screens,
-        setScreens,
+        transitioning,
         activeDrawer,
         setActiveDrawer,
         animationType: navigationType.current,
@@ -228,12 +209,24 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
         prevScreen: prevScreen.current,
         currentScreen: currentScreen.current,
         screenHistory: screenHistory.current,
+        openDrawer,
+        closeDrawer,
         variants,
       }}
     >
-      <AnimatePresence>{children}</AnimatePresence>
+      <AnimatePresence onExitComplete={onExitComplete}>
+        {children}
+      </AnimatePresence>
     </DrawersContext.Provider>
   );
 };
 
-export const useDrawersContext = () => useContext(DrawersContext);
+export const useDrawersContext = () => {
+  const context = useContext(DrawersContext);
+
+  if (context === null) {
+    throw new Error('Must be used with DrawersProvider');
+  }
+
+  return context;
+};

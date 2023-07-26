@@ -6,10 +6,12 @@ import { useDrawersContext } from '~/contexts';
 
 export interface ThemeSelectorProps {
   initialMode?: 'light' | 'dark';
+  className?: string;
 }
 
 export const ThemeSelector = ({
   initialMode = 'light',
+  className = '',
 }: ThemeSelectorProps) => {
   const [mode, setMode] = useState(initialMode);
   const [hover, setHover] = useState(false);
@@ -62,7 +64,10 @@ export const ThemeSelector = ({
   });
 
   return (
-    <motion.div className="relative z-[2]" variants={containerVariants}>
+    <motion.div
+      className={`${className} relative z-10`}
+      variants={containerVariants}
+    >
       <button
         className="flex cursor-pointer items-center gap-[12px]"
         onMouseEnter={() => setHover(true)}

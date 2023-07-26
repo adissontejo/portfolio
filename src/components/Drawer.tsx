@@ -1,8 +1,7 @@
 import { useEffect, useRef } from 'react';
-import { useRouter } from 'next/router';
 import { motion } from 'framer-motion';
 
-import { useDrawersContext, useScreenContext } from '~/contexts';
+import { useDrawersContext } from '~/contexts';
 import { DrawerId, drawers } from '~/data';
 import { getColumnLeftPos } from '~/lib';
 
@@ -16,14 +15,17 @@ export const Drawer = ({ id, className = '' }: DrawerProps) => {
 
   const columnLeftPos = getColumnLeftPos(id);
 
-  const router = useRouter();
+  const actionQueue = useRef<'onMouseEnter' | 'onMouseLeave'>(null);
 
-  const actionQueue = useRef<'onMouseEnter' | 'onMouseLeave' | 'onClick'>(null);
-
-  const { activeDrawer, setActiveDrawer, prevScreen, currentScreen, variants } =
-    useDrawersContext();
-
-  const { entering, exiting } = useScreenContext();
+  const {
+    transitioning,
+    activeDrawer,
+    setActiveDrawer,
+    prevScreen,
+    currentScreen,
+    openDrawer,
+    variants,
+  } = useDrawersContext();
 
   const hover = activeDrawer === id;
 
@@ -32,11 +34,7 @@ export const Drawer = ({ id, className = '' }: DrawerProps) => {
   const slideX = hover ? slideXWithHover : slideXWithoutHover;
 
   const onMouseEnter = () => {
-    if (exiting || actionQueue.current === 'onClick') {
-      return;
-    }
-
-    if (entering) {
+    if (transitioning) {
       actionQueue.current = 'onMouseEnter';
 
       return;
@@ -46,11 +44,7 @@ export const Drawer = ({ id, className = '' }: DrawerProps) => {
   };
 
   const onMouseLeave = () => {
-    if (exiting || actionQueue.current === 'onClick') {
-      return;
-    }
-
-    if (entering) {
+    if (transitioning) {
       actionQueue.current = 'onMouseLeave';
 
       return;
@@ -60,30 +54,20 @@ export const Drawer = ({ id, className = '' }: DrawerProps) => {
   };
 
   const onClick = () => {
-    if (exiting) {
-      return;
-    }
-
-    if (entering && prevScreen !== id) {
-      actionQueue.current = 'onClick';
-
-      return;
-    }
-
-    router.push(`/${id}`);
+    openDrawer(id);
   };
 
   useEffect(() => {
-    if (entering || exiting || actionQueue.current === null) {
+    if (transitioning || actionQueue.current === null) {
       return;
     }
 
-    const actions = { onMouseEnter, onMouseLeave, onClick };
+    const actions = { onMouseEnter, onMouseLeave };
 
     actions[actionQueue.current]();
 
     actionQueue.current = null;
-  }, [entering, exiting]);
+  }, [transitioning]);
 
   const barVariants = variants({
     default: {
@@ -170,26 +154,26 @@ export const Drawer = ({ id, className = '' }: DrawerProps) => {
   return (
     <button
       className={`${className} relative flex w-full cursor-pointer justify-end self-end lg:self-center lg:justify-self-end`}
-      style={{ zIndex: (2 - rightToLeftPosition) * 10 }}
+      style={{ zIndex: (3 - rightToLeftPosition) * 10 }}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
       <motion.div
-        className="h-[35px] w-full overflow-hidden pl-[30px] sm:h-[50px]"
+        className="h-[35px] w-full overflow-hidden pl-5 sm:h-[50px]"
         variants={barVariants}
       >
         <motion.div
-          className="flex h-full w-full items-center gap-4 lg:flex-row-reverse lg:justify-end"
+          className="flex h-full w-full items-center gap-4 text-light lg:flex-row-reverse lg:justify-end"
           style={{ backgroundColor: `var(--${color}-color)` }}
           animate={{ x: hover ? -15 : 0 }}
         >
           <img
-            className="h-18 ml-4 sm:h-auto lg:ml-0"
+            className="ml-4 aspect-square h-[18px] sm:h-[21px] lg:ml-0"
             src={`/drawer-icons/${id}.svg`}
             alt={label}
           />
-          <p className="text-light sm:text-xl lg:ml-8">{label}</p>
+          <p className="sm:text-xl lg:ml-8">{label}</p>
         </motion.div>
       </motion.div>
       <motion.div

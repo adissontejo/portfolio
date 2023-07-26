@@ -5,8 +5,10 @@
 @layer base {
   :root {
     --drawer-column-width: 20px;
+  }
 
-    @media screen and screen(sm) {
+  @media screen and screen(sm) {
+    :root {
       --drawer-column-width: 60px;
     }
   }

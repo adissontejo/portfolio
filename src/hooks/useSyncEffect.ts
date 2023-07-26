@@ -1,10 +1,11 @@
-import { DependencyList, EffectCallback, useRef } from 'react';
+import { DependencyList, useRef } from 'react';
 
-export const useSyncEffect = (
-  effect: EffectCallback,
+export const useSyncEffect = <T = void>(
+  effect: () => T,
   deps?: DependencyList
 ) => {
   const prev = useRef<unknown[]>(null);
+  const result = useRef(null as T);
 
   if (
     !deps ||
@@ -13,6 +14,8 @@ export const useSyncEffect = (
   ) {
     prev.current = deps?.map(item => item) || [];
 
-    effect();
+    result.current = effect();
   }
+
+  return result.current;
 };

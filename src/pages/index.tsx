@@ -59,10 +59,10 @@ const Home = ({ themeMode }: HomeProps) => {
       <Head>
         <title>Ádisson</title>
       </Head>
-      <header className="flex w-full pl-9 pt-8">
+      <header className="flex w-full pl-8 pt-8">
         <ThemeSelector initialMode={themeMode} />
       </header>
-      <motion.div className="flex h-full w-11/12 max-w-7xl flex-col content-center items-start justify-center gap-10 overflow-x-visible pb-16 lg:grid lg:grid-cols-[auto_1fr] lg:grid-rows-[70px_auto_70px] lg:items-center lg:gap-0">
+      <motion.div className="flex h-full w-full max-w-7xl flex-col content-center items-start justify-center gap-10 overflow-x-visible pb-16 pl-3 sm:w-11/12 sm:pl-0 lg:grid lg:grid-cols-[auto_1fr] lg:grid-rows-[70px_auto_70px] lg:items-center lg:gap-0">
         <motion.div
           className="mb-3 me-6 lg:my-20 lg:mr-16"
           variants={logoVariants}
@@ -71,7 +71,7 @@ const Home = ({ themeMode }: HomeProps) => {
             className="pr-[70px] var-[x-target_0] var-[y-target_-30px] sm:pr-[190px] lg:pr-0 lg:var-[x-target_-30px] lg:var-[y-target_0]"
             {...logoAnimation}
           >
-            <Logo className="pl-[30px]" />
+            <Logo className="pl-5" />
           </motion.div>
         </motion.div>
         <Drawer id="experiences" className="lg:col-span-2 lg:row-start-1" />

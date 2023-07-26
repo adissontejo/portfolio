@@ -1,38 +1,66 @@
-import { ReactNode, useMemo } from 'react';
+import { ReactNode, useEffect, useMemo, useRef } from 'react';
+import Head from 'next/head';
 import { motion } from 'framer-motion';
 
 import { useDrawersContext } from '~/contexts';
-import { DrawerId, drawers } from '~/data';
-import { useLoopAnimation } from '~/hooks';
+import { DrawerId } from '~/data';
+import { useDrawer, useLoopAnimation, useSyncEffect } from '~/hooks';
 import { getColumnLeftPos } from '~/lib';
 
 import { BackButton } from './BackButton';
+import { NextDrawerButton } from './NextDrawerButton';
+import { ScrollUpButton } from './ScrollUpButton';
 
 export interface DrawerScreenProps {
-  id: DrawerId;
   children?: ReactNode;
 }
 
-export const DrawerScreen = ({ id, children }: DrawerScreenProps) => {
-  const { color, title, rightToLeftPosition } = drawers[id];
+export const DrawerScreen = ({ children }: DrawerScreenProps) => {
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const { activeDrawer, navigationType, prevScreen, currentScreen, variants } =
-    useDrawersContext();
+  const {
+    activeDrawer,
+    screenHistory,
+    navigationType,
+    prevScreen,
+    currentScreen,
+    variants,
+  } = useDrawersContext();
+
+  const { id, color, title, rightToLeftPosition } = useDrawer();
 
   const slideXWithoutHover = getColumnLeftPos(id);
   const slideXWithHover = `calc(${slideXWithoutHover} - 15px)`;
   const slideX = activeDrawer === id ? slideXWithHover : slideXWithoutHover;
 
+  const leftingDrawers = useSyncEffect(() => {
+    const drawers: DrawerId[] = ['experiences', 'qualifications', 'contact'];
+
+    return drawers.filter(drawer => !screenHistory.includes(drawer));
+  }, []);
+
   const zIndex = useMemo(() => {
     const leftScreen =
       navigationType === 'forward' ? prevScreen : currentScreen;
 
+    console.log(prevScreen);
+
     if (leftScreen === 'home' || leftScreen === id) {
-      return (2 - rightToLeftPosition) * 10 + 5;
+      return (3 - rightToLeftPosition) * 10 + 5;
     }
 
-    return 30;
+    if (leftScreen === id) {
+      return 0;
+    }
+
+    return 100;
   }, [navigationType, prevScreen, currentScreen]);
+
+  useEffect(() => {
+    if (navigationType === 'back') {
+      containerRef.current.scrollTo({ top: containerRef.current.scrollHeight });
+    }
+  }, []);
 
   const titleAnimation = useLoopAnimation({
     from: {
@@ -59,24 +87,9 @@ export const DrawerScreen = ({ id, children }: DrawerScreenProps) => {
           duration: 1.5,
         },
       },
-      exit: {
-        x: '-100vw',
-        transition: {
-          duration: 1.5,
-        },
-      },
     },
 
     back: {
-      initial: {
-        x: '-100vw',
-      },
-      animate: {
-        x: 0,
-        transition: {
-          duration: 1.5,
-        },
-      },
       exit: {
         x: currentScreen === 'home' ? slideX : '100vw',
         transition: {
@@ -128,23 +141,44 @@ export const DrawerScreen = ({ id, children }: DrawerScreenProps) => {
 
   return (
     <motion.div
-      className="fixed left-0 top-0 flex h-full w-full flex-col items-center overflow-y-auto overflow-x-hidden"
+      className="fixed left-0 top-0 flex h-full w-full flex-col items-center overflow-hidden"
       style={{ backgroundColor: `var(--${color}-color)`, zIndex }}
       variants={containerVariants}
     >
-      <BackButton drawerId={id} />
-      <motion.div
-        className="flex w-full justify-center px-5 pb-5 pt-14 sm:justify-start sm:pl-20"
-        variants={titleVariants}
+      <Head>
+        <title>Ádisson · {title}</title>
+      </Head>
+      <main
+        ref={containerRef}
+        className="flex h-full w-full flex-col items-center overflow-y-auto overflow-x-hidden"
       >
-        <motion.img
-          className="max-w-full"
-          src={`/drawer-titles/${id}.svg`}
-          alt={title}
-          draggable={false}
-          {...titleAnimation}
-        />
-      </motion.div>
+        <header className="flex w-full flex-col">
+          <BackButton />
+          <motion.div
+            className="flex w-full justify-center px-5 pb-5 pt-14 sm:justify-start sm:pl-20"
+            variants={titleVariants}
+          >
+            <motion.img
+              className="max-w-full"
+              src={`/drawer-titles/${id}.svg`}
+              alt={title}
+              draggable={false}
+              {...titleAnimation}
+            />
+          </motion.div>
+        </header>
+        <div className="min-h-screen w-full" />
+        <footer className="flex min-h-[140px] w-full flex-col items-end sm:min-h-[200px]">
+          {leftingDrawers.map(drawer => (
+            <NextDrawerButton
+              key={drawer}
+              className="mb-[35px] sm:mb-[50px]"
+              drawerId={drawer}
+            />
+          ))}
+        </footer>
+      </main>
+      <ScrollUpButton containerRef={containerRef} />
     </motion.div>
   );
 };

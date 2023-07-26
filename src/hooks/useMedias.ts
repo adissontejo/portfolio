@@ -2,7 +2,7 @@ import { theme } from '~/styles';
 
 import { useBreakpoint } from './useBreakpoint';
 
-export const useScreens = () => {
+export const useMedias = () => {
   const isSm = useBreakpoint(theme.screens['sm']);
   const isMd = useBreakpoint(theme.screens['md']);
   const isLg = useBreakpoint(theme.screens['lg']);

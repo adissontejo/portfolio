@@ -5,25 +5,18 @@ import { ScreenId } from '~/data';
 import { useSyncEffect } from '~/hooks';
 import { getScreenFromPathname } from '~/lib';
 
-import {
-  AnimationType,
-  NavigationType,
-  useDrawersContext,
-  VariantKey,
-} from './drawers';
+import { NavigationType, useDrawersContext } from './drawers';
 
 type EnterType = NavigationType;
 type ExitType = Exclude<NavigationType, 'load'>;
 
 export interface ScreenContextData {
-  id: ScreenId;
+  screenId: ScreenId;
   enterType: EnterType;
   exitType: ExitType;
-  entering: boolean;
-  exiting: boolean;
 }
 
-const ScreenContext = createContext({} as ScreenContextData);
+const ScreenContext = createContext<ScreenContextData>(null);
 
 export interface ScreenProviderProps {
   pathname: string;
@@ -31,43 +24,26 @@ export interface ScreenProviderProps {
 }
 
 export const ScreenProvider = ({ pathname, children }: ScreenProviderProps) => {
-  const id = useRef(getScreenFromPathname(pathname)).current;
   const enterType = useRef<EnterType>('load');
+  const enterFrom = useRef<ScreenId>(null);
   const exitType = useRef<ExitType>('forward');
+  const exitTo = useRef<ScreenId>(null);
 
-  const { screens, setScreens, currentScreen, navigationType } =
-    useDrawersContext();
+  const { prevScreen, currentScreen, navigationType } = useDrawersContext();
 
-  const { entering = false, exiting = false } = screens[id] || {};
+  const id = useSyncEffect(() => getScreenFromPathname(pathname), []);
 
   useSyncEffect(() => {
     if (currentScreen === id) {
       enterType.current = navigationType;
-    } else {
+
+      enterFrom.current = prevScreen;
+    } else if (prevScreen === id) {
       exitType.current = navigationType as ExitType;
-    }
-  }, [currentScreen, navigationType]);
 
-  const onAnimationComplete = (variant: VariantKey) => {
-    const [navigation, animation] = variant.split('-') as [
-      NavigationType,
-      AnimationType
-    ];
-
-    if (navigation === navigationType && animation === 'exit') {
-      setScreens(prev => ({
-        ...prev,
-        [id]: {
-          entering: false,
-          exiting: false,
-        },
-        [currentScreen]: {
-          entering: false,
-          exiting: false,
-        },
-      }));
+      exitTo.current = currentScreen;
     }
-  };
+  }, [prevScreen, currentScreen]);
 
   const animationStates = {
     initial: [`${enterType.current}-initial`],
@@ -78,22 +54,24 @@ export const ScreenProvider = ({ pathname, children }: ScreenProviderProps) => {
   return (
     <ScreenContext.Provider
       value={{
-        id,
-        entering,
-        exiting,
+        screenId: id,
         enterType: enterType.current,
         exitType: exitType.current,
       }}
     >
-      <motion.div
-        className="contents"
-        {...animationStates}
-        onAnimationComplete={onAnimationComplete}
-      >
+      <motion.div className="contents" {...animationStates}>
         {children}
       </motion.div>
     </ScreenContext.Provider>
   );
 };
 
-export const useScreenContext = () => useContext(ScreenContext);
+export const useScreenContext = () => {
+  const context = useContext(ScreenContext);
+
+  if (context === null) {
+    throw new Error('Must be used with ScreenProvider');
+  }
+
+  return context;
+};

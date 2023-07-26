@@ -8,6 +8,7 @@
     "noEmit": true,
     "incremental": true,
     "esModuleInterop": true,
+    "target": "esnext",
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
@@ -16,8 +17,8 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"]
-    }
+    },
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "./**/*.ts", "./**/*.tsx"],
   "exclude": ["node_modules"]
 }

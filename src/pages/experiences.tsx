@@ -1,20 +1,14 @@
-import Head from 'next/head';
-
 import {
   AcademicActivities,
+  DrawerScreen,
   ProfessionalExperiences,
   ProjectsCarousel,
   Section,
 } from '~/components';
 
-import { Container } from './styles';
-
 const Experiences = () => {
   return (
-    <Container id="experiences">
-      <Head>
-        <title>Ádisson · Experiências</title>
-      </Head>
+    <DrawerScreen>
       <Section title="meus projetos">
         <ProjectsCarousel />
       </Section>
@@ -24,7 +18,7 @@ const Experiences = () => {
       <Section title="atividades acadêmicas">
         <AcademicActivities />
       </Section>
-    </Container>
+    </DrawerScreen>
   );
 };
 

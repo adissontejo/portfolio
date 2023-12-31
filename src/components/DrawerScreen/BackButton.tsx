@@ -90,6 +90,7 @@ export const BackButton = ({ className = '' }: BackButtonProps) => {
   const buttonVariants = variants({
     default: {
       x: 0,
+      perspective: 1,
     },
 
     enter: {
@@ -110,6 +111,7 @@ export const BackButton = ({ className = '' }: BackButtonProps) => {
         x: 0,
         transition: {
           duration: 0.7,
+          delay: 0.5,
         },
       },
     },
@@ -127,7 +129,7 @@ export const BackButton = ({ className = '' }: BackButtonProps) => {
 
   return (
     <motion.div
-      className={`${className} w-4/5 max-w-lg pt-14`}
+      className={`relative z-10 ${className} w-4/5 max-w-lg pt-14`}
       style={containerStyle}
       variants={buttonVariants}
     >

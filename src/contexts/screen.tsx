@@ -5,15 +5,18 @@ import { ScreenId } from '~/data';
 import { useSyncEffect } from '~/hooks';
 import { getScreenFromPathname } from '~/lib';
 
-import { NavigationType, useDrawersContext } from './drawers';
+import { AnimationType, NavigationType, useDrawersContext } from './drawers';
 
 type EnterType = NavigationType;
 type ExitType = Exclude<NavigationType, 'load'>;
+
+type AnimationStates = Record<AnimationType, string>;
 
 export interface ScreenContextData {
   screenId: ScreenId;
   enterType: EnterType;
   exitType: ExitType;
+  animationStates: AnimationStates;
 }
 
 const ScreenContext = createContext<ScreenContextData>(null);
@@ -46,9 +49,9 @@ export const ScreenProvider = ({ pathname, children }: ScreenProviderProps) => {
   }, [prevScreen, currentScreen]);
 
   const animationStates = {
-    initial: [`${enterType.current}-initial`],
-    animate: [`${enterType.current}-animate`],
-    exit: [`${exitType.current}-exit`],
+    initial: `${enterType.current}-initial`,
+    animate: `${enterType.current}-animate`,
+    exit: `${exitType.current}-exit`,
   };
 
   return (
@@ -57,6 +60,10 @@ export const ScreenProvider = ({ pathname, children }: ScreenProviderProps) => {
         screenId: id,
         enterType: enterType.current,
         exitType: exitType.current,
+        animationStates: {
+          ...animationStates,
+          whileInView: `${enterType.current}-whileInView`,
+        },
       }}
     >
       <motion.div className="contents" {...animationStates}>

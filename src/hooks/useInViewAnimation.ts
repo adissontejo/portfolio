@@ -1,7 +1,7 @@
 import { MutableRefObject, useEffect, useMemo, useState } from 'react';
 import { MotionProps } from 'framer-motion';
 
-import { useDrawersContext } from '~/contexts';
+import { useScreenContext } from '~/contexts';
 
 import { useMeasures } from './useMeasures';
 import { AnimationStates } from '~/types';
@@ -17,7 +17,7 @@ export function useInViewAnimation<T extends HTMLElement>({
   minAmount = 0.5,
   once = true,
 }: useInViewAnimationProps = {}) {
-  const { animationStates, animationType } = useDrawersContext();
+  const { animationStates } = useScreenContext();
 
   const { ref, element, viewport } = useMeasures<T>();
 
@@ -41,18 +41,17 @@ export function useInViewAnimation<T extends HTMLElement>({
     AnimationStates & { ref: MutableRefObject<T> };
 
   if (!enabled) {
-    return { ref, ...animationStates } as InViewProps;
+    return {
+      ref,
+      ...animationStates,
+      whileInView: undefined,
+    } as InViewProps;
   }
 
   return {
     ref,
     ...animationStates,
-    whileInView: [
-      'all',
-      'whileInView',
-      animationType !== 'back' ? 'enterInView' : '',
-      `${animationType}WhileInView`,
-    ],
+    whileInView: animationStates.whileInView,
     viewport: {
       amount,
       once,

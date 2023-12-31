@@ -1,4 +1,4 @@
-import { MutableRefObject, useRef, useState } from 'react';
+import { MutableRefObject, useState } from 'react';
 import {
   motion,
   useMotionTemplate,
@@ -8,7 +8,6 @@ import {
 } from 'framer-motion';
 import { MdArrowForwardIos } from 'react-icons/md';
 
-import { useDrawersContext } from '~/contexts';
 import { useDrawer, useMedias } from '~/hooks';
 
 interface ScrollUpButtonProps {
@@ -16,15 +15,11 @@ interface ScrollUpButtonProps {
 }
 
 export const ScrollUpButton = ({ containerRef }: ScrollUpButtonProps) => {
-  const { navigationType } = useDrawersContext();
-
   const medias = useMedias();
 
   const { color } = useDrawer();
 
   const [hover, setHover] = useState(false);
-
-  const shouldStartOpen = useRef(navigationType === 'back');
 
   const { scrollY, scrollYProgress } = useScroll({
     container: containerRef,
@@ -34,10 +29,6 @@ export const ScrollUpButton = ({ containerRef }: ScrollUpButtonProps) => {
   const yPercentValue = useTransform(
     [scrollY, scrollYProgress],
     ([value, progressValue]: number[]) => {
-      if (value === 0 && shouldStartOpen.current) {
-        return -50;
-      }
-
       if (value < (medias.sm ? 95 : 80)) {
         return 0;
       }
@@ -45,8 +36,6 @@ export const ScrollUpButton = ({ containerRef }: ScrollUpButtonProps) => {
       const height = value / progressValue;
 
       if (height - value <= (medias.sm ? 100 : 70)) {
-        shouldStartOpen.current = false;
-
         return -50;
       }
 

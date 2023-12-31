@@ -84,14 +84,14 @@ export const ThemeSelector = ({
             }}
           />
         </div>
-        <p className="text-base text-purple transition-dark-mode after:invisible after:content-['escuro'] dark:text-light">
+        <p className="text-purple transition-dark-mode after:invisible after:content-['escuro'] dark:text-light">
           modo&nbsp;
           <span className="invisible absolute">
             {hoverMode === 'dark' ? 'escuro' : 'claro'}
           </span>
         </p>
       </button>
-      <span className="absolute left-[30px] top-0 -z-10 text-base text-purple transition-dark-mode before:invisible before:content-['modo'] dark:text-light">
+      <span className="absolute left-[30px] top-0 -z-10 text-purple transition-dark-mode before:invisible before:content-['modo'] dark:text-light">
         &nbsp;
         <motion.span
           className="absolute left-full before:content-['claro']"

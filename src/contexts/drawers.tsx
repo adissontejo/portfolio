@@ -20,7 +20,7 @@ export type NavigationType = 'load' | 'back' | 'forward';
 
 type NavigationState = NavigationType | 'enter';
 
-export type AnimationType = 'initial' | 'animate' | 'exit';
+export type AnimationType = 'initial' | 'animate' | 'exit' | 'whileInView';
 
 export type VariantKey = `${NavigationType}-${AnimationType}`;
 
@@ -80,7 +80,12 @@ export const DrawersProvider = ({ children }: { children: ReactNode }) => {
     const animationVariants: AnimationVariants = {};
 
     const navigationTypes: NavigationState[] = ['load', 'back', 'forward'];
-    const animationTypes: AnimationType[] = ['initial', 'animate', 'exit'];
+    const animationTypes: AnimationType[] = [
+      'initial',
+      'animate',
+      'exit',
+      'whileInView',
+    ];
 
     navigationTypes.forEach(navigation => {
       const navigationConfig = config[navigation] || {};

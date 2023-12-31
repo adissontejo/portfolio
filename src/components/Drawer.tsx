@@ -173,7 +173,7 @@ export const Drawer = ({ id, className = '' }: DrawerProps) => {
             src={`/drawer-icons/${id}.svg`}
             alt={label}
           />
-          <p className="sm:text-xl lg:ml-8">{label}</p>
+          <p className="sm:text-lg lg:ml-8">{label}</p>
         </motion.div>
       </motion.div>
       <motion.div

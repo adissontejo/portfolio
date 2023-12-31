@@ -16,7 +16,13 @@ module.exports = {
     },
   },
   plugins: [
-    plugin(function ({ theme, addBase, addUtilities, matchUtilities }) {
+    plugin(function ({
+      theme,
+      addBase,
+      addComponents,
+      addUtilities,
+      matchUtilities,
+    }) {
       const colorVariables = {};
 
       Object.entries(theme('colors')).forEach(([key, value]) => {

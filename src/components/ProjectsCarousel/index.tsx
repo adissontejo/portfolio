@@ -1,225 +1,222 @@
-import { PointerEvent, useEffect, useRef, useState } from 'react';
-import {
-  animate,
-  motion,
-  useDragControls,
-  useMotionValue,
-} from 'framer-motion';
+import { useRef } from 'react';
+import { animate, motion, useMotionValue, useTransform } from 'framer-motion';
 
 import { useDrawersContext } from '~/contexts';
 import { projects } from '~/data';
-import { AnimationVariants } from '~/types';
+import { useInViewAnimation } from '~/hooks';
 
-import { Carousel, Container, OpacityFilter } from './styles';
-import { Controller } from './Controller';
-import { Project } from './Project';
-import { useMeasures } from './useMeasures';
+import { ArrowButton } from './ArrowButton';
+import { ProjectImg } from './ProjectImg';
+import { ProjectTitle } from './ProjectTitle';
+import { ProjectDescription } from './ProjectDescription';
 
 export const ProjectsCarousel = () => {
-  const { transitioning } = useDrawersContext();
-
-  const { carouselWidth } = useMeasures();
+  const { transitioning, variants } = useDrawersContext();
+  const inViewProps = useInViewAnimation<HTMLDivElement>();
 
   const x = useMotionValue(0);
 
-  const dragControls = useDragControls();
+  const carouselRef = useRef<HTMLDivElement>();
+  const integerOffset = useRef(0);
 
-  const [entering, setEntering] = useState(true);
+  const getFrameWidth = () => {
+    if (!carouselRef.current) {
+      return undefined;
+    }
 
-  const position = useRef(0);
-  const down = useRef(false);
-  const dragging = useRef(false);
-  const interval = useRef<NodeJS.Timer>(null);
+    const rect = carouselRef.current.getBoundingClientRect();
 
-  const animateX = () => {
-    const value = -position.current * carouselWidth;
+    return Math.round(rect.width);
+  };
 
-    animate(x, value, {
+  const offset = useTransform(x, value => {
+    const width = getFrameWidth();
+
+    if (width === undefined) {
+      return 0;
+    }
+
+    return value / width;
+  });
+
+  const percentX = useTransform(offset, value => {
+    return `${value * 100}%`;
+  });
+
+  const animateX = (newOffset: number) => {
+    if (transitioning) {
+      return;
+    }
+
+    const width = getFrameWidth();
+
+    integerOffset.current = newOffset;
+
+    animate(x, newOffset * width, {
       duration: 0.5,
     });
   };
 
   const back = () => {
-    position.current--;
-
-    if (entering || transitioning) {
-      return;
-    }
-
-    animateX();
+    animateX(integerOffset.current + 1);
   };
 
   const forward = () => {
-    position.current++;
-
-    if (entering || transitioning) {
-      return;
-    }
-
-    animateX();
+    animateX(integerOffset.current - 1);
   };
 
   const onPointerDown = () => {
-    down.current = true;
-
-    document.body.style.cursor = 'grabbing';
+    document.body.classList.add('grabbing');
 
     const listener = () => {
-      down.current = false;
-
-      dragging.current = false;
-
-      document.body.style.cursor = 'initial';
-
-      resetInterval();
+      document.body.classList.remove('grabbing');
 
       window.removeEventListener('pointerup', listener);
     };
 
     window.addEventListener('pointerup', listener);
-
-    resetInterval();
-  };
-
-  const onPointerMove = (e: PointerEvent<HTMLDivElement>) => {
-    if (Math.abs(e.movementX) < 3) {
-      return;
-    }
-
-    if (!dragging.current && down.current) {
-      dragging.current = true;
-
-      dragControls.start(e);
-    }
   };
 
   const modifyTarget = (target: number) => {
-    position.current = -Math.round(target / carouselWidth);
+    const width = getFrameWidth();
 
-    return -position.current * carouselWidth;
+    integerOffset.current = Math.round(target / width);
+
+    return width * integerOffset.current;
   };
 
-  const resetInterval = () => {
-    if (interval.current !== null) {
-      clearInterval(interval.current);
-
-      interval.current = null;
-    }
-
-    if (transitioning || entering || down.current) {
-      return;
-    }
-
-    interval.current = setInterval(forward, 9000);
-  };
-
-  useEffect(() => {
-    resetInterval();
-
-    if (!entering && !transitioning) {
-      animateX();
-    }
-  }, [entering, transitioning, carouselWidth]);
-
-  const borderVariants: AnimationVariants = {
-    enterInitial: {
-      pathLength: 0,
-    },
-    whileInView: {
-      pathLength: 1,
-      transition: {
-        duration: 0.8,
-        delay: 0.9,
+  const borderVariants = variants({
+    enter: {
+      initial: {
+        pathLength: 0,
+      },
+      whileInView: {
+        pathLength: 1,
+        transition: {
+          duration: 0.8,
+          delay: 0.9,
+        },
       },
     },
-    backExit: {
-      pathLength: 0,
-      transition: {
-        duration: 1,
-      },
-    },
-  };
 
-  const carouselVariants: AnimationVariants = {
-    enterInitial: {
-      x: `${projects.length * 100}%`,
-    },
-    backInitial: {
-      x: 0,
-    },
-    whileInView: {
-      x: 0,
-      transition: {
-        duration: 0.7,
+    back: {
+      exit: {
+        pathLength: 0,
+        transition: {
+          duration: 1,
+        },
       },
     },
-    backExit: {
-      x: `${projects.length * 100}%`,
-      transition: {
-        duration: 1,
+  });
+
+  const initialPercent = `${projects.length * 100}%`;
+
+  const carouselVariants = variants({
+    enter: {
+      initial: {
+        x: initialPercent,
+      },
+
+      whileInView: {
+        x: 0,
+        transition: {
+          duration: 0.7,
+        },
       },
     },
-  };
+
+    back: {
+      exit: {
+        x: initialPercent,
+        transition: {
+          duration: 0.7,
+        },
+      },
+    },
+  });
 
   return (
-    <Container onPointerMove={resetInterval}>
-      <div className="carousel-wrapper">
-        <OpacityFilter type="left" />
-        <Carousel draggable={false}>
-          <div className="scene">
-            <svg
-              className="border"
-              width="100%"
-              height="100%"
-              viewBox="0 0 436 254"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <motion.path d="M 1 1 H 435 V 253" variants={borderVariants} />
-              <motion.path d="M 1 1 V 253 H 435" variants={borderVariants} />
-            </svg>
-            <motion.div
-              variants={carouselVariants}
-              onAnimationComplete={() => setEntering(false)}
-              draggable={false}
-            >
-              <motion.div
-                className="carousel"
-                drag={entering ? false : 'x'}
-                dragControls={dragControls}
-                dragListener={false}
-                dragTransition={{
-                  power: 0.05,
-                  timeConstant: 80,
-                  restDelta: 0,
-                  modifyTarget,
-                }}
-                draggable={false}
-                onPointerDown={onPointerDown}
-                onPointerMove={onPointerMove}
-                style={{ x }}
-                whileDrag={{ cursor: 'grabbing' }}
-              >
-                {projects.map((item, index) => (
-                  <Project
-                    src={item.src}
-                    key={index}
-                    index={index}
-                    length={projects.length}
-                    carouselX={x}
-                  />
-                ))}
-              </motion.div>
-            </motion.div>
-          </div>
-        </Carousel>
-        <OpacityFilter type="right" />
+    <motion.div {...inViewProps} className="flex w-full flex-col items-center">
+      <div className="relative h-[142px] w-[240px] sm:h-[250px] sm:w-[432px]">
+        <svg
+          className="pointer-events-none absolute left-0 top-0 z-[100] h-full w-full touch-none stroke-light stroke-1"
+          width="100%"
+          height="100%"
+          viewBox="0 0 432 250"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <motion.path d="M 1 1 H 431 V 249" variants={borderVariants} />
+          <motion.path d="M 1 1 V 249 H 431" variants={borderVariants} />
+        </svg>
+        <motion.div
+          variants={carouselVariants}
+          className="w-[240px] cursor-grab sm:w-[432px]"
+        >
+          <motion.div
+            ref={carouselRef}
+            style={{ x }}
+            className="flex w-full cursor-grab"
+            drag={transitioning ? false : 'x'}
+            dragTransition={{
+              power: 0.05,
+              timeConstant: 80,
+              restDelta: 0,
+              modifyTarget,
+            }}
+            draggable={false}
+            onPointerDown={onPointerDown}
+          >
+            {projects.map((item, index) => (
+              <ProjectImg
+                src={item.src}
+                key={index}
+                index={index}
+                length={projects.length}
+                offset={offset}
+              />
+            ))}
+          </motion.div>
+        </motion.div>
       </div>
-      <Controller
-        back={() => [resetInterval(), back()]}
-        forward={() => [resetInterval(), forward()]}
-        carouselX={x}
-      />
-    </Container>
+      <div className="mt-8 flex w-full items-center justify-center">
+        <ArrowButton type="back" onClick={back} />
+        <motion.div
+          style={{ x: percentX }}
+          className="flex w-[256px] sm:w-[448px] "
+        >
+          {projects.map((item, index) => (
+            <ProjectTitle
+              key={index}
+              index={index}
+              length={projects.length}
+              offset={offset}
+            >
+              {item.name}
+            </ProjectTitle>
+          ))}
+        </motion.div>
+        <ArrowButton type="forward" onClick={forward} />
+      </div>
+      <div className="flex w-full">
+        <div className="relative z-10 flex-1 bg-green" />
+        <motion.div
+          style={{ x: percentX }}
+          className="mt-12 flex w-full max-w-4xl"
+        >
+          {projects.map((item, index) => (
+            <ProjectDescription
+              key={index}
+              index={index}
+              length={projects.length}
+              offset={offset}
+            >
+              {item.about}
+            </ProjectDescription>
+          ))}
+        </motion.div>
+        <div className="relative z-10 flex-1 bg-green" />
+      </div>
+    </motion.div>
   );
 };

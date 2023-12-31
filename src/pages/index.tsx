@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { Drawer, Logo, ThemeSelector } from '~/components';
 import { useDrawersContext } from '~/contexts';
 import { useLoopAnimation } from '~/hooks';
+import React from 'react';
 
 export interface HomeProps {
   themeMode: 'light' | 'dark';

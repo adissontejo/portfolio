@@ -199,7 +199,9 @@ export const ProjectsCarousel = () => {
         <ArrowButton type="forward" onClick={forward} />
       </div>
       <div className="flex w-full">
-        <div className="relative z-10 flex-1 bg-green" />
+        <div className="relative z-10 flex-1 bg-green">
+          <div className="absolute -right-8 top-0 h-full w-8 bg-gradient-to-r from-green to-transparent max-[896px]:hidden" />
+        </div>
         <motion.div
           style={{ x: percentX }}
           className="mt-12 flex w-full max-w-4xl"
@@ -215,7 +217,9 @@ export const ProjectsCarousel = () => {
             </ProjectDescription>
           ))}
         </motion.div>
-        <div className="relative z-10 flex-1 bg-green" />
+        <div className="relative z-10 flex-1 bg-green">
+          <div className="absolute -left-8 top-0 h-full w-8 bg-gradient-to-l from-green to-transparent max-[896px]:hidden" />
+        </div>
       </div>
     </motion.div>
   );

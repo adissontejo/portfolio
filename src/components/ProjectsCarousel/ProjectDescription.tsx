@@ -48,7 +48,7 @@ export const ProjectDescription = ({
   return (
     <motion.p
       style={{ x }}
-      className="relative min-w-full pl-1 text-center text-light"
+      className="relative min-w-full px-8 text-center text-light max-[896px]:px-2"
     >
       <motion.span variants={descriptionVariants}>{children}</motion.span>
     </motion.p>

@@ -70,9 +70,9 @@ export const Experience = ({ index, name, about }: ExperienceProps) => {
   });
 
   return (
-    <div className="flex w-full flex-col items-center gap-3">
+    <div className="flex w-full flex-col items-center gap-3 overflow-hidden">
       <motion.div
-        className="relative flex w-[480px] min-w-[50%] max-w-full items-center overflow-hidden bg-light"
+        className="relative z-10 flex w-[480px] min-w-[50%] max-w-full items-center bg-light"
         style={{ alignSelf: type === 'left' ? 'flex-start' : 'flex-end' }}
         variants={barVariants}
       >
@@ -83,6 +83,11 @@ export const Experience = ({ index, name, about }: ExperienceProps) => {
         >
           {name}
         </p>
+        <div
+          className={`${
+            type === 'left' ? 'left-0' : 'right-0'
+          } absolute -bottom-8 h-8 w-screen bg-gradient-to-b from-green to-transparent`}
+        />
       </motion.div>
       <div className="relative overflow-hidden">
         <motion.p
